@@ -8,6 +8,6 @@ install:
 	ln -s $(CURDIR)/$(RUN) $(WHICH)
 
 uninstall:
-	rm WHICH
+	rm $(WHICH)
 
 clean:
