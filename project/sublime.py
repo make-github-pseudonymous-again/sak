@@ -5,15 +5,8 @@ def mk(directory):
 	full = os.path.abspath(directory)
 	path = full + '/' + os.path.basename(full) + '.sublime-project'
 	with open(path, 'w') as f:
-		f.write(
-'''{{
-	"folders":
-	[
-		{{
-			"path": "{0}"
-		}}
-	]
-}}'''.format(os.path.abspath(directory)))
+		project = {'folders' : [{ 'path' : os.path.abspath(directory) }]}
+		json.dump(project, f, indent = '\t')
 
 	for i in [2, 3]:
 
