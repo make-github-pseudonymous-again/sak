@@ -7,3 +7,5 @@ for f in os.listdir(root):
 	if os.path.isfile(path) and f != '__init__.py':
 		name, ext = os.path.splitext(f)
 		if ext == '.py' : __import__('project.' + name)
+
+os = None
