@@ -1,9 +1,8 @@
 import hashlib
 
-def checksum(filename, h = hashlib.sha256(), blocksize = 2**15):
-	with open(filename, 'rb') as f:
+def checksum(f, h = hashlib.sha256(), blocksize = 2**15):
+	chunk = f.read(blocksize)
+	while len(chunk) > 0:
+		h.update(chunk)
 		chunk = f.read(blocksize)
-		while len(chunk) > 0:
-			h.update(chunk)
-			chunk = f.read(blocksize)
-	return h.digest()
+	return h
