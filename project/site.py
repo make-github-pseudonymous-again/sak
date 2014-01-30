@@ -1,4 +1,15 @@
-import ftplib, getpass, project.file, json, os, base64
+import ftplib, getpass, project.file, json, os, base64, tempfile
+
+def __ftp_is_file(ftp, path):
+	if len(path) == 0 or path[0] != '/' : path = ftp.pwd() + '/' + path
+	l = ftp.nlst(path)
+	return len(l) == 1 and l[0] == path
+
+def __ftp_is_dir(ftp, path):
+	if len(path) == 0 or path[0] != '/' : path = ftp.pwd() + '/' + path
+	l = ftp.nlst(path)
+	return len(l) > 0 and l[0] != path
+
 
 def __local_fetch(root, config, checksum_table, hierarchy_tree, current = '', tree = None):
 	if tree == None : tree = config['tree']
@@ -26,25 +37,15 @@ def __local_fetch(root, config, checksum_table, hierarchy_tree, current = '', tr
 			__local_fetch(root, config, checksum_table, hierarchy_tree[item], current + item + '/', what)
 
 
-def __server_fetch(ftp, config, checksum_table, hierarchy_tree, current = ''):
-	for item in ftp.nlst(current):
-		print('%s%s' % (current, item))
-		if item == '.' or item == '..' or item == config['checksum'] : continue
-		minipath = current + item
-		path = config['root'] + '/' + minipath
-		if os.path.isfile(path):
-			checksum = ''
-			def __fill_buf(b):
-				checksum += b
-			ftp.retrbinary('RETR /%s/%s/%s' % (config['root'], config['checksum'], minipath), __fill_buf)
-			checksum_ascii = base64.b64encode(checksum).decode('ascii')
-			checksum_table.setdefault(checksum_ascii, [])
-			checksum_table[checksum_ascii].append(minipath)
-			hierarchy_tree[item] = checksum_ascii
-
-		elif os.path.isdir(path):
-			hierarchy_tree[item] = {}
-			__server_fetch(ftp, config, checksum_table, hierarchy_tree[item], current + item + '/')
+def __server_fetch(ftp, config, server, current = ''):
+	checksum_file = '/%s/%s' % (config['root'], config['checksum'])
+	if __ftp_is_file(ftp, checksum_file):
+		chuncks = []
+		ftp.retrlines('RETR %s' % checksum_file, chuncks.append)
+		checksum = ''.join(chuncks)
+		data = json.loads(checksum)
+		server['checksum_table'] = data['checksum_table']
+		server['hierarchy_tree'] = data['hierarchy_tree']
 
 
 def __update_deleted_moved_copied(ftp, config, local, server):
@@ -94,9 +95,9 @@ def __update_added(ftp, config, local, server):
 	for checksum, paths in local['checksum_table'].items():
 		# added files
 		if checksum not in server['checksum_table']:
-			for i in range(len(paths)):
-				with open('%s/%s' % (local['root'], paths[i]['s']), 'rb') as f:
-					print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], paths[i]['d'], f))
+			for i in range(len(paths['s'])):
+				with open('%s/%s' % (local['root'], paths['s'][i]), 'rb') as f:
+					print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], paths['d'][i], f))
 					# ftp.storbinary('STOR /%s/%s' % (config['root'], paths[i]['d']), f)
 
 def __update_modified(ftp, config, local_h, server_h, current = ''):
@@ -114,10 +115,23 @@ def __update_modified(ftp, config, local_h, server_h, current = ''):
 		elif item in server_h:
 			__update_modified(ftp, config, data, server_h[item], current + item + '/')
 
+def __update_checksum(ftp, config, local):
+	data = {
+		'checksum_table' : local['checksum_table'],
+		'hierarchy_tree' : local['hierarchy_tree']
+	}
+	with open('%s/%s' % (local['root'], config['checksum']), 'w') as f:
+		json.dump(data, f, indent = '\t')
+		f.seek(0)
+		print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
+		# ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
+
+
 def __update(ftp, config, local, server):
 	__update_deleted_moved_copied(ftp, config, local, server)
 	__update_added(ftp, config, local, server)
 	# __update_modified(ftp, config, local['hierarchy_tree'], server['hierarchy_tree'])
+	__update_checksum(ftp, config, local)
 
 
 def up(directory, config_file):
@@ -164,11 +178,11 @@ def up(directory, config_file):
 
 		__update(ftp, config, local, server)
 
+	# except ftplib.all_errors as e:
+	# 	print('Socket error : %s' % (e))
+
+	finally:
 		ftp.quit()
-
-	except ftplib.all_errors as e:
-		print('Socket error : %s' % (e))
-
 
 # FTP.rename(fromname, toname)
 # FTP.delete(filename)
