@@ -20,8 +20,13 @@ def __local_fetch(root, config, checksum_table, hierarchy_tree, current = '', tr
 		path = root + '/' + minipath
 		if os.path.isfile(path):
 			base, ext = os.path.splitext(minipath)
-			if ext == config['online_ext'] : dest = base
-			elif item + config['online_ext'] in dir_list : continue
+			if ext == config['online_ext'] :
+				if base in tree.keys() : continue
+				else : dest = base
+			elif item + config['online_ext'] in dir_list :
+				dest = minipath
+				path += config['online_ext']
+				minipath += config['online_ext']
 			else : dest = minipath
 			with open(path, 'rb') as f:
 				checksum = project.file.checksum(f).digest()
@@ -35,9 +40,6 @@ def __local_fetch(root, config, checksum_table, hierarchy_tree, current = '', tr
 			if what == None : what = { sub : None for sub in os.listdir(path)}
 			hierarchy_tree[item] = {}
 			__local_fetch(root, config, checksum_table, hierarchy_tree[item], current + item + '/', what)
-
-	print(json.dumps(checksum_table, indent = '\t'))
-	print(json.dumps(hierarchy_tree, indent = '\t'))
 
 
 def __server_fetch(ftp, config, server):
@@ -135,7 +137,8 @@ def __update_checksum(ftp, config, local):
 
 	with open('%s/%s' % (local['root'], config['checksum']), 'w') as f:
 		json.dump(data, f, indent = '\t')
-		f.seek(0)
+
+	with open('%s/%s' % (local['root'], config['checksum']), 'rb') as f:
 		print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
 		# ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
 		print('ftp.sendcmd(\'SITE CHMOD 640 /%s/%s\')' % (config['root'], config['checksum']))
@@ -173,6 +176,9 @@ def up(directory, config_file):
 
 	# build the local tree and table
 	__local_fetch(local['root'], config, local['checksum_table'], local['hierarchy_tree'])
+
+	print(json.dumps(local['checksum_table'], indent = '\t'))
+	print(json.dumps(local['hierarchy_tree'], indent = '\t'))
 
 	try:
 
@@ -224,11 +230,15 @@ def __server_hash(ftp, config, checksum_table, hierarchy_tree, current = ''):
 			__server_hash(ftp, config, checksum_table, hierarchy_tree, current + item + '/') # hierarchy_tree[item]
 
 def __send_hash(ftp, config, data):
-	with tempfile.NamedTemporaryFile('w') as tmp:
+	with tempfile.NamedTemporaryFile('w', delete = False) as tmp:
 		json.dump(data, tmp, indent = '\t')
-		with open(tmp.name, 'rb') as f:
-			print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
-			ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
+
+	with open(tmp.name, 'rb') as f:
+		print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
+		ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
+
+	os.remove(tmp.name)
+
 	print('ftp.sendcmd(\'SITE CHMOD 640 /%s/%s\')' % (config['root'], config['checksum']))
 	ftp.sendcmd('SITE CHMOD 640 /%s/%s' % (config['root'], config['checksum']))
 
