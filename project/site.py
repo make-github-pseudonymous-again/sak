@@ -37,7 +37,7 @@ def __local_fetch(root, config, checksum_table, hierarchy_tree, current = '', tr
 			__local_fetch(root, config, checksum_table, hierarchy_tree[item], current + item + '/', what)
 
 
-def __server_fetch(ftp, config, server, current = ''):
+def __server_fetch(ftp, config, server):
 	checksum_file = '/%s/%s' % (config['root'], config['checksum'])
 	if __ftp_is_file(ftp, checksum_file):
 		chuncks = []
@@ -59,14 +59,13 @@ def __update_deleted_moved_copied(ftp, config, local, server):
 
 		else:
 
-			base = None
-			not_handled = local['checksum_table']['d'].copy()
+			not_handled = local['checksum_table'][checksum]['d'].copy()
 
 			for i in range(len(minipaths)):
 				minipath = minipaths[i]
 
 				# moved files
-				if minipath not in local['checksum_table']['d']:
+				if minipath not in local['checksum_table'][checksum]['d']:
 					if len(not_handled) > 0:
 						for j in range(len(not_handled)):
 							if not_handled[j] not in minipaths:
@@ -82,13 +81,16 @@ def __update_deleted_moved_copied(ftp, config, local, server):
 
 				# not moved
 				else:
-					base = minipath
 					not_handled.remove(minipath)
 
 			# copied files
-			for i in range(len(not_handled)):
-				print('ftp.copy(\'/%s/%s\', \'/%s/%s\')' % (config['root'], base, config['root'], not_handled[i]))
-				# ftp.copy('/%s/%s' % (config['root'], base), '/%s/%s' % (config['root'], not_handled[i]))
+			if len(not_handled) > 0:
+				base = local['checksum_table'][checksum]['s'][0]
+				with open('%s/%s' % (local['root'], base), 'rb') as f:
+					for i in range(len(not_handled)):
+						f.seek(0)
+						print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], not_handled[i], f))
+						# ftp.storbinary('STOR /%s/%s' % (config['root'], not_handled[i]), f)
 
 
 def __update_added(ftp, config, local, server):
@@ -117,15 +119,20 @@ def __update_modified(ftp, config, local_h, server_h, current = ''):
 
 def __update_checksum(ftp, config, local):
 	data = {
-		'checksum_table' : local['checksum_table'],
-		'hierarchy_tree' : local['hierarchy_tree']
+		'checksum_table' : {},
+		'hierarchy_tree' : {}
 	}
+
+	for key in local['checksum_table']:
+		data['checksum_table'][key] = local['checksum_table'][key]['d']
+
 	with open('%s/%s' % (local['root'], config['checksum']), 'w') as f:
 		json.dump(data, f, indent = '\t')
 		f.seek(0)
 		print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
 		# ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
-
+		print('ftp.sendcmd(\'SITE CHMOD 640 /%s/%s\')' % (config['root'], config['checksum']))
+		# ftp.sendcmd('SITE CHMOD 640 /%s/%s' % (config['root'], config['checksum']))
 
 def __update(ftp, config, local, server):
 	__update_deleted_moved_copied(ftp, config, local, server)
@@ -142,7 +149,7 @@ def up(directory, config_file):
 		'hierarchy_tree' : {}
 	}
 
-	# fetch the file tree to upload
+	# fetch the config file to upload
 	with open(config_file, 'r') as f:
 		config = json.load(f)
 
@@ -155,12 +162,11 @@ def up(directory, config_file):
 	try:
 
 		ftp = ftplib.FTP()
-		ftp.connect(config['host'])
-		print(ftp.getwelcome())
+		print(ftp.connect(config['host']))
 		username = config['username'] if 'username' in config else input('Username for \'ftp://%s\' : ' % (config['host']))
 		password = getpass.getpass('Password for \'ftp://%s@%s\' : ' % (username, config['host']))
-		ftp.login(username, password)
-		ftp.cwd(config['root'])
+		print(ftp.login(username, password))
+		print(ftp.cwd(config['root']))
 
 
 		server = {
@@ -170,7 +176,7 @@ def up(directory, config_file):
 		}
 
 		# build the server tree and table
-		__server_fetch(ftp, config, server['checksum_table'], server['hierarchy_tree'])
+		__server_fetch(ftp, config, server)
 
 		print(json.dumps(server['checksum_table'], indent = '\t'))
 		print(json.dumps(server['hierarchy_tree'], indent = '\t'))
@@ -188,3 +194,7 @@ def up(directory, config_file):
 # FTP.delete(filename)
 # FTP.mkd(pathname)
 # FTP.rmd(dirname)
+
+
+
+# def hash(directory, config_file):
