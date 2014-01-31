@@ -1,4 +1,4 @@
-import ftplib, getpass, project.file, json, os, base64, tempfile
+import ftplib, getpass, project.file, json, os, base64, tempfile, hashlib
 
 def __ftp_is_file(ftp, path):
 	if len(path) == 0 or path[0] != '/' : path = ftp.pwd() + '/' + path
@@ -36,6 +36,9 @@ def __local_fetch(root, config, checksum_table, hierarchy_tree, current = '', tr
 			hierarchy_tree[item] = {}
 			__local_fetch(root, config, checksum_table, hierarchy_tree[item], current + item + '/', what)
 
+	print(json.dumps(checksum_table, indent = '\t'))
+	print(json.dumps(hierarchy_tree, indent = '\t'))
+
 
 def __server_fetch(ftp, config, server):
 	checksum_file = '/%s/%s' % (config['root'], config['checksum'])
@@ -46,6 +49,9 @@ def __server_fetch(ftp, config, server):
 		data = json.loads(checksum)
 		server['checksum_table'] = data['checksum_table']
 		server['hierarchy_tree'] = data['hierarchy_tree']
+
+	print(json.dumps(server['checksum_table'], indent = '\t'))
+	print(json.dumps(server['hierarchy_tree'], indent = '\t'))
 
 
 def __update_deleted_moved_copied(ftp, config, local, server):
@@ -117,6 +123,7 @@ def __update_modified(ftp, config, local_h, server_h, current = ''):
 		elif item in server_h:
 			__update_modified(ftp, config, data, server_h[item], current + item + '/')
 
+
 def __update_checksum(ftp, config, local):
 	data = {
 		'checksum_table' : {},
@@ -141,6 +148,17 @@ def __update(ftp, config, local, server):
 	__update_checksum(ftp, config, local)
 
 
+def __ftp_login(config):
+
+	ftp = ftplib.FTP()
+	print(ftp.connect(config['host']))
+	username = config['username'] if 'username' in config else input('Username for \'ftp://%s\' : ' % (config['host']))
+	password = getpass.getpass('Password for \'ftp://%s@%s\' : ' % (username, config['host']))
+	print(ftp.login(username, password))
+	print(ftp.cwd(config['root']))
+
+	return ftp
+
 def up(directory, config_file):
 
 	local = {
@@ -156,32 +174,20 @@ def up(directory, config_file):
 	# build the local tree and table
 	__local_fetch(local['root'], config, local['checksum_table'], local['hierarchy_tree'])
 
-	print(json.dumps(local['checksum_table'], indent = '\t'))
-	print(json.dumps(local['hierarchy_tree'], indent = '\t'))
-
 	try:
 
-		ftp = ftplib.FTP()
-		print(ftp.connect(config['host']))
-		username = config['username'] if 'username' in config else input('Username for \'ftp://%s\' : ' % (config['host']))
-		password = getpass.getpass('Password for \'ftp://%s@%s\' : ' % (username, config['host']))
-		print(ftp.login(username, password))
-		print(ftp.cwd(config['root']))
-
+		ftp = __ftp_login(config)
 
 		server = {
-			'root' : os.path.abspath(directory),
+			'root' : config['root'],
 			'checksum_table' : {},
 			'hierarchy_tree' : {}
 		}
 
-		# build the server tree and table
+		# fetch the server tree and table
 		__server_fetch(ftp, config, server)
 
-		print(json.dumps(server['checksum_table'], indent = '\t'))
-		print(json.dumps(server['hierarchy_tree'], indent = '\t'))
-
-
+		# try to patch server by analyzing (diff local server)
 		__update(ftp, config, local, server)
 
 	# except ftplib.all_errors as e:
@@ -197,4 +203,59 @@ def up(directory, config_file):
 
 
 
-# def hash(directory, config_file):
+def __server_hash(ftp, config, checksum_table, hierarchy_tree, current = ''):
+	for item in ftp.nlst(current):
+		print('%s%s' % (current, item))
+		if item == '.' or item == '..' or item == config['checksum'] : continue
+		minipath = current + item
+		path = '/' + config['root'] + '/' + minipath
+		if __ftp_is_file(ftp, path):
+			h = hashlib.sha256()
+			ftp.retrbinary('RETR /%s/%s' % (config['root'], minipath), h.update)
+			checksum = h.digest()
+			checksum_ascii = base64.b64encode(checksum).decode('ascii')
+			print(checksum_ascii)
+			checksum_table.setdefault(checksum_ascii, [])
+			checksum_table[checksum_ascii].append(minipath)
+			# hierarchy_tree[item] = checksum_ascii
+
+		elif __ftp_is_dir(ftp, path):
+			# hierarchy_tree[item] = {}
+			__server_hash(ftp, config, checksum_table, hierarchy_tree, current + item + '/') # hierarchy_tree[item]
+
+def __send_hash(ftp, config, data):
+	with tempfile.NamedTemporaryFile('w') as tmp:
+		json.dump(data, tmp, indent = '\t')
+		with open(tmp.name, 'rb') as f:
+			print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
+			ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
+	print('ftp.sendcmd(\'SITE CHMOD 640 /%s/%s\')' % (config['root'], config['checksum']))
+	ftp.sendcmd('SITE CHMOD 640 /%s/%s' % (config['root'], config['checksum']))
+
+
+def hash(config_file):
+
+	# fetch the config file to upload
+	with open(config_file, 'r') as f:
+		config = json.load(f)
+
+	try:
+
+		ftp = __ftp_login(config)
+
+		server = {
+			'checksum_table' : {},
+			'hierarchy_tree' : {}
+		}
+
+		# build the server tree and table
+		__server_hash(ftp, config, server['checksum_table'], server['hierarchy_tree'])
+
+		# send it
+		__send_hash(ftp, config, server)
+
+	# except ftplib.all_errors as e:
+	# 	print('Socket error : %s' % (e))
+
+	finally:
+		ftp.quit()
