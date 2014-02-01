@@ -1,15 +1,4 @@
-import ftplib, getpass, project.file, json, os, base64, tempfile, hashlib
-
-def __ftp_is_file(ftp, path):
-	if len(path) == 0 or path[0] != '/' : path = ftp.pwd() + '/' + path
-	l = ftp.nlst(path)
-	return len(l) == 1 and l[0] == path
-
-def __ftp_is_dir(ftp, path):
-	if len(path) == 0 or path[0] != '/' : path = ftp.pwd() + '/' + path
-	l = ftp.nlst(path)
-	return len(l) > 0 and l[0] != path
-
+import ftplib, project.file, json, os, base64, tempfile, hashlib, lib.ftp
 
 def __local_fetch(root, config, checksum_table, hierarchy_tree, current = '', tree = None):
 	if tree == None : tree = config['tree']
@@ -44,7 +33,7 @@ def __local_fetch(root, config, checksum_table, hierarchy_tree, current = '', tr
 
 def __server_fetch(ftp, config, server):
 	checksum_file = '/%s/%s' % (config['root'], config['checksum'])
-	if __ftp_is_file(ftp, checksum_file):
+	if ftp.isfile(checksum_file):
 		chuncks = []
 		ftp.retrlines('RETR %s' % checksum_file, chuncks.append)
 		checksum = ''.join(chuncks)
@@ -141,8 +130,8 @@ def __update_checksum(ftp, config, local):
 	with open('%s/%s' % (local['root'], config['checksum']), 'rb') as f:
 		print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
 		# ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
-		print('ftp.sendcmd(\'SITE CHMOD 640 /%s/%s\')' % (config['root'], config['checksum']))
-		# ftp.sendcmd('SITE CHMOD 640 /%s/%s' % (config['root'], config['checksum']))
+		print('ftp.chmod(\'640\', \'/%s/%s\')' % (config['root'], config['checksum']))
+		# ftp.chmod('640', '/%s/%s' % (config['root'], config['checksum']))
 
 def __update(ftp, config, local, server):
 	__update_deleted_moved_copied(ftp, config, local, server)
@@ -151,16 +140,6 @@ def __update(ftp, config, local, server):
 	__update_checksum(ftp, config, local)
 
 
-def __ftp_login(config):
-
-	ftp = ftplib.FTP()
-	print(ftp.connect(config['host']))
-	username = config['username'] if 'username' in config else input('Username for \'ftp://%s\' : ' % (config['host']))
-	password = getpass.getpass('Password for \'ftp://%s@%s\' : ' % (username, config['host']))
-	print(ftp.login(username, password))
-	print(ftp.cwd(config['root']))
-
-	return ftp
 
 def up(directory, config_file):
 
@@ -182,7 +161,8 @@ def up(directory, config_file):
 
 	try:
 
-		ftp = __ftp_login(config)
+		ftp = lib.ftp.wrap(ftplib.FTP())
+		ftp.loginprompt(config)
 
 		server = {
 			'root' : config['root'],
@@ -210,12 +190,12 @@ def up(directory, config_file):
 
 
 def __server_hash(ftp, config, checksum_table, hierarchy_tree, current = ''):
-	for item in ftp.nlst(current):
+	for t, item in ftp.ls(current):
 		print('%s%s' % (current, item))
 		if item == '.' or item == '..' or item == config['checksum'] : continue
 		minipath = current + item
 		path = '/' + config['root'] + '/' + minipath
-		if __ftp_is_file(ftp, path):
+		if t == ftp.FILE:
 			h = hashlib.sha256()
 			ftp.retrbinary('RETR /%s/%s' % (config['root'], minipath), h.update)
 			checksum = h.digest()
@@ -225,7 +205,7 @@ def __server_hash(ftp, config, checksum_table, hierarchy_tree, current = ''):
 			checksum_table[checksum_ascii].append(minipath)
 			# hierarchy_tree[item] = checksum_ascii
 
-		elif __ftp_is_dir(ftp, path):
+		elif t == ftp.DIR:
 			# hierarchy_tree[item] = {}
 			__server_hash(ftp, config, checksum_table, hierarchy_tree, current + item + '/') # hierarchy_tree[item]
 
@@ -239,8 +219,8 @@ def __send_hash(ftp, config, data):
 
 	os.remove(tmp.name)
 
-	print('ftp.sendcmd(\'SITE CHMOD 640 /%s/%s\')' % (config['root'], config['checksum']))
-	ftp.sendcmd('SITE CHMOD 640 /%s/%s' % (config['root'], config['checksum']))
+	print('ftp.chmod(\'640\', \'/%s/%s\')' % (config['root'], config['checksum']))
+	ftp.chmod('640', '/%s/%s' % (config['root'], config['checksum']))
 
 
 def hash(config_file):
@@ -251,7 +231,8 @@ def hash(config_file):
 
 	try:
 
-		ftp = __ftp_login(config)
+		ftp = lib.ftp.wrap(ftplib.FTP())
+		ftp.loginprompt(config)
 
 		server = {
 			'checksum_table' : {},
