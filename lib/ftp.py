@@ -4,7 +4,7 @@ class wrap:
 
 	def __init__(self, ftp):
 		self.ftp = ftp
-		
+
 		self.FILE = '-'
 		self.DIR = 'd'
 		self.LINK = 'l'
@@ -85,3 +85,12 @@ class wrap:
 
 	def close(self, *args):
 		return self.ftp.close(*args)
+
+	def size(self, *args):
+		return self.ftp.size(*args)
+
+	def pwd(self, *args):
+		return self.ftp.size(*args)
+
+	def dir(self, *args):
+		return self.ftp.dir(*args)
