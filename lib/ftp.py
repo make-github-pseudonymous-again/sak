@@ -94,3 +94,10 @@ class wrap:
 
 	def dir(self, *args):
 		return self.ftp.dir(*args)
+
+	def __enter__(self, *args):
+		self.ftp.__enter__(*args)
+		return self
+
+	def __exit__(self, *args):
+		return self.ftp.__exit__(*args)

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, project, inspect
+import sys, project, inspect, lib
 
 
 def main(inp):
@@ -12,19 +12,19 @@ def main(inp):
 def parse(inp):
 	# Determine module
 	if len(inp) < 1:
-		raise project.error.ModuleNameNotSpecifiedException(project)
+		raise lib.error.ModuleNameNotSpecifiedException(project)
 
 	module = getattr(project, inp[0], None)
 	if module == None or not inspect.ismodule(module):
-		raise project.error.ModuleDoesNotExistException(inp[0], project)
+		raise lib.error.ModuleDoesNotExistException(inp[0], project)
 
 	# Determine action
 	if len(inp) < 2:
-		raise project.error.ActionNameNotSpecifiedException(module, inp[0])
+		raise lib.error.ActionNameNotSpecifiedException(module, inp[0])
 
 	action = getattr(module, inp[1], None)
 	if action == None or not inspect.isfunction(action):
-		raise project.error.ActionDoesNotExistException(inp[1], module, inp[0])
+		raise lib.error.ActionDoesNotExistException(inp[1], module, inp[0])
 
 	# Check action arguments
 	spec = inspect.getargspec(action)
@@ -32,10 +32,10 @@ def parse(inp):
 	n = len(inp) - 2
 
 	if n < m:
-		raise project.error.TooFewArgumentsForActionException(n, spec, inp[1], inp[0])
+		raise lib.error.TooFewArgumentsForActionException(n, spec, inp[1], inp[0])
 
 	if spec[1] == None and n > len(spec[0]):
-		raise project.error.TooManyArgumentsForActionException(n, spec, inp[1], inp[0])
+		raise lib.error.TooManyArgumentsForActionException(n, spec, inp[1], inp[0])
 
 	# Done
 	return action, inp[2:]
@@ -44,4 +44,4 @@ def parse(inp):
 if __name__ == '__main__':
 
 	try : main(sys.argv[1:])
-	except project.error.MainException as e : print(e)
+	except lib.error.MainException as e : print(e)

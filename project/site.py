@@ -1,11 +1,17 @@
-import ftplib, project.file, json, os, base64, tempfile, hashlib, lib.ftp
+import ftplib, json, os, base64, tempfile, hashlib, lib, socket
 
 
-def diff(*args):
-	return up(*args, dry_run = True)
+def down(directory = '.', config_file = 'json/config.json'):
+	pass
+
+def up(directory = '.', config_file = 'json/config.json'):
+	pass
+
+def diff(directory = '.', config_file = 'json/config.json'):
+	return push(directory, config_file, dry_run = True)
 
 
-def up(directory, config_file, dry_run = False):
+def push(directory = '.', config_file = 'json/config.json', dry_run = False):
 
 	local = {
 		'root' : os.path.abspath(directory),
@@ -13,8 +19,15 @@ def up(directory, config_file, dry_run = False):
 		'hierarchy_tree' : {}
 	}
 
+	if not os.path.isdir(local['root']) : print('[Errno 1] Local root \'%s\' not found' % local['root']); return
+
 	# fetch the config file to upload
-	with open(config_file, 'r') as f : config = json.load(f)
+	try:
+		with open(config_file, 'r') as f : config = json.load(f)
+
+	except FileNotFoundError as e:
+		print(e)
+		return
 
 	helper = __helper(dry_run)
 
@@ -24,59 +37,65 @@ def up(directory, config_file, dry_run = False):
 	# print(json.dumps(local['checksum_table'], indent = '\t'))
 	# print(json.dumps(local['hierarchy_tree'], indent = '\t'))
 
-	try:
+	with lib.ftp.wrap(ftplib.FTP()) as ftp:
 
-		ftp = lib.ftp.wrap(ftplib.FTP())
-		ftp.loginprompt(config)
+		try:
 
-		server = {
-			'root' : config['root'],
-			'checksum_table' : {},
-			'hierarchy_tree' : {}
-		}
+			ftp.loginprompt(config)
 
-		# fetch the server tree and table
-		helper.server_fetch(ftp, config, server)
+			server = {
+				'root' : config['root'],
+				'checksum_table' : {},
+				'hierarchy_tree' : {}
+			}
 
-		# try to patch server by analyzing (diff local server)
-		helper.update(ftp, config, local, server)
+			# fetch the server tree and table
+			helper.server_fetch(ftp, config, server)
 
-	# except ftplib.all_errors as e:
-	# 	print('Socket error : %s' % (e))
+			# try to patch server by analyzing (diff local server)
+			helper.update(ftp, config, local, server)
 
-	finally:
-		ftp.quit()
+		except socket.gaierror as e:
+			print(e)
+
+		# except ftplib.all_errors as e:
+		# 	print('Socket error : %s' % (e))
 
 
-def hash(config_file):
+def hash(config_file = 'json/config.json'):
 
 	# fetch the config file to upload
-	with open(config_file, 'r') as f:
-		config = json.load(f)
+	try:
+		with open(config_file, 'r') as f : config = json.load(f)
+
+	except FileNotFoundError as e:
+		print(e)
+		return
 
 	helper = __helper(dry_run = False)
 
-	try:
+	with lib.ftp.wrap(ftplib.FTP()) as ftp:
+		try:
 
-		ftp = lib.ftp.wrap(ftplib.FTP())
-		ftp.loginprompt(config)
+			ftp.loginprompt(config)
 
-		server = {
-			'checksum_table' : {},
-			'hierarchy_tree' : {}
-		}
+			server = {
+				'checksum_table' : {},
+				'hierarchy_tree' : {}
+			}
 
-		# build the server tree and table
-		helper.server_hash(ftp, config, server['checksum_table'], server['hierarchy_tree'])
+			# build the server tree and table
+			helper.server_hash(ftp, config, server['checksum_table'], server['hierarchy_tree'])
 
-		# send it
-		helper.send_hash(ftp, config, server)
+			# send it
+			helper.send_hash(ftp, config, server)
 
-	# except ftplib.all_errors as e:
-	# 	print('Socket error : %s' % (e))
+		# except ftplib.all_errors as e:
+		# 	print('Socket error : %s' % (e))
 
-	finally:
-		ftp.quit()
+		except socket.gaierror as e:
+			print(e)
+
 
 
 
@@ -101,8 +120,7 @@ class __helper:
 					path += config['online_ext']
 					minipath += config['online_ext']
 				else : dest = minipath
-				with open(path, 'rb') as f:
-					checksum = project.file.checksum(f).digest()
+				with open(path, 'rb') as f : checksum = lib.file.hash(f).digest()
 				checksum_ascii = base64.b64encode(checksum).decode('ascii')
 				checksum_table.setdefault(checksum_ascii, {'s' : [], 'd' : []})
 				checksum_table[checksum_ascii]['s'].append(minipath)
