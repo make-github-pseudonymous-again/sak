@@ -1,6 +1,6 @@
 
 RUN = run.py
-WHICH = /usr/bin/p
+WHICH = /usr/bin/$$
 
 all:
 
