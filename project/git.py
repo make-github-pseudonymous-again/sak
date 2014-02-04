@@ -106,7 +106,7 @@ class helper:
 	def branch(d):
 		out, _ = helper.call(['git', 'branch'], cwd = d)
 		m = helper.BRANCH.match(out.decode())
-		return m.group(1) if m != None else None
+		return None if m is None else m.group(1)
 
 	def remotes(d):
 		out, _ = helper.call(['git', 'remote'], cwd = d)
