@@ -36,6 +36,23 @@ def update(*args):
 	return helper.wrap(args, callback)
 
 
+def pull(*args):
+
+	def callback(d):
+		print('Pulling \'%s\'' % d)
+		helper.pull(d)
+
+	return helper.wrap(args, callback)
+
+
+def push(*args):
+	
+	def callback(d):
+		print('Pushing \'%s\'' % d)
+		helper.push(d)
+
+	return helper.wrap(args, callback)
+
 
 
 class helper:
@@ -97,6 +114,12 @@ class helper:
 
 	def update(d):
 		helper.call(['git', 'remote', 'update'], cwd = d)
+
+	def push(d):
+		helper.call(['git', 'push'], cwd = d)
+
+	def pull(d):
+		helper.call(['git', 'pull'], cwd = d)
 
 	def pulls(d, remote, branch):
 		return helper.commits(d, 'HEAD', '%s/%s' % (remote, branch))
