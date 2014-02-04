@@ -1,11 +1,26 @@
 import ftplib, json, os, base64, tempfile, hashlib, lib, socket
 
 
-def down(directory = '.', config_file = 'json/config.json'):
-	pass
+def down(directory = '.', config_file = 'json/config.json', dry_run = False):
+	local = {'root' : os.path.abspath(directory)}
 
-def up(directory = '.', config_file = 'json/config.json'):
-	pass
+	pre = lambda *x: None
+
+	def callback(ftp, helper, config):
+		helper.server_down(ftp, config, local)
+
+	_helper.wrap(local, config_file, dry_run, pre, callback)
+
+def up(directory = '.', config_file = 'json/config.json', dry_run = False):
+	local = {'root' : os.path.abspath(directory)}
+
+	pre = lambda *x: None
+
+	def callback(ftp, helper, config):
+		helper.server_up(ftp, config, local)
+		
+	_helper.wrap(local, config_file, dry_run, pre, callback)
+
 
 def diff(directory = '.', config_file = 'json/config.json'):
 	return push(directory, config_file, dry_run = True)
@@ -15,56 +30,29 @@ def push(directory = '.', config_file = 'json/config.json', dry_run = False):
 
 	local = {
 		'root' : os.path.abspath(directory),
-		'checksum_table' : {},
-		'hierarchy_tree' : {}
+		'hash' : {},
+		'tree' : {}
 	}
 
-	if not os.path.isdir(local['root']) : print('[Errno 1] Local root \'%s\' not found' % local['root']); return
+	def pre(helper, config):
+		helper.local_fetch(local['root'], config, local['hash'], local['tree'])
 
-	# fetch the config file to upload
-	try:
-		with open(config_file, 'r') as f : config = json.load(f)
+	def callback(ftp, helper, config):
 
-	except FileNotFoundError as e:
-		print(e)
-		return
+		server = {
+			'root' : config['root'],
+			'hash' : {},
+			'tree' : {}
+		}
 
-	helper = __helper(dry_run)
+		helper.server_fetch(ftp, config, server)
+		helper.update(ftp, config, local, server)
 
-	# build the local tree and table
-	helper.local_fetch(local['root'], config, local['checksum_table'], local['hierarchy_tree'])
-
-	# print(json.dumps(local['checksum_table'], indent = '\t'))
-	# print(json.dumps(local['hierarchy_tree'], indent = '\t'))
-
-	with lib.ftp.wrap(ftplib.FTP()) as ftp:
-
-		try:
-
-			ftp.loginprompt(config)
-
-			server = {
-				'root' : config['root'],
-				'checksum_table' : {},
-				'hierarchy_tree' : {}
-			}
-
-			# fetch the server tree and table
-			helper.server_fetch(ftp, config, server)
-
-			# try to patch server by analyzing (diff local server)
-			helper.update(ftp, config, local, server)
-
-		except socket.gaierror as e:
-			print(e)
-
-		# except ftplib.all_errors as e:
-		# 	print('Socket error : %s' % (e))
+	_helper.wrap(local, config_file, dry_run, pre, callback)
 
 
 def hash(config_file = 'json/config.json'):
 
-	# fetch the config file to upload
 	try:
 		with open(config_file, 'r') as f : config = json.load(f)
 
@@ -72,7 +60,7 @@ def hash(config_file = 'json/config.json'):
 		print(e)
 		return
 
-	helper = __helper(dry_run = False)
+	helper = _helper(dry_run = False)
 
 	with lib.ftp.wrap(ftplib.FTP()) as ftp:
 		try:
@@ -80,18 +68,12 @@ def hash(config_file = 'json/config.json'):
 			ftp.loginprompt(config)
 
 			server = {
-				'checksum_table' : {},
-				'hierarchy_tree' : {}
+				'hash' : {},
+				'tree' : {}
 			}
 
-			# build the server tree and table
-			helper.server_hash(ftp, config, server['checksum_table'], server['hierarchy_tree'])
-
-			# send it
+			helper.server_hash(ftp, config, server['hash'], server['tree'])
 			helper.send_hash(ftp, config, server)
-
-		# except ftplib.all_errors as e:
-		# 	print('Socket error : %s' % (e))
 
 		except socket.gaierror as e:
 			print(e)
@@ -99,52 +81,73 @@ def hash(config_file = 'json/config.json'):
 
 
 
-class __helper:
+class _helper:
 
 	def __init__(self, dry_run):
 		self.do = not dry_run
 
-	def local_fetch(self, root, config, checksum_table, hierarchy_tree, current = '', tree = None):
-		if tree == None : tree = config['tree']
+	def wrap(local, config_file, dry_run, pre, callback):
+
+		if not os.path.isdir(local['root']): print('[Errno 1] Local root \'%s\' not found' % local['root']); return
+
+		try:
+			with open(os.path.join(local['root'], config_file), 'r') as f : config = json.load(f)
+
+		except FileNotFoundError as e:
+			print(e)
+			return
+
+		helper = _helper(dry_run)
+
+		pre(helper, config)
+
+		with lib.ftp.wrap(ftplib.FTP()) as ftp:
+
+			try:
+				ftp.loginprompt(config)
+				callback(ftp, helper, config)
+
+			except socket.gaierror as e:
+				print(e)
+
+	def local_fetch(self, root, config, hash_t, tree_i, current = '', tree = None):
+		if tree is None : tree = config['tree']
 		dir_list = os.listdir(root + '/' + current)
 		for item, what in tree.items():
 			minipath = current + item
 			path = root + '/' + minipath
 			if os.path.isfile(path):
 				base, ext = os.path.splitext(minipath)
-				if ext == config['online_ext'] :
+				if ext == config['online'] :
 					if os.path.basename(minipath) in tree : continue
 					else : dest = base
-				elif item + config['online_ext'] in dir_list :
+				elif item + config['online'] in dir_list :
 					dest = minipath
-					path += config['online_ext']
-					minipath += config['online_ext']
+					path += config['online']
+					minipath += config['online']
 				else : dest = minipath
-				with open(path, 'rb') as f : checksum = lib.file.hash(f).digest()
-				checksum_ascii = base64.b64encode(checksum).decode('ascii')
-				checksum_table.setdefault(checksum_ascii, {'s' : [], 'd' : []})
-				checksum_table[checksum_ascii]['s'].append(minipath)
-				checksum_table[checksum_ascii]['d'].append(dest)
-				hierarchy_tree[item] = [checksum_ascii, dest]
+				with open(path, 'rb') as f : h = lib.file.hash(f).digest()
+				h_ascii = base64.b64encode(h).decode('ascii')
+				hash_t.setdefault(h_ascii, {'s' : [], 'd' : []})
+				hash_t[h_ascii]['s'].append(minipath)
+				hash_t[h_ascii]['d'].append(dest)
+				tree_i[item] = [h_ascii, dest]
 
 			elif os.path.isdir(path):
-				if what == None : what = { sub : None for sub in os.listdir(path)}
-				hierarchy_tree[item] = {}
-				self.local_fetch(root, config, checksum_table, hierarchy_tree[item], current + item + '/', what)
+				if what is None : what = { sub : None for sub in os.listdir(path)}
+				tree_i[item] = {}
+				self.local_fetch(root, config, hash_t, tree_i[item], current + item + '/', what)
 
 
 	def server_fetch(self, ftp, config, server):
-		checksum_file = '/%s/%s' % (config['root'], config['checksum'])
-		if ftp.isfile(checksum_file):
+		index_file = '/%s/%s' % (config['root'], config['index'])
+		if ftp.isfile(index_file):
 			chuncks = []
-			ftp.retrlines('RETR %s' % checksum_file, chuncks.append)
-			checksum = ''.join(chuncks)
-			data = json.loads(checksum)
-			server['checksum_table'] = data['checksum_table']
-			server['hierarchy_tree'] = data['hierarchy_tree']
-
-		# print(json.dumps(server['checksum_table'], indent = '\t'))
-		# print(json.dumps(server['hierarchy_tree'], indent = '\t'))
+			ftp.retrlines('RETR %s' % index_file, chuncks.append)
+			index = ''.join(chuncks)
+			data = json.loads(index)
+			server['hash'] = data['hash']
+			server['tree'] = data['tree']
 
 
 	def ensure_structure_rec(self, ftp, config, local_h, current):
@@ -177,23 +180,23 @@ class __helper:
 					self.clean_structure(ftp, config, local_h[item], server_h[item], current + item + '/')
 
 	def update_deleted_moved_copied(self, ftp, config, local, server):
-		for checksum, minipaths in server['checksum_table'].items():
+		for h, minipaths in server['hash'].items():
 
 			# deleted files
-			if checksum not in local['checksum_table']:
+			if h not in local['hash']:
 				for i in range(len(minipaths)):
 					print('ftp.delete(\'/%s/%s\')' % (config['root'], minipaths[i]))
 					if self.do : ftp.delete('/%s/%s' % (config['root'], minipaths[i]))
 
 			else:
 
-				not_handled = local['checksum_table'][checksum]['d'].copy()
+				not_handled = local['hash'][h]['d'].copy()
 
 				for i in range(len(minipaths)):
 					minipath = minipaths[i]
 
 					# moved files
-					if minipath not in local['checksum_table'][checksum]['d']:
+					if minipath not in local['hash'][h]['d']:
 						if len(not_handled) > 0:
 							for j in range(len(not_handled)):
 								if not_handled[j] not in minipaths:
@@ -213,7 +216,7 @@ class __helper:
 
 				# copied files
 				if len(not_handled) > 0:
-					base = local['checksum_table'][checksum]['s'][0]
+					base = local['hash'][h]['s'][0]
 					with open('%s/%s' % (local['root'], base), 'rb') as f:
 						for i in range(len(not_handled)):
 							f.seek(0)
@@ -222,9 +225,9 @@ class __helper:
 
 
 	def update_added(self, ftp, config, local, server):
-		for checksum, paths in local['checksum_table'].items():
+		for h, paths in local['hash'].items():
 			# added files
-			if checksum not in server['checksum_table']:
+			if h not in server['hash']:
 				for i in range(len(paths['s'])):
 					with open('%s/%s' % (local['root'], paths['s'][i]), 'rb') as f:
 						print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], paths['d'][i], f))
@@ -235,8 +238,8 @@ class __helper:
 		for item, data in local_h.items():
 			# modified files
 			if type(data) == list:
-				checksum, dest = data
-				if dest in server_h and checksum != server_h[dest]:
+				h, dest = data
+				if dest in server_h and h != server_h[dest]:
 					with open('%s/%s%s' % (local['root'], current, item), 'rb') as f:
 						print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], current, dest, f))
 						if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], minipath), f)
@@ -246,14 +249,14 @@ class __helper:
 				self.update_modified(ftp, config, data, server_h[item], current + item + '/')
 
 
-	def update_checksum(self, ftp, config, local):
+	def update_index(self, ftp, config, local):
 		data = {
-			'checksum_table' : {},
-			'hierarchy_tree' : {}
+			'hash' : {},
+			'tree' : {}
 		}
 
-		for key in local['checksum_table']:
-			data['checksum_table'][key] = local['checksum_table'][key]['d']
+		for key in local['hash']:
+			data['hash'][key] = local['hash'][key]['d']
 
 		def rec_build(local_t, server_t):
 			for item, value in local_t.items():
@@ -263,57 +266,77 @@ class __helper:
 					server_t[item] = {}
 					rec_build(value, server_t[item])
 
-		rec_build(local['hierarchy_tree'], data['hierarchy_tree'])
+		rec_build(local['tree'], data['tree'])
 
 
-		with open('%s/%s' % (local['root'], config['checksum']), 'w') as f:
+		with open('%s/%s' % (local['root'], config['index']), 'w') as f:
 			json.dump(data, f, indent = '\t')
 
-		with open('%s/%s' % (local['root'], config['checksum']), 'rb') as f:
-			print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
-			if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
-			print('ftp.chmod(\'640\', \'/%s/%s\')' % (config['root'], config['checksum']))
-			if self.do : ftp.chmod('640', '/%s/%s' % (config['root'], config['checksum']))
+		with open('%s/%s' % (local['root'], config['index']), 'rb') as f:
+			print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['index'], f))
+			if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], config['index']), f)
+			print('ftp.chmod(\'640\', \'/%s/%s\')' % (config['root'], config['index']))
+			if self.do : ftp.chmod('640', '/%s/%s' % (config['root'], config['index']))
 
 	def update(self, ftp, config, local, server):
-		self.ensure_structure(ftp, config, local['hierarchy_tree'], server['hierarchy_tree'])
+		self.ensure_structure(ftp, config, local['tree'], server['tree'])
 		self.update_deleted_moved_copied(ftp, config, local, server)
 		self.update_added(ftp, config, local, server)
-		# self.update_modified(ftp, config, local['hierarchy_tree'], server['hierarchy_tree'])
-		self.update_checksum(ftp, config, local)
-		self.clean_structure(ftp, config, local['hierarchy_tree'], server['hierarchy_tree'])
+		# self.update_modified(ftp, config, local['tree'], server['tree'])
+		self.update_index(ftp, config, local)
+		self.clean_structure(ftp, config, local['tree'], server['tree'])
 
 
 
-	def server_hash(self, ftp, config, checksum_table, hierarchy_tree, current = ''):
+	def server_hash(self, ftp, config, hash_t, tree, current = ''):
 		for t, item in ftp.ls(current):
 			print('%s%s' % (current, item))
-			if item == '.' or item == '..' or item == config['checksum'] : continue
+			if item == '.' or item == '..' or item == config['index'] : continue
 			minipath = current + item
 			path = '/' + config['root'] + '/' + minipath
 			if t == ftp.FILE:
-				h = hashlib.sha256()
-				ftp.retrbinary('RETR /%s/%s' % (config['root'], minipath), h.update)
-				checksum = h.digest()
-				checksum_ascii = base64.b64encode(checksum).decode('ascii')
-				print(checksum_ascii)
-				checksum_table.setdefault(checksum_ascii, [])
-				checksum_table[checksum_ascii].append(minipath)
-				hierarchy_tree[item] = checksum_ascii
+				hasher = hashlib.sha256()
+				ftp.retrbinary('RETR /%s/%s' % (config['root'], minipath), hasher.update)
+				h = hasher.digest()
+				h_ascii = base64.b64encode(h).decode('ascii')
+				print(h_ascii)
+				hash_t.setdefault(h_ascii, [])
+				hash_t[h_ascii].append(minipath)
+				tree[item] = h_ascii
 
 			elif t == ftp.DIR:
-				hierarchy_tree[item] = {}
-				self.server_hash(ftp, config, checksum_table, hierarchy_tree[item], current + item + '/')
+				tree[item] = {}
+				self.server_hash(ftp, config, hash_t, tree[item], current + item + '/')
 
 	def send_hash(self, ftp, config, data):
 		with tempfile.NamedTemporaryFile('w', delete = False) as tmp:
 			json.dump(data, tmp, indent = '\t')
 
 		with open(tmp.name, 'rb') as f:
-			print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['checksum'], f))
-			ftp.storbinary('STOR /%s/%s' % (config['root'], config['checksum']), f)
+			print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['index'], f))
+			if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], config['index']), f)
 
 		os.remove(tmp.name)
 
-		print('ftp.chmod(\'640\', \'/%s/%s\')' % (config['root'], config['checksum']))
-		ftp.chmod('640', '/%s/%s' % (config['root'], config['checksum']))
+		print('ftp.chmod(\'640\', \'/%s/%s\')' % (config['root'], config['index']))
+		if self.do : ftp.chmod('640', '/%s/%s' % (config['root'], config['index']))
+
+
+
+	def server_down(self, ftp, config, local):
+		return self.server_switch(ftp, config, local, 'down')
+
+
+
+	def server_up(self, ftp, config, local):
+		return self.server_switch(ftp, config, local, 'up')
+
+
+	def server_switch(self, ftp, config, local, which):
+		src = os.path.join(local['root'], config[which])
+		if os.path.isfile('%s%s' % (src, config['online'])) : src += config['online']
+
+		with open(src, 'rb') as f:
+			print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], config['up'], f))
+			if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], config['up']), f)
+
