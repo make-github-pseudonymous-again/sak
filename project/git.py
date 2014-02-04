@@ -1,3 +1,10 @@
+"""
+	git module
+
+	some git snippets freely derived from https://github.com/badele/gitcheck
+"""
+
+
 import os, subprocess, re, functools, lib.ansy
 
 
