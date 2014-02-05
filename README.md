@@ -22,8 +22,10 @@ examples :
 
   - retrieve info on git repos located under *.* and *workspace*
 
+
 	$ git info . workspace
 
   - list actions available in module *site*
+
 
 	$ help list site
