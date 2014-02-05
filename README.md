@@ -20,10 +20,10 @@ currently available modules and actions :
 
 examples :
 
-  - retrieve info on git repos located under <path1>, <path2>, ...
+  - retrieve info on git repos located under *.* and *workspace*
 
-	$ git info <path1> <path2> ...
+	$ git info . workspace
 
-  - list actions available in module <m>
+  - list actions available in module *site*
 
-	$ help list <m>
+	$ help list site
