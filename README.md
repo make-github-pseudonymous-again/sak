@@ -7,7 +7,7 @@ Swiss Army KnifE
 
 usage :
 
-	$ <module> <action> [<*arg>]
+	$ <module> <action> <*arg>
 
 
 currently available modules and actions :
