@@ -7,7 +7,7 @@ Swiss Army KnifE
 
 usage :
 
-	$ <module> <action> <*arg>
+	user@host:cwd$ $ <module> <action> <*arg>
 
 
 currently available modules and actions :
@@ -22,8 +22,8 @@ examples :
 
   - retrieve info on git repos located under *.* and *workspace*
 
-		$ git info . workspace
+		user@host:cwd$ $ git info . workspace
 
   - list actions available in module *site*
 
-		$ help list site
+		user@host:cwd$ $ help list site
