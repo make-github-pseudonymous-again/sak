@@ -21,5 +21,6 @@ def build(root, ugly = '-uno', src = 'src', out = 'min'):
 		if ugly != '-uno' : uglify(path)
 
 
-def uglify(path):
-	os.system('uglifyjs ' + path + ' -o ' + path + ' -m -c')
+def uglify(path,  dest = None):
+	if dest is None : dest = path
+	os.system('uglifyjs ' + path + ' -o ' + dest + ' -m -c')
