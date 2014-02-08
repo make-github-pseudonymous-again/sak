@@ -27,31 +27,24 @@ def info(*args):
 	return helper.wrap(args, callback)
 
 
-def update(*args):
+def do(action, *args):
 
 	def callback(d):
-		print('Updating \'%s\'' % d)
-		helper.update(d)
+		print('%s \'%s\'' % (action, d))
+		getattr(helper, action)(d)
 
 	return helper.wrap(args, callback)
+
+def update(*args):
+	return do(update.__name__, *args)
 
 
 def pull(*args):
-
-	def callback(d):
-		print('Pulling \'%s\'' % d)
-		helper.pull(d)
-
-	return helper.wrap(args, callback)
+	return do(pull.__name__, *args)
 
 
 def push(*args):
-	
-	def callback(d):
-		print('Pushing \'%s\'' % d)
-		helper.push(d)
-
-	return helper.wrap(args, callback)
+	return do(push.__name__, *args)
 
 
 
