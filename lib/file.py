@@ -1,19 +1,22 @@
-import hashlib, sys, os
+import hashlib, sys, os, lib.dir
+
+
+def read(f, callback, blocksize = 2**15):
+	chunk = f.read(blocksize)
+	while len(chunk) > 0:
+		callback(chunk)
+		chunk = f.read(blocksize)
 
 def hash(f, h = None, blocksize = 2**15):
 	if h == None : h = hashlib.sha256()
-	chunk = f.read(blocksize)
-	while len(chunk) > 0:
-		h.update(chunk)
-		chunk = f.read(blocksize)
+	read(f, h.update, blocksize)
 	return h
 
+def concat(src, f, blocksize = 2**15):
 
-def walk(s, d = None, f = print):
-	if d is None : d = walk
-	for e in sorted(os.listdir(s)):
-		path = os.path.join(s, e)
+	def callback(path):
+		with open(path, 'r') as g : read(g, f.write, blocksize)
+		f.write(os.linesep)
 
-		if   os.path.isdir(path)  : d(path)
-		elif os.path.isfile(path) : f(path)
+	lib.dir.walk(src, f = callback)
 	
