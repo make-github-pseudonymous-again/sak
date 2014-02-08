@@ -1,4 +1,4 @@
-import ftplib, json, os, base64, tempfile, hashlib, lib, socket
+import json, os, base64, tempfile, hashlib, lib, socket
 
 
 def down(directory = '.', config_file = 'json/config.json', dry_run = False):
@@ -62,7 +62,7 @@ def hash(config_file = 'json/config.json'):
 
 	helper = _helper(dry_run = False)
 
-	with lib.ftp.wrap(ftplib.FTP()) as ftp:
+	with lib.ftp.FTP() as ftp:
 		try:
 
 			ftp.loginprompt(config)
@@ -101,7 +101,7 @@ class _helper:
 
 		pre(helper, config)
 
-		with lib.ftp.wrap(ftplib.FTP()) as ftp:
+		with lib.ftp.FTP() as ftp:
 
 			try:
 				ftp.loginprompt(config)
