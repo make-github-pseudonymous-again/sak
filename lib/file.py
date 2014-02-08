@@ -9,10 +9,11 @@ def hash(f, h = None, blocksize = 2**15):
 	return h
 
 
-def walk(d):
-	for e in sorted(os.listdir(d)):
-		path = os.path.join(d, e)
+def walk(s, d = None, f = print):
+	if d is None : d = walk
+	for e in sorted(os.listdir(s)):
+		path = os.path.join(s, e)
 
-		if   os.path.isdir(path)  : dcallback(path)
-		elif os.path.isfile(path) : fcallback(path)
+		if   os.path.isdir(path)  : d(path)
+		elif os.path.isfile(path) : f(path)
 	
