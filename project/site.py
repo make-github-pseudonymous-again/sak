@@ -190,7 +190,7 @@ class _helper:
 
 			else:
 
-				not_handled = local['hash'][h]['d'].copy()
+				not_handled = local['hash'][h]['d'][:] # change [:] for .copy() in future releases (>=3.3.2+)
 
 				for i in range(len(minipaths)):
 					minipath = minipaths[i]
