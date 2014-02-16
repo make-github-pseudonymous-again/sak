@@ -2,8 +2,8 @@ import getpass, ftplib
 
 class FTP(ftplib.FTP):
 
-	def __init__(self):
-		ftplib.FTP.__init__(self)
+	def __init__(self, *args):
+		ftplib.FTP.__init__(self, *args)
 		self.FILE = '-'
 		self.DIR = 'd'
 		self.LINK = 'l'
