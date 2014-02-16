@@ -54,7 +54,8 @@ def push(directory = '.', config_file = 'json/config.json', dry_run = False):
 def hash(config_file = 'json/config.json'):
 
 	try:
-		with open(config_file, 'r') as f : config = json.load(f)
+		config = _helper.default.copy()
+		with open(config_file, 'r') as f : config.update(json.load(f))
 
 	except FileNotFoundError as e:
 		print(e)
@@ -83,6 +84,21 @@ def hash(config_file = 'json/config.json'):
 
 class _helper:
 
+	default = {
+		"host" : "hostaddr",
+		"username" : "username",
+		"root"   : "www",
+
+		"index"  : ".hash",
+		"online" : ".online",
+
+		"down"   : ".htaccess",
+		"up"     : ".htaccess",
+		
+		"tree"   : {},
+		"ignore" : []
+	}
+
 	def __init__(self, dry_run):
 		self.do = not dry_run
 
@@ -91,7 +107,8 @@ class _helper:
 		if not os.path.isdir(local['root']): print('[Errno 1] Local root \'%s\' not found' % local['root']); return
 
 		try:
-			with open(os.path.join(local['root'], config_file), 'r') as f : config = json.load(f)
+			config = _helper.default.copy()
+			with open(os.path.join(local['root'], config_file), 'r') as f : config.update(json.load(f))
 
 		except FileNotFoundError as e:
 			print(e)
@@ -293,6 +310,7 @@ class _helper:
 			print('%s%s' % (current, item))
 			if item == '.' or item == '..' or item == config['index'] : continue
 			minipath = current + item
+			if minipath in config['ignore'] : continue	
 			path = '/' + config['root'] + '/' + minipath
 			if t == ftp.FILE:
 				hasher = hashlib.sha256()
