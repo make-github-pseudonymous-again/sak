@@ -26,3 +26,9 @@ def rgb2hsl(rgb):
 
 def rgba2hsla(rgb):
 	print(lib.css.hsla2str(*lib.color.rgba2hsla(*lib.css.str2rgb(rgb))))
+
+def hsl2rgb(hsl):
+	print(lib.css.rgb2str(*lib.color.hsl2rgb(*lib.css.str2hsl(hsl))))
+
+def hsla2rgba(hsl):
+	print(lib.css.rgba2str(*lib.color.hsla2rgba(*lib.css.str2hsl(hsl))))
