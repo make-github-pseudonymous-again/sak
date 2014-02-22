@@ -1,10 +1,10 @@
 import lib.color, lib.css
 
 def hex2rgba(h):
-	print(lib.css.rgba2str(*lib.color.hex2rgb(h)))
+	print(lib.css.rgba2str(*lib.css.hex2rgb(h)))
 
 def hex2rgb(h):
-	print(lib.css.rgb2str(*lib.color.hex2rgb(h)[:-1]))
+	print(lib.css.rgb2str(*lib.css.hex2rgb(h)[:-1]))
 
 def rgb2hex(rgb):
 	print(lib.color.rgb2hex(*lib.css.str2rgb(rgb)))
