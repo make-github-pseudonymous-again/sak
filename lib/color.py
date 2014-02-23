@@ -1,11 +1,11 @@
 
 
 
-def darken(r, g, b, p):
-	return lighten(r, g, b, -p)
+def darken(h, s, l, p):
+	return lighten(h, s, l, -p)
 
-def lighten(r, g, b, p):
-	return map(lambda x : round(min(255, x + (p / 100) * 255)), [r,g,b])
+def lighten(h, s, l, p):
+	return h, s, l + p * 2.55
 
 def rgb2hsl(r, g, b):
 	M = max(r, g, b)
