@@ -15,7 +15,7 @@ class helper:
 	def svg2other(img, out, t, ext):
 
 		if out is None:
-			base, ext = os.path.splitext(img)
-			out = img + ext
+			base, _ = os.path.splitext(img)
+			out = base + ext
 
 		subprocess.call(['inkscape', '-z', '-T', t, out, img])
