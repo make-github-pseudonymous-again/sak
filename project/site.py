@@ -207,7 +207,7 @@ class _helper:
 
 			else:
 
-				not_handled = local['hash'][h]['d'][:] # change [:] for .copy() in future releases (>=3.3.2+)
+				not_handled = [x for x in local['hash'][h]['d'] if x not in minipaths]
 
 				for i in range(len(minipaths)):
 					minipath = minipaths[i]
@@ -215,11 +215,8 @@ class _helper:
 					# moved files
 					if minipath not in local['hash'][h]['d']:
 						if len(not_handled) > 0:
-							for j in range(len(not_handled)):
-								if not_handled[j] not in minipaths:
-									replace = not_handled[j]
-									del not_handled[j]
-									break
+							replace = not_handled[0]
+							del not_handled[0]
 
 							print('ftp.rename(\'/%s/%s\', \'/%s/%s\')' % (config['root'], minipath, config['root'], replace))
 							if self.do : ftp.rename('/%s/%s' % (config['root'], minipath), '/%s/%s' % (config['root'], replace))
@@ -229,7 +226,7 @@ class _helper:
 
 					# not moved
 					else:
-						not_handled.remove(minipath)
+						pass
 
 				# copied files
 				if len(not_handled) > 0:
