@@ -13,6 +13,10 @@ def build(root, ugly = '-uno', src = 'src', out = 'min'):
 		with open(path, 'w') as f:
 
 			def callback(g):
+				f.write(os.linesep)
+				f.write('/* ' + g.name + ' */')
+				f.write(os.linesep)
+				f.write(os.linesep)
 				lib.file.read(g, f.write)
 				f.write(os.linesep)
 
