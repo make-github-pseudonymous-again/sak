@@ -1,6 +1,8 @@
 Swiss Army KnifE
 ================
 
+[![Build Status](https://drone.io/github.com/aureooms/sake/status.png)](https://drone.io/github.com/aureooms/sake/latest)
+
 
 ***sake*** is a module based tool
 
