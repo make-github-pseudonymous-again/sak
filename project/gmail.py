@@ -2,14 +2,7 @@ import sys, getpass, urllib.parse, urllib.request as urllib2, lib
 
 def get(user = None, passwd = None):
 
-	if user is None : user, passwd = lib.config.module('gmail')
-	if passwd is None : passwd = lib.config.user('user')
-
-	url = 'https://%smail.google.com'
-	if user is None : user = input('Username for \'%s\' : ' % url % '')
-	url = url % (urllib.parse.quote_plus(user).replace('%', '%%') + '%s@')
-	if passwd is None : passwd = getpass.getpass('Password for \'%s\' : ' % url % '')
-
+	user, passwd = lib.config.prompt_cred('mail.google.com', 'gmail')
 
 	auth_handler = urllib2.HTTPBasicAuthHandler()
 	auth_handler.add_password(
