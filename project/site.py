@@ -186,13 +186,20 @@ class _helper:
 					self.ensure_structure(ftp, config, local_h[item], server_h[item], current + item + '/')
 
 
+	def clean(self, ftp, config, subtree, current):
+		for item, data in subtree.items():
+			if type(data) == dict : self.clean(ftp, config, data, current + '/' + item)
+
+		print('ftp.rmd(\'/%s/%s\')' % (config['root'], current))
+		if self.do : ftp.rmd('/%s/%s' % (config['root'], current))
+
+
 	def clean_structure(self, ftp, config, local_h, server_h, current = ''):
 
 		for item, data in server_h.items():
 			if type(data) == dict:
 				if item not in local_h:
-					print('ftp.rmd(\'/%s/%s%s\')' % (config['root'], current, item))
-					if self.do : ftp.rmd('/%s/%s%s' % (config['root'], current, item))
+					self.clean(ftp, config, data, current + item)
 				else:	
 					self.clean_structure(ftp, config, local_h[item], server_h[item], current + item + '/')
 
