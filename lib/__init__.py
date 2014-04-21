@@ -1,13 +1,18 @@
-import os
 
-root = os.path.dirname(os.path.abspath(__file__))
-module = os.path.basename(root)
+__all__ = []
 
-for f in os.listdir(root):
-	path = root + '/' + f
-	if os.path.isfile(path) and f != '__init__.py':
-		name, ext = os.path.splitext(f)
+def __init__():
+	import os
+	root = os.path.dirname(os.path.abspath(__file__))
+	module = os.path.basename(root)
 
-		if ext == '.py' : __import__(module + '.' + name)
+	for f in os.listdir(root):
+		path = root + '/' + f
+		if os.path.isfile(path) and f != '__init__.py':
+			name, ext = os.path.splitext(f)
 
-os = None
+			if ext == '.py':
+				__import__(module + '.' + name)
+				__all__.append(name)
+
+__init__()

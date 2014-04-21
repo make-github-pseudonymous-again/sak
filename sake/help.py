@@ -1,12 +1,12 @@
-import inspect, project, lib
+import inspect, sake, lib
 
 def list(module = None, action = None):
-	if module == None : print(', '.join([o for o, _ in inspect.getmembers(project, inspect.ismodule)]))
+	if module == None : print(', '.join([o for o, _ in inspect.getmembers(sake, inspect.ismodule)]))
 
 	else :
-		M = getattr(project, module, None)
+		M = getattr(sake, module, None)
 		if M == None or not inspect.ismodule(M):
-			raise lib.error.ModuleDoesNotExistException(module, project)
+			raise lib.error.ModuleDoesNotExistException(module, sake)
 
 		if action == None : print(', '.join([o for o, _ in inspect.getmembers(M, inspect.isfunction)]))
 

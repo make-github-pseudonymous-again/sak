@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, project, inspect, lib
+import sys, sake, inspect, lib
 
 
 def main(inp):
@@ -12,19 +12,33 @@ def main(inp):
 def parse(inp):
 	# Determine module
 	if len(inp) < 1:
-		raise lib.error.ModuleNameNotSpecifiedException(project)
+		raise lib.error.ModuleNameNotSpecifiedException(sake)
 
-	module = getattr(project, inp[0], None)
-	if module == None or not inspect.ismodule(module):
-		raise lib.error.ModuleDoesNotExistException(inp[0], project)
+	modules = lib.pacman.resolve(inp[0], sake)
+
+	if len(modules) == 0:
+		raise lib.error.ModuleDoesNotExistException(inp[0], sake)
+
+	if len(modules) > 1:
+		raise lib.error.ModuleNameAmbiguousException(inp[0], modules)
+
+	inp[0] = modules[0]
+	module = getattr(sake, inp[0])
 
 	# Determine action
 	if len(inp) < 2:
 		raise lib.error.ActionNameNotSpecifiedException(module, inp[0])
 
-	action = getattr(module, inp[1], None)
-	if action == None or not inspect.isfunction(action):
+	actions = lib.pacman.resolve(inp[1], module)
+
+	if len(actions) == 0:
 		raise lib.error.ActionDoesNotExistException(inp[1], module, inp[0])
+
+	if len(actions) > 1:
+		raise lib.error.ActionNameAmbiguousException(inp[1], inp[0], actions)
+
+	inp[1] = actions[0]
+	action = getattr(module, inp[1])
 
 	# Check action arguments
 	spec = inspect.getargspec(action)
