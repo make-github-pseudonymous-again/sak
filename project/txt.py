@@ -10,3 +10,9 @@ def concat(src, out):
 
 		lib.file.walk(src, callback)
 
+
+def app(out, txt):
+
+	with open(out, 'a') as f:
+		f.write(txt)
+		f.write(os.linesep)

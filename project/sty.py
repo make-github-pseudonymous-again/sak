@@ -1,3 +1,3 @@
-import project.text
+import project.txt
 
-build = project.text.concat
+build = project.txt.concat
