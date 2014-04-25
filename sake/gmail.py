@@ -1,4 +1,4 @@
-import sys, getpass, urllib.parse, urllib.request as urllib2, lib
+import urllib.request as urllib2, lib
 
 def get(user = None, passwd = None):
 
@@ -23,3 +23,7 @@ def get(user = None, passwd = None):
 	unread = contents[i:j]
 
 	print(unread)
+
+
+def open():
+	lib.sys.call(['google-chrome', 'https://mail.google.com']);
