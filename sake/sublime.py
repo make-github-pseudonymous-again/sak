@@ -25,7 +25,8 @@ def mk(directory = '.'):
 def rm(directory = '.'):
 	full = os.path.abspath(directory)
 	path = full + '/' + os.path.basename(full) + '.sublime-project'
-	os.remove(path)
+	if os.path.isfile(path) : os.remove(path)
+	else : print("could not find '%s'" % path)
 
 	workspace_path = full + '/' + os.path.basename(full) + '.sublime-workspace'
 	if os.path.isfile(workspace_path) : os.remove(workspace_path)
