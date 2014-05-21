@@ -2,13 +2,17 @@ import os, lib.file
 
 def build(root, ugly = '-uno', src = 'src', out = 'min'):
 
+	result = os.path.join(root, out);
+
+	if not os.path.exists(result) : os.makedirs(result)
+
 	data = os.path.join(root, src)
 	for l in os.listdir(data):
 
 		curr = os.path.join(data, l)
 		if not os.path.isdir(curr) : continue
 
-		path = os.path.join(root, out, '%s.js' % l)
+		path = os.path.join(result, '%s.js' % l)
 
 		with open(path, 'w') as f:
 
