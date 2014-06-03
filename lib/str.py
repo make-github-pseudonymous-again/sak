@@ -1,4 +1,4 @@
-
+import re
 
 _v = 'aeiou'
 _V = _v.upper()
@@ -18,3 +18,7 @@ vowel = lambda s: filt(s, _v)
 consl = lambda s: filt(s, _c)
 voweu = lambda s: filt(s, _V)
 consu = lambda s: filt(s, _C)
+
+
+def natural(s):
+	return [ int(c) if c.isdigit() else c for c in re.split('([0-9]+)', s) ]

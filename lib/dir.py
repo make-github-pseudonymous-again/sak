@@ -5,5 +5,5 @@ def walk(s, d = None, f = print):
 	for e in sorted(os.listdir(s)):
 		path = os.path.join(s, e)
 
-		if   os.path.isdir(path)  : d(path)
-		elif os.path.isfile(path) : f(path)
+		if   d and os.path.isdir(path)  : d(path)
+		elif f and os.path.isfile(path) : f(path)
