@@ -1,4 +1,13 @@
-import lib.color, lib.css
+import lib.color, lib.css, subprocess
+
+def build(src, ugly = None):
+	cmd = ['compass', 'compile', src]
+	if ugly is not None : cmd += ['-e', 'production', '--force']
+	subprocess.call(cmd)
+
+def watch(src):
+	cmd = ['compass', 'watch', src]
+	subprocess.call(cmd)
 
 def hex2rgba(h):
 	print(lib.css.rgba2str(*lib.css.hex2rgb(h)))
