@@ -271,8 +271,7 @@ class _helper(object):
 			if h not in server['hash']:
 				for i in range(len(paths['s'])):
 					with open('%s/%s' % (local['root'], paths['s'][i]), 'rb') as f:
-						print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], paths['d'][i], f))
-						if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], paths['d'][i]), f)
+						self.storbinary(ftp, '/%s/%s' % (config['root'], paths['d'][i]), f)
 
 
 
