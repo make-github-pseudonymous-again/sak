@@ -5,7 +5,7 @@
 """
 
 
-import os, subprocess, re, functools, lib.ansy
+import os, subprocess, re, functools
 
 
 def info(*args):
@@ -48,7 +48,7 @@ def push(*args):
 
 
 
-class helper:
+class helper(object):
 
 	class exception(Exception):
 		def __init__(self, what):

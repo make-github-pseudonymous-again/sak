@@ -1,4 +1,4 @@
-import hashlib, sys, os, lib.dir
+import hashlib, os, lib.dir
 
 
 def read(f, callback, blocksize = 2**15):

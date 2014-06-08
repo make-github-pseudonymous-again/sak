@@ -11,14 +11,17 @@ class FTP(ftplib.FTP):
 	def chmod(self, mod, path):
 		return self.sendcmd('SITE CHMOD %s %s' % (mod, path))
 
-	def isfile(self, path):
+	def poke(self, path):
 		if len(path) == 0 or path[0] != '/' : path = self.pwd() + '/' + path
-		l = self.nlst(path)
+		return (path, self.nlst(path))
+
+
+	def isfile(self, path):
+		path, l = self.poke(path)
 		return len(l) == 1 and l[0] == path
 
 	def isdir(self, path):
-		if len(path) == 0 or path[0] != '/' : path = self.pwd() + '/' + path
-		l = self.nlst(path)
+		path, l = self.poke(path)
 		return len(l) > 0 and l[0] != path
 
 	def ls(self, path = '.'):

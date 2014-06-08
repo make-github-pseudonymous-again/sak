@@ -40,7 +40,7 @@ def hsla2rgba(hsl):
 	print(lib.css.rgba2str(*lib.color.hsla2rgba(*lib.css.str2hsl(hsl))))
 
 
-class helper:
+class helper(object):
 	def light(inp, p, transform):
 
 		if inp[0] == 'r':

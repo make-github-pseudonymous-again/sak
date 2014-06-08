@@ -82,7 +82,7 @@ def hash(config_file = 'json/config.json'):
 
 
 
-class _helper:
+class _helper(object):
 
 	default = {
 		"host" : "hostaddr",
@@ -314,8 +314,7 @@ class _helper:
 			print('%s%s' % (current, item))
 			if item == '.' or item == '..' or item == config['index'] : continue
 			minipath = current + item
-			if minipath in config['ignore'] : continue	
-			path = '/' + config['root'] + '/' + minipath
+			if minipath in config['ignore'] : continue
 			if t == ftp.FILE:
 				hasher = hashlib.sha256()
 				ftp.retrbinary('RETR /%s/%s' % (config['root'], minipath), hasher.update)

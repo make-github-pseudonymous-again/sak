@@ -19,7 +19,7 @@ def crop(img, out, width, height, gravity = 'Center', left = 0, top = 0):
 	subprocess.call(['convert', img, '-gravity', gravity, '-crop', '%sx%s+%s+%s' % (width, height, left, top), out])
 
 
-class inkscape:
+class inkscape(object):
 	def convert(img, out, width, height, t, ext):
 
 		if out is None:
