@@ -203,46 +203,66 @@ class _helper(object):
 				else:	
 					self.clean_structure(ftp, config, local_h[item], server_h[item], current + item + '/')
 
+
+	def delete(self, ftp, path):
+		print("ftp.delete('%s')" % path)
+		if self.do : ftp.delete(path)
+
+
+	def delete_minipaths(self, ftp, minipaths, root):
+		for minipath in minipaths:
+			self.delete(ftp, '/%s/%s' % (root, minipath))
+
+
+	def rename(self, ftp, fr, to):
+		print("ftp.rename('%s', '%s')" % (fr, to))
+		if self.do : ftp.rename('%s' % fr, '%s' % to)
+
+	def update_moved(self, ftp, config, local, h, not_handled, minipaths):	
+		for minipath in minipaths:
+
+			# moved files
+			if minipath not in local['hash'][h]['d']:
+				if len(not_handled) > 0:
+					replace = not_handled[0]
+					del not_handled[0]
+
+					self.rename(ftp, '/%s/%s' % (config['root'], minipath), '/%s/%s' % (config['root'], replace))
+				else:
+					self.delete(ftp, '/%s/%s' % (config['root'], minipath))
+
+			# not moved
+			else:
+				pass
+
+	def storbinary(self, ftp, path, fd):
+		print("ftp.storbinary('STOR %s', %s)" % (path, fd))
+		if self.do : ftp.storbinary('STOR %s' % path, fd)
+
+	def update_copied(self, ftp, config, local, h, not_handled):
+		base = local['hash'][h]['s'][0]
+		with open('%s/%s' % (local['root'], base), 'rb') as f:
+			for i in range(len(not_handled)):
+				f.seek(0)
+				self.storbinary('/%s/%s' % (config['root'], not_handled[i]), f)
+
+	def update_moved_copied_minipaths(self, ftp, config, local, h, minipaths):
+		not_handled = [x for x in local['hash'][h]['d'] if x not in minipaths]
+
+		self.update_moved(ftp, config, local, h, not_handled, minipaths)
+
+		if len(not_handled) > 0 : self.update_copied(ftp, config, local, h, not_handled)
+		
+
 	def update_deleted_moved_copied(self, ftp, config, local, server):
 		for h, minipaths in server['hash'].items():
 
 			# deleted files
 			if h not in local['hash']:
-				for i in range(len(minipaths)):
-					print('ftp.delete(\'/%s/%s\')' % (config['root'], minipaths[i]))
-					if self.do : ftp.delete('/%s/%s' % (config['root'], minipaths[i]))
+				self.delete_minipaths(ftp, minipaths, config['root'])
 
 			else:
-
-				not_handled = [x for x in local['hash'][h]['d'] if x not in minipaths]
-
-				for i in range(len(minipaths)):
-					minipath = minipaths[i]
-
-					# moved files
-					if minipath not in local['hash'][h]['d']:
-						if len(not_handled) > 0:
-							replace = not_handled[0]
-							del not_handled[0]
-
-							print('ftp.rename(\'/%s/%s\', \'/%s/%s\')' % (config['root'], minipath, config['root'], replace))
-							if self.do : ftp.rename('/%s/%s' % (config['root'], minipath), '/%s/%s' % (config['root'], replace))
-						else:
-							print('ftp.delete(\'/%s/%s\')' % (config['root'], minipath))
-							if self.do : ftp.delete('/%s/%s' % (config['root'], minipath))
-
-					# not moved
-					else:
-						pass
-
-				# copied files
-				if len(not_handled) > 0:
-					base = local['hash'][h]['s'][0]
-					with open('%s/%s' % (local['root'], base), 'rb') as f:
-						for i in range(len(not_handled)):
-							f.seek(0)
-							print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], not_handled[i], f))
-							if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], not_handled[i]), f)
+				self.update_moved_copied_minipaths(ftp, config, local, h, minipaths)
 
 
 	def update_added(self, ftp, config, local, server):
