@@ -77,6 +77,23 @@ class FTP(object):
 					self.makedirs(root, model[item], actual[item], current + item + '/')
 
 
+	def _removedirs(self, root, subtree, current):
+		for item, data in subtree.items():
+			if type(data) == dict : self._removedirs(root, data, current + '/' + item)
+
+		self.rmd('/%s/%s' % (root, current))
+
+
+	def removedirs(self, root, model, actual, current = ''):
+
+		for item, entry in actual.items():
+			if type(entry) == dict:
+				if item not in model:
+					self._removedirs(root, entry, current + item)
+				else:	
+					self.removedirs(root, model[item], entry, current + item + '/')
+
+
 	def sendJSON(self, path, data):
 		with tempfile.NamedTemporaryFile('w', delete = False) as tmp:
 			lib.json.pretty(data, tmp)

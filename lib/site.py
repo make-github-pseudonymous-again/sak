@@ -105,22 +105,6 @@ class FTPSite(object):
 			server['tree'] = data['tree']
 
 
-	def clean(self, config, subtree, current):
-		for item, data in subtree.items():
-			if type(data) == dict : self.clean(config, data, current + '/' + item)
-
-		self.remote.rmd('/%s/%s' % (config['root'], current))
-
-
-	def clean_structure(self, config, local_h, server_h, current = ''):
-
-		for item, data in server_h.items():
-			if type(data) == dict:
-				if item not in local_h:
-					self.clean(config, data, current + item)
-				else:	
-					self.clean_structure(config, local_h[item], server_h[item], current + item + '/')
-
 
 
 	def delete_minipaths(self, minipaths, root):
@@ -217,7 +201,7 @@ class FTPSite(object):
 		self.update_deleted_moved_copied(config, local, server)
 		self.update_added(config, local, server)
 		self.update_index(config, local)
-		self.clean_structure(config, local['tree'], server['tree'])
+		self.remote.removedirs(config['root'], local['tree'], server['tree'])
 
 
 	def server_hash(self, config, htree, tree, current = ''):
