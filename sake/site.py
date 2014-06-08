@@ -277,14 +277,16 @@ class _helper(object):
 			else:
 				self.update_moved_copied_minipaths(ftp, config, local, h, minipaths)
 
+	def add_paths(self, ftp, config, local, paths):
+		for i in range(len(paths['s'])):
+			with open('%s/%s' % (local['root'], paths['s'][i]), 'rb') as f:
+				self.storbinary(ftp, '/%s/%s' % (config['root'], paths['d'][i]), f)
 
 	def update_added(self, ftp, config, local, server):
 		for h, paths in local['hash'].items():
 			# added files
 			if h not in server['hash']:
-				for i in range(len(paths['s'])):
-					with open('%s/%s' % (local['root'], paths['s'][i]), 'rb') as f:
-						self.storbinary(ftp, '/%s/%s' % (config['root'], paths['d'][i]), f)
+				self.add_paths(ftp, config, local, paths)
 
 
 	def chmod(self, ftp, mode, path):
