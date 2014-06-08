@@ -237,31 +237,12 @@ class FTPSite(object):
 		self.clean_structure(config, local['tree'], server['tree'])
 
 
-	def remote_file_ascii_hash(self, config, minipath):
-		return self.remote.hascii('/%s/%s' % (config['root'], minipath))
+	def server_hash(self, config, htree, tree, current = ''):
+		isindex = lambda item : item == config['index']
+		ignored = lambda path : path in config['ignore']
+		skip = lambda current, item :  isindex(item) or ignored(current + item)
+		self.remote.hash(config['root'], htree, tree, skip, current)
 
-	def filter_item(self, item, index):
-		return item == '.' or item == '..' or item == index
-
-	def server_hash(self, config, hash_t, tree, current = ''):
-		for t, item in self.ftp.ls(current):
-
-			print('%s%s' % (current, item))
-			if self.filter_item(item, config['index']) : continue
-
-			minipath = current + item
-			if minipath in config['ignore'] : continue
-
-			if t == self.ftp.FILE:
-				h_ascii = self.remote_file_ascii_hash(config, minipath)
-				print(h_ascii)
-				hash_t.setdefault(h_ascii, [])
-				hash_t[h_ascii].append(minipath)
-				tree[item] = h_ascii
-
-			elif t == self.ftp.DIR:
-				tree[item] = {}
-				self.server_hash(config, hash_t, tree[item], current + item + '/')
 
 	def send_hash(self, config, data):
 		with tempfile.NamedTemporaryFile('w', delete = False) as tmp:

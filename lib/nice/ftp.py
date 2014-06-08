@@ -1,4 +1,4 @@
-import hashlib
+import hashlib, base64
 
 
 class FTP(object):
@@ -38,3 +38,23 @@ class FTP(object):
 		self.ftp.retrbinary('RETR %s' % path, hasher.update)
 		h = hasher.digest()
 		return base64.b64encode(h).decode('ascii')
+
+
+	def hash(self, root, htree, tree, skip, current = ''):
+		for t, item in self.ftp.ls(current):
+
+			if item == '.' or item == '..' or skip(current, item) : continue
+
+			minipath = current + item
+
+			if t == self.ftp.FILE:
+				digest = self.hascii('/%s/%s' % (root, minipath))
+				print('%s > %s' % (minipath, digest))
+
+				htree.setdefault(digest, [])
+				htree[digest].append(minipath)
+				tree[item] = digest
+
+			elif t == self.ftp.DIR:
+				tree[item] = {}
+				self.hash(root, htree, tree[item], skip, current + item + '/')
