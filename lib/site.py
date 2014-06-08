@@ -105,21 +105,10 @@ class FTPSite(object):
 			server['tree'] = data['tree']
 
 
-	def ensure_structure_rec(self, config, local_h, current):
-		for item, data in local_h.items():
-			if type(data) == dict:
-				self.remote.mkd('/%s/%s%s' % (config['root'], current, item))
-				self.ensure_structure_rec(config, local_h[item], current + item + '/')
 
-	def ensure_structure(self, config, local_h, server_h, current = ''):
+	def ensure_structure(self, config, local, remote):
+		self.remote.makedirs(config['root'], local, remote)
 
-		for item, data in local_h.items():
-			if type(data) == dict:
-				if item not in server_h:
-					self.remote.mkd('/%s/%s%s' % (config['root'], current, item))
-					self.ensure_structure_rec(config, local_h[item], current + item + '/')
-				else:
-					self.ensure_structure(config, local_h[item], server_h[item], current + item + '/')
 
 
 	def clean(self, config, subtree, current):

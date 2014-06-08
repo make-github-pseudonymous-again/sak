@@ -58,3 +58,20 @@ class FTP(object):
 			elif t == self.ftp.DIR:
 				tree[item] = {}
 				self.hash(root, htree, tree[item], skip, current + item + '/')
+
+
+	def _makedirs(self, root, model, current):
+		for item, data in model.items():
+			if type(data) == dict:
+				self.mkd('/%s/%s%s' % (root, current, item))
+				self._makedirs(model[item], current + item + '/')
+
+	def makedirs(self, root, model, actual, current = ''):
+
+		for item, data in model.items():
+			if type(data) == dict:
+				if item not in actual:
+					self.mkd('/%s/%s%s' % (root, current, item))
+					self._makedirs(model[item], current + item + '/')
+				else:
+					self.makedirs(model[item], actual[item], current + item + '/')
