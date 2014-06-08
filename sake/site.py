@@ -128,7 +128,7 @@ class _helper(object):
 				print(e)
 
 
-	def file_ascii_hash(self, path):
+	def local_file_ascii_hash(self, path):
 		with open(path, 'rb') as f : h = lib.file.hash(f).digest()
 		return base64.b64encode(h).decode('ascii')
 
@@ -143,7 +143,7 @@ class _helper(object):
 			path += config['online']
 			minipath += config['online']
 		else : dest = minipath
-		h_ascii = self.file_ascii_hash(path)
+		h_ascii = self.local_file_ascii_hash(path)
 		hash_t.setdefault(h_ascii, {'s' : [], 'd' : []})
 		hash_t[h_ascii]['s'].append(minipath)
 		hash_t[h_ascii]['d'].append(dest)
@@ -292,6 +292,14 @@ class _helper(object):
 		if self.do : ftp.chmod(mode, path)
 
 
+	def rec_build(self, local_t, server_t):
+		for item, value in local_t.items():
+			if type(value) == list:
+				server_t[item] = value[0]
+			elif type(value) == dict:
+				server_t[item] = {}
+				self.rec_build(value, server_t[item])
+
 	def update_index(self, ftp, config, local):
 		data = {
 			'hash' : {},
@@ -301,15 +309,8 @@ class _helper(object):
 		for key in local['hash']:
 			data['hash'][key] = local['hash'][key]['d']
 
-		def rec_build(local_t, server_t):
-			for item, value in local_t.items():
-				if type(value) == list:
-					server_t[item] = value[0]
-				elif type(value) == dict:
-					server_t[item] = {}
-					rec_build(value, server_t[item])
 
-		rec_build(local['tree'], data['tree'])
+		self.rec_build(local['tree'], data['tree'])
 
 
 		with open('%s/%s' % (local['root'], config['index']), 'w') as f:
@@ -327,18 +328,26 @@ class _helper(object):
 		self.clean_structure(ftp, config, local['tree'], server['tree'])
 
 
+	def remote_file_ascii_hash(self, ftp, config, minipath):
+		hasher = hashlib.sha256()
+		ftp.retrbinary('RETR /%s/%s' % (config['root'], minipath), hasher.update)
+		h = hasher.digest()
+		return base64.b64encode(h).decode('ascii')
+
+	def filter_item(self, item, index):
+		return item == '.' or item == '..' or item == index
 
 	def server_hash(self, ftp, config, hash_t, tree, current = ''):
 		for t, item in ftp.ls(current):
+
 			print('%s%s' % (current, item))
-			if item == '.' or item == '..' or item == config['index'] : continue
+			if self.filter_item(item, config['index']) : continue
+
 			minipath = current + item
 			if minipath in config['ignore'] : continue
+
 			if t == ftp.FILE:
-				hasher = hashlib.sha256()
-				ftp.retrbinary('RETR /%s/%s' % (config['root'], minipath), hasher.update)
-				h = hasher.digest()
-				h_ascii = base64.b64encode(h).decode('ascii')
+				h_ascii = self.remote_file_ascii_hash(ftp, config, minipath)
 				print(h_ascii)
 				hash_t.setdefault(h_ascii, [])
 				hash_t[h_ascii].append(minipath)
