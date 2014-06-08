@@ -6,9 +6,10 @@ def down(directory = '.', config_file = 'json/config.json', dry_run = False):
 
 	pre = lambda *x: None
 
-	def callback(ftp, helper, config):
-		helper.server_down(ftp, config, local)
+	def callback(helper, config):
+		helper.server_down(config, local)
 
+	if not _helper.check_local_root(local['root']) : return
 	_helper.wrap(local, config_file, dry_run, pre, callback)
 
 def up(directory = '.', config_file = 'json/config.json', dry_run = False):
@@ -16,9 +17,10 @@ def up(directory = '.', config_file = 'json/config.json', dry_run = False):
 
 	pre = lambda *x: None
 
-	def callback(ftp, helper, config):
-		helper.server_up(ftp, config, local)
-		
+	def callback(helper, config):
+		helper.server_up(config, local)
+
+	if not _helper.check_local_root(local['root']) : return
 	_helper.wrap(local, config_file, dry_run, pre, callback)
 
 
@@ -37,7 +39,7 @@ def push(directory = '.', config_file = 'json/config.json', dry_run = False):
 	def pre(helper, config):
 		helper.local_fetch(local['root'], config, local['hash'], local['tree'])
 
-	def callback(ftp, helper, config):
+	def callback(helper, config):
 
 		server = {
 			'root' : config['root'],
@@ -45,39 +47,29 @@ def push(directory = '.', config_file = 'json/config.json', dry_run = False):
 			'tree' : {}
 		}
 
-		helper.server_fetch(ftp, config, server)
-		helper.update(ftp, config, local, server)
+		helper.server_fetch(config, server)
+		helper.update(config, local, server)
 
+	if not _helper.check_local_root(local['root']) : return
 	_helper.wrap(local, config_file, dry_run, pre, callback)
 
 
-def hash(config_file = 'json/config.json'):
+def hash(directory = '.', config_file = 'json/config.json'):
+	local = {'root' : os.path.abspath(directory)}
+	dry_run = False
+	pre = lambda *args, **kwargs : None
 
-	try:
-		config = _helper.default.copy()
-		with open(config_file, 'r') as f : config.update(json.load(f))
+	def callback(helper, config):
 
-	except FileNotFoundError as e:
-		print(e)
-		return
+		server = {
+			'hash' : {},
+			'tree' : {}
+		}
 
-	helper = _helper(dry_run = False)
+		helper.server_hash(config, server['hash'], server['tree'])
+		helper.send_hash(config, server)
 
-	with lib.ftp.FTP() as ftp:
-		try:
-
-			ftp.loginprompt(config)
-
-			server = {
-				'hash' : {},
-				'tree' : {}
-			}
-
-			helper.server_hash(ftp, config, server['hash'], server['tree'])
-			helper.send_hash(ftp, config, server)
-
-		except socket.gaierror as e:
-			print(e)
+	_helper.wrap(local, config_file, dry_run, pre, callback)
 
 
 
@@ -101,14 +93,27 @@ class _helper(object):
 
 	def __init__(self, dry_run):
 		self.do = not dry_run
+		self.ftp = None
+		self.remote = None
+
+	def setFTP(self, ftp):
+		self.ftp = ftp
+		self.remote = lib.nice.ftp.FTP(ftp, self.do)
+
+	def check_local_root(root):
+		if not os.path.isdir(root):
+			print("[Errno 1] Local root '%s' not found" % root)
+			return False
+
+		else:
+			return True
 
 	def wrap(local, config_file, dry_run, pre, callback):
 
-		if not os.path.isdir(local['root']): print('[Errno 1] Local root \'%s\' not found' % local['root']); return
-
 		try:
 			config = _helper.default.copy()
-			with open(os.path.join(local['root'], config_file), 'r') as f : config.update(json.load(f))
+			with open(os.path.join(local['root'], config_file), 'r') as f:
+				config.update(json.load(f))
 
 		except FileNotFoundError as e:
 			print(e)
@@ -119,18 +124,15 @@ class _helper(object):
 		pre(helper, config)
 
 		with lib.ftp.FTP() as ftp:
+			helper.setFTP(ftp)
 
 			try:
 				ftp.loginprompt(config)
-				callback(ftp, helper, config)
+				callback(helper, config)
 
 			except socket.gaierror as e:
 				print(e)
 
-
-	def local_file_ascii_hash(self, path):
-		with open(path, 'rb') as f : h = lib.file.hash(f).digest()
-		return base64.b64encode(h).decode('ascii')
 
 
 	def local_file(self, config, hash_t, tree_i, tree, dir_list, item, minipath, path):
@@ -143,7 +145,7 @@ class _helper(object):
 			path += config['online']
 			minipath += config['online']
 		else : dest = minipath
-		h_ascii = self.local_file_ascii_hash(path)
+		h_ascii = lib.nice.file.hascii(path)
 		hash_t.setdefault(h_ascii, {'s' : [], 'd' : []})
 		hash_t[h_ascii]['s'].append(minipath)
 		hash_t[h_ascii]['d'].append(dest)
@@ -164,74 +166,58 @@ class _helper(object):
 				self.local_fetch(root, config, hash_t, tree_i[item], current + item + '/', what)
 
 
-	def server_fetch(self, ftp, config, server):
+	def server_fetch(self, config, server):
 		index_file = '/%s/%s' % (config['root'], config['index'])
-		if ftp.isfile(index_file):
+		if self.ftp.isfile(index_file):
 			chuncks = []
-			ftp.retrlines('RETR %s' % index_file, chuncks.append)
+			self.ftp.retrlines('RETR %s' % index_file, chuncks.append)
 			index = ''.join(chuncks)
 			data = json.loads(index)
 			server['hash'] = data['hash']
 			server['tree'] = data['tree']
 
-	def mkd(self, ftp, path):
-		print("ftp.mkd('%s')" % path)
-		if self.do : ftp.mkd(path)
 
-	def rmd(self, ftp, path):
-		print("ftp.rmd('%s')" % path)
-		if self.do : ftp.rmd(path)
-
-
-	def ensure_structure_rec(self, ftp, config, local_h, current):
+	def ensure_structure_rec(self, config, local_h, current):
 		for item, data in local_h.items():
 			if type(data) == dict:
-				self.mkd(ftp, '/%s/%s%s' % (config['root'], current, item))
-				self.ensure_structure_rec(ftp, config, local_h[item], current + item + '/')
+				self.remote.mkd('/%s/%s%s' % (config['root'], current, item))
+				self.ensure_structure_rec(config, local_h[item], current + item + '/')
 
-	def ensure_structure(self, ftp, config, local_h, server_h, current = ''):
+	def ensure_structure(self, config, local_h, server_h, current = ''):
 
 		for item, data in local_h.items():
 			if type(data) == dict:
 				if item not in server_h:
-					self.mkd(ftp, '/%s/%s%s' % (config['root'], current, item))
-					self.ensure_structure_rec(ftp, config, local_h[item], current + item + '/')
+					self.remote.mkd('/%s/%s%s' % (config['root'], current, item))
+					self.ensure_structure_rec(config, local_h[item], current + item + '/')
 				else:
-					self.ensure_structure(ftp, config, local_h[item], server_h[item], current + item + '/')
+					self.ensure_structure(config, local_h[item], server_h[item], current + item + '/')
 
 
-	def clean(self, ftp, config, subtree, current):
+	def clean(self, config, subtree, current):
 		for item, data in subtree.items():
-			if type(data) == dict : self.clean(ftp, config, data, current + '/' + item)
+			if type(data) == dict : self.clean(config, data, current + '/' + item)
 
-		self.rmd(ftp, '/%s/%s' % (config['root'], current))
+		self.remote.rmd('/%s/%s' % (config['root'], current))
 
 
-	def clean_structure(self, ftp, config, local_h, server_h, current = ''):
+	def clean_structure(self, config, local_h, server_h, current = ''):
 
 		for item, data in server_h.items():
 			if type(data) == dict:
 				if item not in local_h:
-					self.clean(ftp, config, data, current + item)
+					self.clean(config, data, current + item)
 				else:	
-					self.clean_structure(ftp, config, local_h[item], server_h[item], current + item + '/')
+					self.clean_structure(config, local_h[item], server_h[item], current + item + '/')
 
 
-	def delete(self, ftp, path):
-		print("ftp.delete('%s')" % path)
-		if self.do : ftp.delete(path)
 
-
-	def delete_minipaths(self, ftp, minipaths, root):
+	def delete_minipaths(self, minipaths, root):
 		for minipath in minipaths:
-			self.delete(ftp, '/%s/%s' % (root, minipath))
+			self.remote.delete('/%s/%s' % (root, minipath))
 
 
-	def rename(self, ftp, fr, to):
-		print("ftp.rename('%s', '%s')" % (fr, to))
-		if self.do : ftp.rename('%s' % fr, '%s' % to)
-
-	def update_moved(self, ftp, config, local, h, not_handled, minipaths):	
+	def update_moved(self, config, local, h, not_handled, minipaths):	
 		for minipath in minipaths:
 
 			# moved files
@@ -240,69 +226,62 @@ class _helper(object):
 					replace = not_handled[0]
 					del not_handled[0]
 
-					self.rename(ftp, '/%s/%s' % (config['root'], minipath), '/%s/%s' % (config['root'], replace))
+					self.remote.rename('/%s/%s' % (config['root'], minipath), '/%s/%s' % (config['root'], replace))
 				else:
-					self.delete(ftp, '/%s/%s' % (config['root'], minipath))
+					self.remote.delete('/%s/%s' % (config['root'], minipath))
 
 			# not moved
 			else:
 				pass
 
-	def storbinary(self, ftp, path, fd):
-		print("ftp.storbinary('STOR %s', %s)" % (path, fd))
-		if self.do : ftp.storbinary('STOR %s' % path, fd)
-
-	def update_copied(self, ftp, config, local, h, not_handled):
+	def update_copied(self, config, local, h, not_handled):
 		base = local['hash'][h]['s'][0]
 		with open('%s/%s' % (local['root'], base), 'rb') as f:
 			for i in range(len(not_handled)):
 				f.seek(0)
-				self.storbinary(ftp, '/%s/%s' % (config['root'], not_handled[i]), f)
+				self.remote.storbinary('/%s/%s' % (config['root'], not_handled[i]), f)
 
-	def update_moved_copied_minipaths(self, ftp, config, local, h, minipaths):
+	def update_moved_copied_minipaths(self, config, local, h, minipaths):
 		not_handled = [x for x in local['hash'][h]['d'] if x not in minipaths]
 
-		self.update_moved(ftp, config, local, h, not_handled, minipaths)
+		self.update_moved(config, local, h, not_handled, minipaths)
 
-		if len(not_handled) > 0 : self.update_copied(ftp, config, local, h, not_handled)
+		if len(not_handled) > 0 : self.update_copied(config, local, h, not_handled)
 		
 
-	def update_deleted_moved_copied(self, ftp, config, local, server):
+	def update_deleted_moved_copied(self, config, local, server):
 		for h, minipaths in server['hash'].items():
 
 			# deleted files
 			if h not in local['hash']:
-				self.delete_minipaths(ftp, minipaths, config['root'])
+				self.delete_minipaths(minipaths, config['root'])
 
 			else:
-				self.update_moved_copied_minipaths(ftp, config, local, h, minipaths)
+				self.update_moved_copied_minipaths(config, local, h, minipaths)
 
-	def add_paths(self, ftp, config, local, paths):
+	def add_paths(self, config, local, paths):
 		for i in range(len(paths['s'])):
 			with open('%s/%s' % (local['root'], paths['s'][i]), 'rb') as f:
-				self.storbinary(ftp, '/%s/%s' % (config['root'], paths['d'][i]), f)
+				self.remote.storbinary('/%s/%s' % (config['root'], paths['d'][i]), f)
 
-	def update_added(self, ftp, config, local, server):
+	def update_added(self, config, local, server):
 		for h, paths in local['hash'].items():
 			# added files
 			if h not in server['hash']:
-				self.add_paths(ftp, config, local, paths)
+				self.add_paths(config, local, paths)
 
 
-	def chmod(self, ftp, mode, path):
-		print("ftp.chmod('%s', '%s')" % (mode, path))
-		if self.do : ftp.chmod(mode, path)
 
 
-	def rec_build(self, local_t, server_t):
+	def rec_build(local_t, server_t):
 		for item, value in local_t.items():
 			if type(value) == list:
 				server_t[item] = value[0]
 			elif type(value) == dict:
 				server_t[item] = {}
-				self.rec_build(value, server_t[item])
+				_helper.rec_build(value, server_t[item])
 
-	def update_index(self, ftp, config, local):
+	def update_index(self, config, local):
 		data = {
 			'hash' : {},
 			'tree' : {}
@@ -312,35 +291,32 @@ class _helper(object):
 			data['hash'][key] = local['hash'][key]['d']
 
 
-		self.rec_build(local['tree'], data['tree'])
+		_helper.rec_build(local['tree'], data['tree'])
 
 
 		with open('%s/%s' % (local['root'], config['index']), 'w') as f:
 			json.dump(data, f, indent = '\t')
 
 		with open('%s/%s' % (local['root'], config['index']), 'rb') as f:
-			self.storbinary(ftp, '/%s/%s' % (config['root'], config['index']), f)
-			self.chmod(ftp, '640', '/%s/%s' % (config['root'], config['index']))
+			self.remote.storbinary('/%s/%s' % (config['root'], config['index']), f)
+			self.remote.chmod('640', '/%s/%s' % (config['root'], config['index']))
 
-	def update(self, ftp, config, local, server):
-		self.ensure_structure(ftp, config, local['tree'], server['tree'])
-		self.update_deleted_moved_copied(ftp, config, local, server)
-		self.update_added(ftp, config, local, server)
-		self.update_index(ftp, config, local)
-		self.clean_structure(ftp, config, local['tree'], server['tree'])
+	def update(self, config, local, server):
+		self.ensure_structure(config, local['tree'], server['tree'])
+		self.update_deleted_moved_copied(config, local, server)
+		self.update_added(config, local, server)
+		self.update_index(config, local)
+		self.clean_structure(config, local['tree'], server['tree'])
 
 
-	def remote_file_ascii_hash(self, ftp, config, minipath):
-		hasher = hashlib.sha256()
-		ftp.retrbinary('RETR /%s/%s' % (config['root'], minipath), hasher.update)
-		h = hasher.digest()
-		return base64.b64encode(h).decode('ascii')
+	def remote_file_ascii_hash(self, config, minipath):
+		return self.remote.hascii('/%s/%s' % (config['root'], minipath))
 
 	def filter_item(self, item, index):
 		return item == '.' or item == '..' or item == index
 
-	def server_hash(self, ftp, config, hash_t, tree, current = ''):
-		for t, item in ftp.ls(current):
+	def server_hash(self, config, hash_t, tree, current = ''):
+		for t, item in self.ftp.ls(current):
 
 			print('%s%s' % (current, item))
 			if self.filter_item(item, config['index']) : continue
@@ -348,43 +324,43 @@ class _helper(object):
 			minipath = current + item
 			if minipath in config['ignore'] : continue
 
-			if t == ftp.FILE:
-				h_ascii = self.remote_file_ascii_hash(ftp, config, minipath)
+			if t == self.ftp.FILE:
+				h_ascii = self.remote_file_ascii_hash(config, minipath)
 				print(h_ascii)
 				hash_t.setdefault(h_ascii, [])
 				hash_t[h_ascii].append(minipath)
 				tree[item] = h_ascii
 
-			elif t == ftp.DIR:
+			elif t == self.ftp.DIR:
 				tree[item] = {}
-				self.server_hash(ftp, config, hash_t, tree[item], current + item + '/')
+				self.server_hash(config, hash_t, tree[item], current + item + '/')
 
-	def send_hash(self, ftp, config, data):
+	def send_hash(self, config, data):
 		with tempfile.NamedTemporaryFile('w', delete = False) as tmp:
 			json.dump(data, tmp, indent = '\t')
 
 		with open(tmp.name, 'rb') as f:
-			self.storbinary(ftp, '/%s/%s' % (config['root'], config['index']), f)
+			self.remote.storbinary('/%s/%s' % (config['root'], config['index']), f)
 
 		os.remove(tmp.name)
 
-		self.chmod(ftp, '640', '/%s/%s' % (config['root'], config['index']))
+		self.remote.chmod('640', '/%s/%s' % (config['root'], config['index']))
 
 
 
-	def server_down(self, ftp, config, local):
-		return self.server_switch(ftp, config, local, 'down')
+	def server_down(self, config, local):
+		return self.server_switch(config, local, 'down')
 
 
 
-	def server_up(self, ftp, config, local):
-		return self.server_switch(ftp, config, local, 'up')
+	def server_up(self, config, local):
+		return self.server_switch(config, local, 'up')
 
 
-	def server_switch(self, ftp, config, local, which):
+	def server_switch(self, config, local, which):
 		src = os.path.join(local['root'], config[which])
 		if os.path.isfile('%s%s' % (src, config['online'])) : src += config['online']
 
 		with open(src, 'rb') as f:
-			self.storbinary(ftp, '/%s/%s' % (config['root'], config['up']), f)
+			self.remote.storbinary('/%s/%s' % (config['root'], config['up']), f)
 

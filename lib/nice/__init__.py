@@ -8,18 +8,17 @@ def __init__():
 
 	for f in os.listdir(root):
 		path = root + '/' + f
+
 		if os.path.isdir(path):
 			if os.path.isfile(path + '/__init__.py'):
-				__import__(module + '.' + f)
+				__import__('lib.' + module + '.' + f)
 				__all__.append(f)
-				
-		if os.path.isfile(path) and f != '__init__.py':
+
+		elif os.path.isfile(path) and f != '__init__.py':
 			name, ext = os.path.splitext(f)
 
 			if ext == '.py':
-				__import__(module + '.' + name)
+				__import__('lib.' + module + '.' + name)
 				__all__.append(name)
-
-		
 
 __init__()

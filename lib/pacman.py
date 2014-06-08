@@ -131,7 +131,17 @@ def __init__(t, root):
 
 	for f in os.listdir(root):
 		path = root + '/' + f
-		if os.path.isfile(path) and f != '__init__.py':
+
+		if os.path.isdir(path):
+			if os.path.isfile(path + '/__init__.py'):
+				setattr(t, f, importlib.import_module(module + '.' + f))
+				t.__all__.append(f)
+
+			elif f != '__pycache__':
+				setattr(t, f, types.ModuleType(f))
+				__init__(t, path)
+
+		elif os.path.isfile(path) and f != '__init__.py':
 			name, ext = os.path.splitext(f)
 
 			if ext == '.py':
@@ -139,12 +149,3 @@ def __init__(t, root):
 				setattr(t, name, s)
 				t.__all__.append(name)
 				toolbox(s)
-
-		if os.path.isdir(path):
-			if os.path.isfile(path + '/__init.py'):
-				setattr(t, f, importlib.import_module(module + '.' + f))
-				t.__all__.append(f)
-
-			elif f != '__pycache__':
-				setattr(t, f, types.ModuleType(f))
-				__init__(t, path)
