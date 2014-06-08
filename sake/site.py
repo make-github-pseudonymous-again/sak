@@ -244,7 +244,7 @@ class _helper(object):
 		with open('%s/%s' % (local['root'], base), 'rb') as f:
 			for i in range(len(not_handled)):
 				f.seek(0)
-				self.storbinary('/%s/%s' % (config['root'], not_handled[i]), f)
+				self.storbinary(ftp, '/%s/%s' % (config['root'], not_handled[i]), f)
 
 	def update_moved_copied_minipaths(self, ftp, config, local, h, minipaths):
 		not_handled = [x for x in local['hash'][h]['d'] if x not in minipaths]
