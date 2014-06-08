@@ -1,4 +1,4 @@
-import lib, subprocess
+import lib
 
 def grab(what, user = None):
 

@@ -1,6 +1,6 @@
 import inspect, sake, lib
 
-def list(module = None, action = None):
+def info(module = None, action = None):
 	if module == None : print(', '.join([o for o, _ in inspect.getmembers(sake, inspect.ismodule)]))
 
 	else :

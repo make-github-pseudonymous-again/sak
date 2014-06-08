@@ -66,7 +66,7 @@ def clean(t):
 	for key in t.__all__:
 		try:
 			getattr(t, key)
-		except:
+		except AttributeError:
 			publ.remove(key)
 
 	t.__all__ = list(publ)

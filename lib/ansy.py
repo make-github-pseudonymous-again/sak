@@ -1,6 +1,6 @@
 
 
-class ansy:
+class ansy(object):
 	HEADER = '\033[95m'
 	OKBLUE = '\033[94m'
 	OKGREEN = '\033[92m'
