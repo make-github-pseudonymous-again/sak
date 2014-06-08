@@ -105,12 +105,6 @@ class FTPSite(object):
 			server['tree'] = data['tree']
 
 
-
-	def ensure_structure(self, config, local, remote):
-		self.remote.makedirs(config['root'], local, remote)
-
-
-
 	def clean(self, config, subtree, current):
 		for item, data in subtree.items():
 			if type(data) == dict : self.clean(config, data, current + '/' + item)
@@ -219,7 +213,7 @@ class FTPSite(object):
 			self.remote.chmod('640', '/%s/%s' % (config['root'], config['index']))
 
 	def update(self, config, local, server):
-		self.ensure_structure(config, local['tree'], server['tree'])
+		self.remote.makedirs(config['root'], local['tree'], server['tree'])
 		self.update_deleted_moved_copied(config, local, server)
 		self.update_added(config, local, server)
 		self.update_index(config, local)
