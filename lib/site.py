@@ -117,17 +117,17 @@ class FTPSite(object):
 
 			# moved files
 			if minipath not in local['hash'][h]['d']:
+				path = '/%s/%s' % (config['root'], minipath)
+
 				if len(not_handled) > 0:
 					replace = not_handled[0]
 					del not_handled[0]
+					self.remote.rename(path, '/%s/%s' % (config['root'], replace))
 
-					self.remote.rename('/%s/%s' % (config['root'], minipath), '/%s/%s' % (config['root'], replace))
 				else:
-					self.remote.delete('/%s/%s' % (config['root'], minipath))
+					self.remote.delete(path)
 
-			# not moved
-			else:
-				pass
+
 
 	def update_copied(self, config, local, h, not_handled):
 		base = local['hash'][h]['s'][0]
@@ -188,13 +188,10 @@ class FTPSite(object):
 
 		FTPSite.rec_build(local['tree'], data['tree'])
 
+		path = '/%s/%s' % (config['root'], config['index'])
 
-		with open('%s/%s' % (local['root'], config['index']), 'w') as f:
-			json.dump(data, f, indent = '\t')
-
-		with open('%s/%s' % (local['root'], config['index']), 'rb') as f:
-			self.remote.storbinary('/%s/%s' % (config['root'], config['index']), f)
-			self.remote.chmod('640', '/%s/%s' % (config['root'], config['index']))
+		self.remote.sendJSON(path, data)
+		self.remote.chmod('640', path)
 
 	def update(self, config, local, server):
 		self.remote.makedirs(config['root'], local['tree'], server['tree'])
