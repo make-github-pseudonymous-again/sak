@@ -1,4 +1,4 @@
-import hashlib, base64
+import hashlib, base64, tempfile, lib.json, os
 
 
 class FTP(object):
@@ -64,7 +64,7 @@ class FTP(object):
 		for item, data in model.items():
 			if type(data) == dict:
 				self.mkd('/%s/%s%s' % (root, current, item))
-				self._makedirs(model[item], current + item + '/')
+				self._makedirs(root, model[item], current + item + '/')
 
 	def makedirs(self, root, model, actual, current = ''):
 
@@ -72,6 +72,15 @@ class FTP(object):
 			if type(data) == dict:
 				if item not in actual:
 					self.mkd('/%s/%s%s' % (root, current, item))
-					self._makedirs(model[item], current + item + '/')
+					self._makedirs(root, model[item], current + item + '/')
 				else:
-					self.makedirs(model[item], actual[item], current + item + '/')
+					self.makedirs(root, model[item], actual[item], current + item + '/')
+
+
+	def sendJSON(self, path, data):
+		with tempfile.NamedTemporaryFile('w', delete = False) as tmp:
+			lib.json.pretty(data, tmp)
+
+		with open(tmp.name, 'rb') as fd : self.storbinary(path, fd)
+
+		os.remove(tmp.name)

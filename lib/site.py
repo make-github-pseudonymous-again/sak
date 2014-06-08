@@ -234,15 +234,9 @@ class FTPSite(object):
 
 
 	def send_hash(self, config, data):
-		with tempfile.NamedTemporaryFile('w', delete = False) as tmp:
-			json.dump(data, tmp, indent = '\t')
-
-		with open(tmp.name, 'rb') as f:
-			self.remote.storbinary('/%s/%s' % (config['root'], config['index']), f)
-
-		os.remove(tmp.name)
-
-		self.remote.chmod('640', '/%s/%s' % (config['root'], config['index']))
+		path = '/%s/%s' % (config['root'], config['index'])
+		self.remote.sendJSON(path, data)
+		self.remote.chmod('640', path)
 
 
 
