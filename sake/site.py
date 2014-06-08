@@ -254,20 +254,6 @@ class _helper(object):
 						print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], paths['d'][i], f))
 						if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], paths['d'][i]), f)
 
-	def update_modified(self, ftp, config, local_h, server_h, current = ''):
-
-		for item, data in local_h.items():
-			# modified files
-			if type(data) == list:
-				h, dest = data
-				if dest in server_h and h != server_h[dest]:
-					with open('%s/%s%s' % (local['root'], current, item), 'rb') as f:
-						print('ftp.storbinary(\'STOR /%s/%s\', %s)' % (config['root'], current, dest, f))
-						if self.do : ftp.storbinary('STOR /%s/%s' % (config['root'], minipath), f)
-
-
-			elif item in server_h:
-				self.update_modified(ftp, config, data, server_h[item], current + item + '/')
 
 
 	def update_index(self, ftp, config, local):
@@ -303,7 +289,6 @@ class _helper(object):
 		self.ensure_structure(ftp, config, local['tree'], server['tree'])
 		self.update_deleted_moved_copied(ftp, config, local, server)
 		self.update_added(ftp, config, local, server)
-		# self.update_modified(ftp, config, local['tree'], server['tree'])
 		self.update_index(ftp, config, local)
 		self.clean_structure(ftp, config, local['tree'], server['tree'])
 

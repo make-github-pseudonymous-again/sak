@@ -42,13 +42,13 @@ def parse(inp):
 
 	# Check action arguments
 	spec = inspect.getargspec(action)
-	m = (0 if spec[0] == None else len(spec[0])) - (0 if spec[3] == None else len(spec[3]))
+	m = (0 if spec[0] is None else len(spec[0])) - (0 if spec[3] is None else len(spec[3]))
 	n = len(inp) - 2
 
 	if n < m:
 		raise lib.error.TooFewArgumentsForActionException(n, spec, inp[1], inp[0])
 
-	if spec[1] == None and n > len(spec[0]):
+	if spec[1] is None and n > len(spec[0]):
 		raise lib.error.TooManyArgumentsForActionException(n, spec, inp[1], inp[0])
 
 	# Done

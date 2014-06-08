@@ -10,7 +10,9 @@ def init(t):
 def exists(s, t):
 	return s in t.__dict__
 
-def public(t, pred = []):
+def public(t, pred = None):
+	if pred is None : pred = []
+
 	if len(pred) == 0:
 		return (e for e in t.__all__)
 
@@ -20,7 +22,9 @@ def public(t, pred = []):
 				yield key
 				break
 
-def setpublic(t, pred = []):
+def setpublic(t, pred = None):
+	if pred is None : pred = []
+	
 	if len(pred) == 0 :
 		t.__all__ = t.__dict__.keys()
 		return
@@ -41,7 +45,9 @@ def ispublic(s, t):
 	return s in t.__all__
 
 
-def setprivate(t, pred = []):
+def setprivate(t, pred = None):
+	if pred is None : pred = []
+
 	if len(pred) == 0:
 		t.__all__ = []
 		return

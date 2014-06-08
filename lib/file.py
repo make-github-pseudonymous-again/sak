@@ -8,7 +8,7 @@ def read(f, callback, blocksize = 2**15):
 		chunk = f.read(blocksize)
 
 def hash(f, h = None, blocksize = 2**15):
-	if h == None : h = hashlib.sha256()
+	if h is None : h = hashlib.sha256()
 	read(f, h.update, blocksize)
 	return h
 
