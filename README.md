@@ -2,7 +2,7 @@ Swiss Army KnifE
 ================
 
 [![Build Status](https://drone.io/github.com/aureooms/sake/status.png)](https://drone.io/github.com/aureooms/sake/latest)
-
+[![Code Health](https://landscape.io/github/aureooms/sake/master/landscape.png)](https://landscape.io/github/aureooms/sake/master)
 
 ***sake*** is a module based tool
 
