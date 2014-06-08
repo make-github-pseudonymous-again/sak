@@ -15,7 +15,7 @@ def x2svg(img, out = None, width = None, height = None):
 def resize(img, out, width, height, mode = '^'):
 	subprocess.call(['convert', img, '-resize', '%sx%s%s' % (width, height, mode), out])
 
-def crop(img, out, width, height, gravity = 'Center', left = 0, top = 0):
+def crop(img, out, width, height, gravity = 'Center', left = '0', top = '0'):
 	subprocess.call(['convert', img, '-gravity', gravity, '-crop', '%sx%s+%s+%s' % (width, height, left, top), out])
 
 

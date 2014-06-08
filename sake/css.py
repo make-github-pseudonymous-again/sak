@@ -47,7 +47,7 @@ class helper(object):
 			out = lambda *x : lib.css.rgb2str(*lib.color.hsl2rgb(*x))
 			hsl = lib.color.rgb2hsl(*lib.css.str2rgb(inp))
 		elif inp[0] == 'h':
-			out = lambda *x : lib.css.hsl2str(*x)
+			out = lib.css.hsl2str
 			hsl = lib.css.str2hsl(inp)
 		else:
 			out = lambda *x : lib.css.rgb2hex(*lib.color.hsl2rgb(*x))
