@@ -13,12 +13,28 @@ usage :
 	$ <module> <action> <*arg>
 
 
-currently available modules and actions :
+currently available modules :
 
-  - help
+  - bitbucket
+  - codeclimate
+  - config
+  - css
   - git
+  - github
+  - gmail
+  - google
+  - help
+  - img
+  - js
+  - lib
+  - os
   - site
+  - sty
   - sublime
+  - sys
+  - tex
+  - txt
+
 
 
 examples :
@@ -29,4 +45,17 @@ examples :
 
   - list actions available in module *site*
 
-		$ help list site
+		$ help info site
+
+
+*All modules and action now support shortcuts, example :*
+
+
+  - hash remote ftp site:
+
+		$ si h
+
+  - concat js files in js/src and put output in js/min
+
+		$ j b js
+
