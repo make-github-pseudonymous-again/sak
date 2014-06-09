@@ -23,10 +23,19 @@ class FTPSite(object):
 		self.do = not dry_run
 		self.ftp = None
 		self.remote = None
+		self.rhasher = None
+		self.rupdater = None
+		self.rswitch = None
+		self.rfecth = None
+		self.lfetch = FTPLocalFetcher()
 
-	def setFTP(self, ftp):
+	def init(self, ftp):
 		self.ftp = ftp
 		self.remote = lib.nice.ftp.FTP(ftp, self.do)
+		self.rhasher = FTPRemoteHasher(self.remote)
+		self.rupdater = FTPRemoteUpdater(self.remote)
+		self.rswitch = FTPRemoteSwitch(self.remote)
+		self.rfetch = FTPRemoteFetcher(self.ftp)
 
 	def check_local_root(root):
 		if not os.path.isdir(root):
@@ -52,7 +61,7 @@ class FTPSite(object):
 		pre(helper, config)
 
 		with lib.ftp.FTP() as ftp:
-			helper.setFTP(ftp)
+			helper.init(ftp)
 
 			try:
 				ftp.loginprompt(config)
@@ -63,48 +72,35 @@ class FTPSite(object):
 
 
 
-	def local_file(self, config, hash_t, tree_i, tree, dir_list, item, minipath, path):
-		base, ext = os.path.splitext(minipath)
-		if ext == config['online'] :
-			if os.path.basename(minipath) in tree : return
-			else : dest = base
-		elif item + config['online'] in dir_list :
-			dest = minipath
-			path += config['online']
-			minipath += config['online']
-		else : dest = minipath
-		h_ascii = lib.nice.file.hascii(path)
-		hash_t.setdefault(h_ascii, {'s' : [], 'd' : []})
-		hash_t[h_ascii]['s'].append(minipath)
-		hash_t[h_ascii]['d'].append(dest)
-		tree_i[item] = [h_ascii, dest]
+	
 
-	def local_fetch(self, root, config, hash_t, tree_i, current = '', tree = None):
-		if tree is None : tree = config['tree']
-		dir_list = os.listdir(root + '/' + current)
-		for item, what in tree.items():
-			minipath = current + item
-			path = root + '/' + minipath
-			if os.path.isfile(path):
-				self.local_file(config, hash_t, tree_i, tree, dir_list, item, minipath, path)
+class FTPRemoteHasher(object):
 
-			elif os.path.isdir(path):
-				if what is None : what = { sub : None for sub in os.listdir(path)}
-				tree_i[item] = {}
-				self.local_fetch(root, config, hash_t, tree_i[item], current + item + '/', what)
+	def __init__(self, remote):
+		self.remote = remote
 
 
-	def server_fetch(self, config, server):
-		index_file = '/%s/%s' % (config['root'], config['index'])
-		if self.ftp.isfile(index_file):
-			chuncks = []
-			self.ftp.retrlines('RETR %s' % index_file, chuncks.append)
-			index = ''.join(chuncks)
-			data = json.loads(index)
-			server['hash'] = data['hash']
-			server['tree'] = data['tree']
+	def hash(self, config, htree, tree, current = ''):
+		isindex = lambda item : item == config['index']
+		ignored = lambda path : path in config['ignore']
+		skip = lambda current, item :  isindex(item) or ignored(current + item)
+		self.remote.hash(config['root'], htree, tree, skip, current)
 
 
+	def send(self, config, data):
+		path = '/%s/%s' % (config['root'], config['index'])
+		self.remote.sendJSON(path, data)
+		self.remote.chmod('640', path)
+
+
+
+
+
+
+class FTPRemoteUpdater(object):
+
+	def __init__(self, remote):
+		self.remote = remote
 
 
 	def delete_minipaths(self, minipaths, root):
@@ -126,8 +122,6 @@ class FTPSite(object):
 
 				else:
 					self.remote.delete(path)
-
-
 
 	def update_copied(self, config, local, h, not_handled):
 		base = local['hash'][h]['s'][0]
@@ -166,15 +160,13 @@ class FTPSite(object):
 				self.add_paths(config, local, paths)
 
 
-
-
 	def rec_build(local_t, server_t):
 		for item, value in local_t.items():
 			if type(value) == list:
 				server_t[item] = value[0]
 			elif type(value) == dict:
 				server_t[item] = {}
-				FTPSite.rec_build(value, server_t[item])
+				FTPRemoteUpdater.rec_build(value, server_t[item])
 
 	def update_index(self, config, local):
 		data = {
@@ -186,14 +178,14 @@ class FTPSite(object):
 			data['hash'][key] = local['hash'][key]['d']
 
 
-		FTPSite.rec_build(local['tree'], data['tree'])
+		FTPRemoteUpdater.rec_build(local['tree'], data['tree'])
 
 		path = '/%s/%s' % (config['root'], config['index'])
 
 		self.remote.sendJSON(path, data)
 		self.remote.chmod('640', path)
 
-	def update(self, config, local, server):
+	def all(self, config, local, server):
 		self.remote.makedirs(config['root'], local['tree'], server['tree'])
 		self.update_deleted_moved_copied(config, local, server)
 		self.update_added(config, local, server)
@@ -201,33 +193,83 @@ class FTPSite(object):
 		self.remote.removedirs(config['root'], local['tree'], server['tree'])
 
 
-	def server_hash(self, config, htree, tree, current = ''):
-		isindex = lambda item : item == config['index']
-		ignored = lambda path : path in config['ignore']
-		skip = lambda current, item :  isindex(item) or ignored(current + item)
-		self.remote.hash(config['root'], htree, tree, skip, current)
-
-
-	def send_hash(self, config, data):
-		path = '/%s/%s' % (config['root'], config['index'])
-		self.remote.sendJSON(path, data)
-		self.remote.chmod('640', path)
 
 
 
-	def server_down(self, config, local):
-		return self.server_switch(config, local, 'down')
+
+class FTPRemoteSwitch(object):
+
+	def __init__(self, remote):
+		self.remote = remote
 
 
-
-	def server_up(self, config, local):
-		return self.server_switch(config, local, 'up')
-
-
-	def server_switch(self, config, local, which):
+	def toggle(self, config, local, which):
 		src = os.path.join(local['root'], config[which])
 		if os.path.isfile('%s%s' % (src, config['online'])) : src += config['online']
 
 		with open(src, 'rb') as f:
 			self.remote.storbinary('/%s/%s' % (config['root'], config['up']), f)
+
+
+	def down(self, config, local):
+		return self.server_switch(config, local, 'down')
+
+
+	def up(self, config, local):
+		return self.server_switch(config, local, 'up')
+
+
+
+
+
+class FTPLocalFetcher(object):
+
+	def __init__(self):
+		pass
+
+	def local_file(online, hash_t, tree_i, tree, dir_list, item, minipath, path):
+		base, ext = os.path.splitext(minipath)
+		if ext == online :
+			if os.path.basename(minipath) in tree : return
+			else : dest = base
+		elif item + online in dir_list :
+			dest = minipath
+			path += online
+			minipath += online
+		else : dest = minipath
+		h_ascii = lib.nice.file.hascii(path)
+		hash_t.setdefault(h_ascii, {'s' : [], 'd' : []})
+		hash_t[h_ascii]['s'].append(minipath)
+		hash_t[h_ascii]['d'].append(dest)
+		tree_i[item] = [h_ascii, dest]
+
+	def local(self, root, config, hash_t, tree_i, current = '', tree = None):
+		if tree is None : tree = config['tree']
+		dir_list = os.listdir(root + '/' + current)
+		for item, what in tree.items():
+			minipath = current + item
+			path = root + '/' + minipath
+			if os.path.isfile(path):
+				FTPLocalFetcher.local_file(config['online'], hash_t, tree_i, tree, dir_list, item, minipath, path)
+
+			elif os.path.isdir(path):
+				if what is None : what = { sub : None for sub in os.listdir(path)}
+				tree_i[item] = {}
+				self.local(root, config, hash_t, tree_i[item], current + item + '/', what)
+
+class FTPRemoteFetcher(object):
+
+	def __init__(self, ftp):
+		self.ftp = ftp
+
+	def remote(self, config, server):
+		index_file = '/%s/%s' % (config['root'], config['index'])
+		if self.ftp.isfile(index_file):
+			chuncks = []
+			self.ftp.retrlines('RETR %s' % index_file, chuncks.append)
+			index = ''.join(chuncks)
+			data = json.loads(index)
+			server['hash'] = data['hash']
+			server['tree'] = data['tree']
+
 
