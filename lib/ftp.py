@@ -8,6 +8,9 @@ class FTP(ftplib.FTP):
 		self.DIR = 'd'
 		self.LINK = 'l'
 
+	def storebinary(self, path, fd):
+		super(FTP, self).storebinary('STOR %s' % path, fd)
+
 	def chmod(self, mod, path):
 		return self.sendcmd('SITE CHMOD %s %s' % (mod, path))
 

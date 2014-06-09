@@ -8,30 +8,27 @@ class FTP(object):
 		self.ftp = ftp
 		self.do = do
 
+	def action(self, method, msg, args):
+		print(msg % args)
+		if self.do : method(*args)
 
 	def chmod(self, mode, path):
-		print("ftp.chmod('%s', '%s')" % (mode, path))
-		if self.do : self.ftp.chmod(mode, path)
+		self.action(self.ftp.chmod, "ftp.chmod('%s', '%s')", (mode, path))
 
 	def storbinary(self, path, fd):
-		print("ftp.storbinary('STOR %s', %s)" % (path, fd))
-		if self.do : self.ftp.storbinary('STOR %s' % path, fd)
+		self.action(self.ftp.storbinary, "ftp.storbinary('STOR %s', %s)", (path, fd))
 
 	def mkd(self, path):
-		print("ftp.mkd('%s')" % path)
-		if self.do : self.ftp.mkd(path)
+		self.action(self.ftp.mkd, "ftp.mkd('%s')", (path))
 
 	def rmd(self, path):
-		print("ftp.rmd('%s')" % path)
-		if self.do : self.ftp.rmd(path)
+		self.action(self.ftp.rmd, "ftp.rmd('%s')", (path))
 
 	def delete(self, path):
-		print("ftp.delete('%s')" % path)
-		if self.do : self.ftp.delete(path)
+		self.action(self.ftp.delete, "ftp.delete('%s')", (path))
 
 	def rename(self, fr, to):
-		print("ftp.rename('%s', '%s')" % (fr, to))
-		if self.do : self.ftp.rename('%s' % fr, '%s' % to)
+		self.action(self.ftp.rename, "ftp.rename('%s', '%s')", (fr, to))
 
 	def hascii(self, path):
 		hasher = hashlib.sha256()
