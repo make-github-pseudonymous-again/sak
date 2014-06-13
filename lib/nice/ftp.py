@@ -19,13 +19,13 @@ class FTP(object):
 		self.action(self.ftp.storbinary, "ftp.storbinary('STOR %s', %s)", (path, fd))
 
 	def mkd(self, path):
-		self.action(self.ftp.mkd, "ftp.mkd('%s')", (path))
+		self.action(self.ftp.mkd, "ftp.mkd('%s')", (path,))
 
 	def rmd(self, path):
-		self.action(self.ftp.rmd, "ftp.rmd('%s')", (path))
+		self.action(self.ftp.rmd, "ftp.rmd('%s')", (path,))
 
 	def delete(self, path):
-		self.action(self.ftp.delete, "ftp.delete('%s')", (path))
+		self.action(self.ftp.delete, "ftp.delete('%s')", (path,))
 
 	def rename(self, fr, to):
 		self.action(self.ftp.rename, "ftp.rename('%s', '%s')", (fr, to))
