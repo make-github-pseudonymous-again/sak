@@ -36,15 +36,18 @@ def do(action, *args):
 	return helper.wrap(args, callback)
 
 def update(*args):
-	return do(update.__name__, *args)
+	return do('update', *args)
 
 
 def pull(*args):
-	return do(pull.__name__, *args)
+	return do('pull', *args)
 
 
 def push(*args):
-	return do(push.__name__, *args)
+	return do('push', *args)
+
+def ls(*args):
+	return do('ls', *args)
 
 
 
@@ -106,13 +109,16 @@ class helper(object):
 		return out.decode().split('\n')[:-1]
 
 	def update(d):
-		helper.call(['git', 'remote', 'update'], cwd = d)
+		subprocess.call(['git', 'remote', 'update'], cwd = d)
 
 	def push(d):
-		helper.call(['git', 'push'], cwd = d)
+		subprocess.call(['git', 'push'], cwd = d)
 
 	def pull(d):
-		helper.call(['git', 'pull'], cwd = d)
+		subprocess.call(['git', 'pull'], cwd = d)
+
+	def ls(d):
+		pass
 
 	def pulls(d, remote, branch):
 		return helper.commits(d, 'HEAD', '%s/%s' % (remote, branch))
