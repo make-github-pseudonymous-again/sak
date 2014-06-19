@@ -1,6 +1,4 @@
-import os, subprocess
+import sake.sake
 
-def sake():
-	path = os.path.join(__file__, '..', '..')
-	path = os.path.abspath(path)
-	subprocess.call(['git', 'pull'], cwd = path)
+def self(*args):
+	sake.sake.pull(*args)
