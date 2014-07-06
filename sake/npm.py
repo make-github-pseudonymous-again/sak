@@ -1,4 +1,8 @@
 
+import subprocess
+
+def publish():
+	subprocess.call(['npm', 'publish'])
 
 
 try:
@@ -45,11 +49,12 @@ try:
 		version = VERSION_PREFIX + version
 		if message is None : message = version
 
-		lib.git.add('-all', '.')
+		lib.git.add('--all', '.')
 		lib.git.commit('-am', message)
 		lib.git.push()
 		lib.git.tag('-a', version, '-m', message)
 		lib.git.push('--tags')
+		publish()
 
 
 except ImportError as e:
