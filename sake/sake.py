@@ -1,9 +1,9 @@
-import os, subprocess
+import os, lib.git
 
 def git(action, *args):
 	path = os.path.join(__file__, '..', '..')
 	path = os.path.abspath(path)
-	subprocess.call(['git', action] + list(args), cwd = path)
+	lib.git.do(action, *args, cwd = path)
 
 def pull(*args):
 	git('pull', *args)
