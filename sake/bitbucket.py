@@ -1,7 +1,9 @@
-import lib
+import lib.config, lib.git
 
-def grab(what, user = None):
+DOMAIN = 'bitbucket.org'
 
-	if user is None : user = lib.config.prompt_user('bitbucket.org', 'bitbucket')
+def clone(what, user = None):
 
-	lib.sys.call(['git', 'clone', 'https://%s@bitbucket.org/%s.git' % (user, what)], stdout = None, stderr = None)
+	if user is None : user = lib.config.prompt_user(DOMAIN, 'bitbucket')
+
+	lib.git.clone('https://%s@%s/%s.git' % (user, DOMAIN, what))

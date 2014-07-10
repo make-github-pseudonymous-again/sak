@@ -4,6 +4,9 @@ def do(action, *args, **kwargs):
 	subprocess.call(['git', action] + list(args), **kwargs)
 
 
+def clone(*args, **kwargs):
+	do('clone', *args, **kwargs)
+
 def pull(*args, **kwargs):
 	do('pull', *args, **kwargs)
 

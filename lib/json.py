@@ -1,4 +1,4 @@
-import json
+import json, os.path
 
 
 pretty = lambda *args : json.dump(*args, indent = '\t', separators=(',', ': '))
@@ -11,7 +11,9 @@ class proxy(object):
 		self.mode  = mode
 
 	def __enter__(self):
-		with open(self.fname, 'r') as f : self.data = json.load(f)
+		if self.mode == 'r' or os.path.exists(self.fname):
+			with open(self.fname, 'r') as f : self.data = json.load(f)
+		elif self.mode == 'w' : self.data = {}
 		return self.data
 
 	def __exit__(self, t, value, traceback):
