@@ -1,64 +1,31 @@
 import lib.cpm, sake.github, sake.bitbucket, urllib.parse, lib.config, lib.git, lib.http, os.path
 
-VENDORS = {
-	sake.github.DOMAIN : sake.github,
-	sake.bitbucket.DOMAIN : sake.bitbucket
-}
 
-DEPENDENCIES = ['dep', 'dev']
+def update():
+	pred = lambda x : os.path.exists(x)
+	lib.cpm.depforeach(lib.git.pull, pred, cwd = lambda p : os.path.join(lib.cpm.DEP + p))
 
-SAVE = {
-	'--save' : DEPENDENCIES[0],
-	'--save-dev' : DEPENDENCIES[1]
-}
 
-LIB = 'lib'
+def install(package = None, mode = None):
 
-def install(package = None, save = None):
-
-	lib.cpm.libENSURE()
+	lib.cpm.structure()
 
 	if package is None:
-		with lib.cpm.package() as p:
-			for dep in DEPENDENCIES:
-				for name, package in p[dep].items():
-					path = os.path.join(LIB, name)
-					if not os.path.exists(name):
-						lib.git.clone(package, cwd = LIB)
+		pred = lambda x : not os.path.exists(x)
+		lib.cpm.depforeach(lib.git.clone, pred, cwd = lib.cpm.DEP)
 
 	else:
 
-		url = urllib.parse.urlparse(package)
+		url = lib.repo.resolve(package, lib.cpm.VENDORS)
 
-		p = list(url)
+		if url is None:
+			print('unable to find repo')
+			return
 
-		if url.scheme == '' : p[0] = 'http'
+		lib.git.clone(url, cwd = lib.cpm.DEP)
 
-		if url.netloc == '':
-			found = False
-			for domain, vendor in VENDORS.items():
-				p[1] = domain
-				if lib.http.access(urllib.parse.urlunparse(p)):
-					found = True
-					break
-
-			if not found:
-				print('unable to find repo')
-				return
-
-		
-		user, _ = urllib.parse.splituser(p[1])
-		if user is None:
-			vendor = VENDORS[p[1]]
-			user = lib.config.prompt_user(p[1], vendor.__name__)
-			p[1] = user + '@' + p[1]
-
-		url = urllib.parse.urlunparse(p)
-
-		lib.git.clone(url, cwd = LIB)
-
-		if save in SAVE:
-			which = SAVE[save]
+		if mode in SAVE:
+			which = SAVE[mode]
 			parts = os.path.split(p.path)
 			name, _ = os.path.splitext(parts)
 			with lib.cpm.package('w') as p:
@@ -70,7 +37,7 @@ def init():
 		with lib.cpm.package('w') as p:
 			p['name'] = ''
 			p['dep'] = {}
-			p['dev'] = {}
+			p['dep-dev'] = {}
 			p['version'] = '0.0.0'
 			p['keywords'] = {}
 			p['run'] = {}
@@ -84,4 +51,4 @@ def init():
 			p['home'] = ''
 			p['license'] = ''
 
-	lib.cpm.libENSURE()
+	lib.cpm.structure()

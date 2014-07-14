@@ -1,10 +1,26 @@
 
 
-import lib.json, os.path
+import lib.json, os.path, lib.fn, sake.github, sake.bitbucket
+
+
+
+VENDORS = {
+	sake.github.DOMAIN : sake.github,
+	sake.bitbucket.DOMAIN : sake.bitbucket
+}
+
+
+DEPENDENCIES = ['dep', 'dep-dev']
+
+SAVE = {
+	'--save' : DEPENDENCIES[0],
+	'--save-dev' : DEPENDENCIES[1]
+}
 
 FILENAME_PACKAGE_CONFIGURATION = 'package.json'
 
-LIB = 'lib'
+DEP = 'dep'
+
 
 class package(lib.json.proxy):
 
@@ -16,9 +32,31 @@ class package(lib.json.proxy):
 def configOK():
 	return os.path.exists(FILENAME_PACKAGE_CONFIGURATION)
 
-def libENSURE():
-	if not os.path.exists(LIB):
-		os.mkdir(LIB)
+def structure():
+	if not os.path.exists(DEP):
+		os.mkdir(DEP)
 
-	elif not os.path.isdir(LIB):
-		print('error -> lib exists and is not a directory')
+	elif not os.path.isdir(DEP):
+		print('error -> dep exists and is not a directory')
+
+
+
+def depforeach(action, pred, *args, **kwargs):
+
+	with lib.cpm.package() as p:
+		for dep in DEPENDENCIES:
+			for name, package in p[dep].items():
+				path = os.path.join(DEP, name)
+				if pred(path):
+
+					_args = []
+					_kwargs = {}
+
+					for val in args:
+						_args.append(lib.fn.val(val, package))
+
+					for key, val in kwargs:
+						_kwargs[key] = lib.fn.val(val, package)
+
+
+					action(package, *args, **kwargs)
