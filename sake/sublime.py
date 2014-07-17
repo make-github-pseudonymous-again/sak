@@ -1,7 +1,7 @@
 import os, json
 
 
-def mk(directory = '.'):
+def add(directory = '.'):
 	full = os.path.abspath(directory)
 	path = full + '/' + os.path.basename(full) + '.sublime-project'
 	with open(path, 'w') as f:
@@ -22,7 +22,7 @@ def mk(directory = '.'):
 			with open(d + '/Settings/Session.sublime_session', 'w') as f:
 				json.dump(config, f, indent = '\t')
 
-def rm(directory = '.'):
+def remove(directory = '.'):
 	full = os.path.abspath(directory)
 	path = full + '/' + os.path.basename(full) + '.sublime-project'
 	if os.path.isfile(path) : os.remove(path)
