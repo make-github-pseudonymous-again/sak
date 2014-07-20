@@ -75,7 +75,7 @@ try:
 
 		for pm in PM:
 			if os.path.isfile(pm):
-				with lib.json.proxy(pm, 'w') as conf:
+				with lib.json.proxy(pm, 'w', sort_keys = True) as conf:
 					conf[VERSION_HASH] = version
 
 
