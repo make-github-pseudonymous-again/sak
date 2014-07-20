@@ -67,6 +67,8 @@ try:
 		if special:
 			v = semantic_version.Version(olds[0])
 			setattr(v, version, getattr(v, version) + 1)
+			start = SPECIAL.index(version) + 1
+			for i in range(start, len(SPECIAL)) : setattr(v, SPECIAL[i], 0)
 			version = str(v)
 
 
