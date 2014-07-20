@@ -1,5 +1,5 @@
 
-import subprocess
+import subprocess, collections
 
 def publish():
 	subprocess.call(['npm', 'publish'])
@@ -75,7 +75,7 @@ try:
 
 		for pm in PM:
 			if os.path.isfile(pm):
-				with lib.json.proxy(pm, 'w', sort_keys = True) as conf:
+				with lib.json.proxy(pm, 'w', object_pairs_hook = collections.OrderedDict) as conf:
 					conf[VERSION_HASH] = version
 
 
