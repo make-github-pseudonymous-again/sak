@@ -14,7 +14,7 @@ def test():
 try:
 
 	import semantic_version
-	import os, lib.json, lib.git, lib.list
+	import os, lib.json, lib.git, lib.list, lib.ver
 
 
 	NPM   = 'package.json'
@@ -22,15 +22,16 @@ try:
 
 	PM = [NPM, BOWER]
 
-	VERSION_PREFIX = 'v'
 	VERSION_HASH   = 'version'
 
-	SPECIAL  = ['major', 'minor', 'patch']
 
 
 	def release(version, message = None):
+		version = setversion(version)
+		push(version, message)
 
-		special = version in SPECIAL
+	def setversion(version):
+		special = version in lib.ver.KEYS
 		check   = not special
 			
 		if check and not semantic_version.validate(version) :
@@ -65,21 +66,17 @@ try:
 			return
 
 		if special:
-			v = semantic_version.Version(olds[0])
-			setattr(v, version, getattr(v, version) + 1)
-			start = SPECIAL.index(version) + 1
-			for i in range(start, len(SPECIAL)) : setattr(v, SPECIAL[i], 0)
-			version = str(v)
-
-
+			version = lib.ver.resolve(olds[0], version)
 
 		for pm in PM:
 			if os.path.isfile(pm):
 				with lib.json.proxy(pm, 'w', object_pairs_hook = collections.OrderedDict) as conf:
 					conf[VERSION_HASH] = version
 
+		return version
 
-		version = VERSION_PREFIX + version
+	def push(version, message = None):
+		version = lib.ver.PREFIX + version
 		if message is None : message = version
 
 		build()
@@ -95,6 +92,12 @@ except ImportError as e:
 
 	_e = e
 
-	def release():
+	def release(version, message = None):
+		print(_e, ': to fix this --> pip3 install semantic_version')
+
+	def setversion(version):
+		print(_e, ': to fix this --> pip3 install semantic_version')
+
+	def push(version, message = None):
 		print(_e, ': to fix this --> pip3 install semantic_version')
 
