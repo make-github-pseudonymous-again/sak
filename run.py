@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, sake, inspect, lib
+import sys, sake, inspect, lib.main, lib.pacman, lib.error
 
 
 def main(inp):
@@ -10,48 +10,46 @@ def main(inp):
 
 
 def parse(inp):
-	# Determine module
-	if len(inp) < 1:
-		raise lib.error.ModuleNameNotSpecifiedException(sake)
 
-	modules = lib.pacman.resolve(inp[0], sake)
+	# DETERMINE MODULE
 
-	if len(modules) == 0:
-		raise lib.error.ModuleDoesNotExistException(inp[0], sake)
+	lib.main.checkModuleNameSpecified(sake, inp)
+	moduleName = inp[0]
 
-	if len(modules) > 1:
-		raise lib.error.ModuleNameAmbiguousException(inp[0], modules)
+	modules = lib.pacman.resolve(moduleName, sake)
 
-	inp[0] = modules[0]
-	module = getattr(sake, inp[0])
+	lib.main.checkModuleNameExists(sake, moduleName, modules)
+	lib.main.checkModuleNameNotAmbiguous(moduleName, modules)
 
-	# Determine action
-	if len(inp) < 2:
-		raise lib.error.ActionNameNotSpecifiedException(module, inp[0])
+	moduleName = modules[0]
+	module = getattr(sake, moduleName)
 
-	actions = lib.pacman.resolve(inp[1], module)
 
-	if len(actions) == 0:
-		raise lib.error.ActionDoesNotExistException(inp[1], module, inp[0])
+	# DETERMINE ACTION
 
-	if len(actions) > 1:
-		raise lib.error.ActionNameAmbiguousException(inp[1], inp[0], actions)
+	lib.main.checkActionNameSpecified(inp, moduleName, module)
+	actionName = inp[1]
 
-	inp[1] = actions[0]
-	action = getattr(module, inp[1])
+	actions = lib.pacman.resolve(actionName, module)
 
-	# Check action arguments
+	lib.main.checkActionNameExists(moduleName, module, actionName, actions)
+	lib.main.checkActionNameNotAmbiguous(moduleName, module, actionName, actions)
+
+	actionName = actions[0]
+	action = getattr(module, actionName)
+
+
+	# CHECK ACTION ARGUMENTS
+
 	spec = inspect.getargspec(action)
 	m = (0 if spec[0] is None else len(spec[0])) - (0 if spec[3] is None else len(spec[3]))
 	n = len(inp) - 2
 
-	if n < m:
-		raise lib.error.TooFewArgumentsForActionException(n, spec, inp[1], inp[0])
+	lib.main.checkNotTooFewArgumentsForAction(moduleName, actionName, n, m, spec)
+	lib.main.checkNotTooManyArgumentsForAction(moduleName, actionName, n, m, spec)
 
-	if spec[1] is None and n > len(spec[0]):
-		raise lib.error.TooManyArgumentsForActionException(n, spec, inp[1], inp[0])
 
-	# Done
+	# DONE
 	return action, inp[2:]
 
 
