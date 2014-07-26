@@ -7,6 +7,9 @@ def publish():
 def build():
 	subprocess.call(['npm', 'run', 'build'])
 
+def doc():
+	subprocess.call(['npm', 'run', 'doc'])
+
 def test():
 	subprocess.call(['npm', 'test'])	
 
@@ -80,6 +83,7 @@ try:
 		if message is None : message = version
 
 		build()
+		doc()
 		lib.git.add('--all', '.')
 		lib.git.commit('-am', message)
 		lib.git.push()
