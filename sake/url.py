@@ -1,8 +1,9 @@
-import lxml.html
+import lxml.html, urllib.request
 
 
 def href(url, *args):
-	tree = lxml.html.parse(url)
+	conn = urllib.request.urlopen(url)
+	tree = lxml.html.parse(conn)
 	title = tree.find('.//title')
 	if title is not None : text = title.text
 	else : text = url
