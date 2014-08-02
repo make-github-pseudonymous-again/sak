@@ -1,4 +1,5 @@
-import os, lib.file
+import os, lib.file, lib.git, lib.tex
+
 
 def build(src, out):
 
@@ -27,3 +28,14 @@ def build(src, out):
 		a('appendix')
 		a('after')
 		w('\\end{document}\n')
+
+
+
+def ignore(name):
+	for item in lib.tex.out(name):
+		print(item)
+
+def clean(name):
+	for item in lib.tex.out(name):
+		if os.path.isfile(item):
+			os.remove(item)
