@@ -1,4 +1,4 @@
-import hashlib, lib.dir
+import hashlib, lib.dir, shutil, os.path
 
 
 def read(f, callback, blocksize = 2**15):
@@ -19,3 +19,11 @@ def walk(src, f):
 
 	lib.dir.walk(src, f = callback)
 	
+
+def move(a, cwd):
+
+	if not isinstance(a, (list)) : a = [a]
+
+	absolute = lambda path : os.path.join(cwd, path)
+
+	for m in a : shutil.move(*map(absolute, m))
