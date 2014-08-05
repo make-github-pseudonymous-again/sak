@@ -18,13 +18,15 @@ def split(item):
 
 def read(cwd):
 	d = {}
+	w = 0
 	for f in os.listdir(cwd):
 		x, i = split(f)
 		l = d.setdefault(x, [])
 		v = f[i:]
 		l.append((f, v))
+		w = max(w, i)
 
-	return d
+	return d, w
 
 
 def format(x, z):
@@ -34,8 +36,9 @@ def format(x, z):
 def shift(d, n, beg = 0, end = None):
 
 	out = []
+	w = 0
 
-	if len(d) == 0 or n == 0 : return out
+	if len(d) == 0 or n == 0 : return out, w
 
 	keys = sorted(d.keys())
 
@@ -50,14 +53,16 @@ def shift(d, n, beg = 0, end = None):
 		k = keys[i]
 		if k >= end : break
 
-		w = str(k + n)
+		_k = str(k + n)
 		l = d[k]
-		out += [(f, w + v) for f, v in l]
+		out += [(f, _k + v) for f, v in l]
+
+		w = max(w, len(_k))
 
 		i += 1
 
 
-	return out
+	return out, w
 
 
 def drange(where, beg, end):
