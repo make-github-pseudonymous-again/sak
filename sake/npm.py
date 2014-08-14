@@ -33,6 +33,7 @@ try:
 
 
 	def release(version, message = None):
+		doc()
 		version = setversion(version)
 		push(version, message)
 
@@ -85,7 +86,6 @@ try:
 		version = lib.ver.PREFIX + version
 		if message is None : message = version
 
-		doc()
 		build()
 		lib.git.add('--all', '.')
 		lib.git.commit('-am', message)
