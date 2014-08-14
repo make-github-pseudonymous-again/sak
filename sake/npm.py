@@ -1,5 +1,5 @@
 
-import subprocess, collections
+import subprocess, collections, lib.file
 
 def publish():
 	subprocess.call(['npm', 'publish'])
@@ -11,7 +11,10 @@ def doc():
 	subprocess.call(['npm', 'run', 'doc'])
 
 def test():
-	subprocess.call(['npm', 'test'])	
+	subprocess.call(['npm', 'test'])
+
+def clean():
+	lib.file.rm('node_modules', 'coverage', 'doc', recursive = True, force = True)
 
 
 try:

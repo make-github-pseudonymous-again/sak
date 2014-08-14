@@ -1,4 +1,4 @@
-import hashlib, lib.dir, shutil, os.path
+import hashlib, lib.dir, shutil, os, os.path
 
 
 def read(f, callback, blocksize = 2**15):
@@ -27,3 +27,12 @@ def move(a, cwd):
 	absolute = lambda path : os.path.join(cwd, path)
 
 	for m in a : shutil.move(*map(absolute, m))
+
+
+
+def rm(*paths, recursive = False, force = False):
+
+	for path in paths:
+		if os.path.isdir(path) : shutil.rmtree(path)
+		elif os.path.exists(path) : os.remove(path)
+		elif not force : raise Exception("path '%s' does not exist" % path)
