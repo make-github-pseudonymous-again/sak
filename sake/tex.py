@@ -36,6 +36,5 @@ def ignore(name):
 		print(item)
 
 def clean(name):
-	for item in lib.tex.out(name):
-		if os.path.isfile(item):
-			os.remove(item)
+	files = lib.tex.out(name)
+	lib.file.rm(files)
