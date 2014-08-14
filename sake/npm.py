@@ -85,8 +85,8 @@ try:
 		version = lib.ver.PREFIX + version
 		if message is None : message = version
 
-		build()
 		doc()
+		build()
 		lib.git.add('--all', '.')
 		lib.git.commit('-am', message)
 		lib.git.push()
