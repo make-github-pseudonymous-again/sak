@@ -1,4 +1,4 @@
-import inspect, lib
+import inspect, lib.pacman, json
 
 class MainException(Exception):
 	def __init__(self, what):
@@ -57,4 +57,11 @@ class TooManyArgumentsForActionException(MainException):
 	def __init__(self, n, spec, action_name, module_name):
 		fmt = 'Too many arguments for action \'%s\' in module \'%s\', signature is %s, got %d'
 		args = (action_name, module_name, inspect.formatargspec(*spec), n)
+		MainException.__init__(self, fmt % args)
+
+
+class OptionNotInListException(MainException):
+	def __init__(self, key, value, available):
+		fmt = "%s '%s' is not valid, should be in %s"
+		args = (key, value, json.dumps(available))
 		MainException.__init__(self, fmt % args)
