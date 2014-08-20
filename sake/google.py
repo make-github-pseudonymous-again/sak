@@ -1,5 +1,4 @@
-import lib
-
+import sake
 
 def search(s):
-	lib.sys.call(['google-chrome', "https://google.com#q=%s" % s]);
+	sake.navigator.open("https://google.com#q=%s" % s);
