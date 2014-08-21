@@ -204,3 +204,23 @@ def new(name, org = None, team_id = None, username = None, password = None, auto
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(cmd, rc)
 
+
+def group(*names):
+
+	username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, None, None)
+
+	org = None
+	team_id = None
+	auto_init = FALSE
+	private = FALSE
+	description = None
+	homepage = None
+	has_issues = TRUE
+	has_wiki = TRUE
+	has_downloads = TRUE
+	gitignore_template = None
+	license_template = None
+
+	
+	for name in names:
+		new(name, org, team_id, username, password, auto_init, private, description, homepage, has_issues, has_wiki, has_downloads, gitignore_template, license_template)
