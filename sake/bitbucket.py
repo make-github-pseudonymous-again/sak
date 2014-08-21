@@ -49,8 +49,6 @@ def new(repository, owner = None, username = None, password = None, is_private =
 		"has_wiki" : has_wiki
 	}
 
-	if language is None : del parameters["language"]
-
 	jsonparameters = json.dumps(parameters)
 
 	cmd = [
