@@ -65,3 +65,10 @@ class OptionNotInListException(MainException):
 		fmt = "%s '%s' is not valid, should be in %s"
 		args = (key, value, json.dumps(available))
 		MainException.__init__(self, fmt % args)
+
+
+class SubprocessReturnedFalsyValueException(MainException):
+	def __init__(self, cmd, rc):
+		fmt = "subprocess '%s' exited with return code %d"
+		args = (" ".join(cmd), rc)
+		MainException.__init__(self, fmt % args)

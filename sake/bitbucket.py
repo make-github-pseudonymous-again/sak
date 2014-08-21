@@ -1,4 +1,4 @@
-import lib.config, lib.git, lib.error, subprocess, json
+import lib.config, lib.git, lib.error, lib.check, subprocess, json
 
 DOMAIN = 'bitbucket.org'
 CONFIG_KEY = 'bitbucket'
@@ -67,4 +67,22 @@ def new(repository, owner = None, username = None, password = None, is_private =
 		"%s" % (jsonparameters)
 	]
 
-	subprocess.call(cmd)
+	rc = subprocess.call(cmd)
+	print()
+	lib.check.SubprocessReturnedFalsyValueException(cmd, rc)
+
+
+def group(owner, language, *repositories):
+
+	username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, None, None)
+
+	is_private = TRUE
+	scm = GIT
+	fork_policy = NO_PUBLIC_FORKS
+	name = None
+	description = None
+	has_issues = FALSE
+	has_wiki = FALSE
+
+	for repository in repositories:
+		new(repository, owner, username, password, is_private, scm, fork_policy, name, description, language, has_issues, has_wiki)
