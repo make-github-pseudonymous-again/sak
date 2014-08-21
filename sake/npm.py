@@ -1,17 +1,20 @@
 
-import subprocess, collections, lib.file
+import subprocess, collections, lib.file, lib.error, lib.check
+
+def npm(*args):
+	subprocess.call(['npm'] + list(args))
 
 def publish():
-	subprocess.call(['npm', 'publish'])
+	npm('publish')
 
 def build():
-	subprocess.call(['npm', 'run', 'build'])
+	npm('run', 'build')
 
 def doc():
-	subprocess.call(['npm', 'run', 'doc'])
+	npm('run', 'doc')
 
 def test():
-	subprocess.call(['npm', 'test'])
+	npm('test')
 
 def clean():
 	lib.file.rm('node_modules', 'coverage', 'doc', recursive = True, force = True)
@@ -31,7 +34,6 @@ try:
 	VERSION_HASH   = 'version'
 
 
-
 	def release(version, message = None):
 		doc()
 		version = setversion(version)
@@ -41,11 +43,9 @@ try:
 		special = version in lib.ver.KEYS
 		check   = not special
 			
-		if check and not semantic_version.validate(version) :
-			print("version tag '%s' not valid (http://semver.org/)" % version)
-			return
-
-		if check : v = semantic_version.Version(version)
+		if check :
+			lib.check.SemverVersionTagNotValidException(version)
+			v = semantic_version.Version(version)
 
 		olds = []
 
@@ -54,17 +54,14 @@ try:
 				with lib.json.proxy(pm, 'r') as conf:
 					if VERSION_HASH in conf:
 						old = conf[VERSION_HASH]
-						if not semantic_version.validate(old) :
-							print("old version tag '%s' in '%s' not valid (http://semver.org/)" % (old, pm))
-							return
-						if check and not v > semantic_version.Version(old):
-							print("version tag '%s' should be > than '%s'" % (version, old))
-							return
+						lib.check.OldSemverVersionTagNotValidException(old, pm)
+						if check :
+							lib.check.NewSemverVersionTagNotGreaterException(version, old)
 
 						olds.append(old)
 
 
-		if special and len(olds) == 0:
+		if special and len(olds) == 0 :
 			print("cannot infer version number from '%s' without at least a package configuration file" % version)
 			return
 
@@ -72,7 +69,7 @@ try:
 			print("versions MUST be equal in packages configuration files %s" % list(zip(PM, olds)))
 			return
 
-		if special:
+		if special :
 			version = lib.ver.resolve(olds[0], version)
 
 		for pm in PM:
@@ -95,16 +92,13 @@ try:
 		publish()
 
 
-except ImportError as e:
+except ImportError as cause:
 
-	_e = e
+	e = ModuleMissingException(cause, "semantic_version")
 
-	def release(version, message = None):
-		print(_e, ': to fix this --> pip3 install semantic_version')
+	release = lambda version, message = None : lib.error.throw(e)
 
-	def setversion(version):
-		print(_e, ': to fix this --> pip3 install semantic_version')
+	setversion = lambda version : lib.error.throw(e)
 
-	def push(version, message = None):
-		print(_e, ': to fix this --> pip3 install semantic_version')
+	push = lambda version, message = None : lib.error.throw(e)
 

@@ -1,5 +1,9 @@
 import inspect, lib.pacman, json
 
+
+def throw(e):
+	raise e
+
 class MainException(Exception):
 	def __init__(self, what):
 		Exception.__init__(self, what)
@@ -72,3 +76,31 @@ class SubprocessReturnedFalsyValueException(MainException):
 		fmt = "subprocess '%s' exited with return code %d"
 		args = (" ".join(cmd), rc)
 		MainException.__init__(self, fmt % args)
+
+class SemverVersionTagNotValidException(MainException):
+	def __init__(self, version):
+		fmt = "version tag '%s' not valid (http://semver.org/)"
+		args = version
+		MainException.__init__(self, fmt % args)
+
+class OldSemverVersionTagNotValidException(MainException):
+	def __init__(self, version, src):
+		fmt = "old version tag '%s' in '%s' not valid (http://semver.org/)"
+		args = (version, src)
+		MainException.__init__(self, fmt % args)
+
+class NewSemverVersionTagNotGreaterException(MainException):
+	def __init__(self, a, b):
+		fmt = "version tag '%s' should be > than '%s'"
+		args = (a, b)
+		MainException.__init__(self, fmt % args)
+
+		
+
+class ModuleMissingException(MainException):
+	def __init__(self, cause, name):
+		fmt = "'%s' : to fix this --> pip3 install %s"
+		args = (cause, name)
+		MainException.__init__(self, fmt % args)
+		
+		

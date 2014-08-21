@@ -1,5 +1,5 @@
 
-
+import lib.error
 
 PREFIX = 'v'
 KEYS = ['major', 'minor', 'patch']
@@ -16,9 +16,8 @@ try:
 		return str(v)
 
 
-except ImportError as e:
+except ImportError as cause:
 
-	_e = e
+	e = ModuleMissingException(cause, "semantic_version")
 
-	def resolve(base, key):
-		print(_e, ': to fix this --> pip3 install semantic_version')
+	resolve = lambda base, key : lib.error.throw(e)
