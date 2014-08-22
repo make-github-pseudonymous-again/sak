@@ -1,4 +1,4 @@
-import lib.config, lib.git, lib.error, lib.check, subprocess, json
+import lib.config, lib.git, lib.error, lib.check, subprocess, json, lib.sys
 
 DOMAIN = 'bitbucket.org'
 CONFIG_KEY = 'bitbucket'
@@ -84,3 +84,29 @@ def group(owner, language, *repositories):
 
 	for repository in repositories:
 		new(repository, owner, username, password, is_private, scm, fork_policy, name, description, language, has_issues, has_wiki)
+
+
+def get(owner, repo_slug, username = None, password = None):
+
+	username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+
+	cmd = [
+		"curl",
+		"-X",
+		"GET",
+		"-v",
+		"-u",
+		"%s:%s" % (username, password),
+		"-H",
+		"Content-Type: application/json",
+		"https://api.bitbucket.org/2.0/repositories/%s/%s" % (owner, repo_slug),
+	]
+
+	out, err = lib.sys.call(cmd)
+	return json.loads(out.decode())
+	# print()
+	# lib.check.SubprocessReturnedFalsyValueException(cmd, rc)
+
+def exists(owner, repo_slug, username = None, password = None):
+
+	print("error" not in get(owner, repo_slug, username, password))

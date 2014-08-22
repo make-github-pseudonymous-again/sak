@@ -2,17 +2,19 @@ import os, lib, urllib, getpass
 
 fname = os.path.expanduser('~/.sake')
 
+def new():
+	return {'u':{}, 'm':{}}
 
 def user(user):
 
-	with lib.json.proxy(lib.config.fname) as config :
+	with lib.json.proxy(lib.config.fname, default = new()) as config :
 		passwd = config['u'].get(user, None)
 
 	return passwd
 
 def module(module):
 
-	with lib.json.proxy(lib.config.fname) as config :
+	with lib.json.proxy(lib.config.fname, default = new()) as config :
 		user = config['m'].get(module, None)
 		passwd = config['u'].get(user, None)
 
