@@ -94,7 +94,7 @@ try:
 
 except ImportError as cause:
 
-	e = ModuleMissingException(cause, "semantic_version")
+	e = lib.error.ModuleMissingException(cause, "semantic_version")
 
 	release = lambda version, message = None : lib.error.throw(e)
 

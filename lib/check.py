@@ -26,7 +26,7 @@ try:
 
 except ImportError as cause:
 
-	e = ModuleMissingException(cause, "semantic_version")
+	e = lib.error.ModuleMissingException(cause, "semantic_version")
 
 	SemverVersionTagNotValidException = lambda version : lib.error.throw(e)
 	OldSemverVersionTagNotValidException = lambda version, src : lib.error.throw(e)
