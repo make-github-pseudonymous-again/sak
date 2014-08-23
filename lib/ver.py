@@ -21,3 +21,7 @@ except ImportError as cause:
 	e = lib.error.ModuleMissingException(cause, "semantic_version")
 
 	resolve = lambda base, key : lib.error.throw(e)
+
+
+def isspecial(v):
+	return v in KEYS

@@ -7,7 +7,7 @@ class proxy(object):
 
 	def __init__(self, fname, mode = 'r', default = None, **kwargs):
 		self.fname = fname
-		self.data  = default
+		self.data  = default if mode == 'r' or default is not None else {}
 		self.mode  = mode
 		self.kwargs = kwargs
 

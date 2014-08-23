@@ -104,3 +104,16 @@ class ModuleMissingException(MainException):
 		MainException.__init__(self, fmt % args)
 		
 		
+class VersionNotUniqueException(MainException):
+	def __init__(self, versions):
+		fmt = "versions MUST be equal in packages configuration files %s"
+		args = json.dumps(versions)
+		MainException.__init__(self, fmt % args)
+
+class CannotInferSemverVersionNumberException(MainException):
+	def __init__(self, version):
+		fmt = "cannot infer version number from '%s' without at least a package configuration file"
+		args = version
+		MainException.__init__(self, fmt % args)
+
+
