@@ -35,7 +35,7 @@ def parse(argv, args, kwargs):
 				isflag = True
 			
 			else:
-				for i in range(1, len(p)) : kwargs[p[i]] = True
+				for c in p[1:] : kwargs[c] = True
 					
 		else :
 			if isflag :

@@ -126,9 +126,9 @@ class FTPRemoteUpdater(object):
 	def update_copied(self, config, local, h, not_handled):
 		base = local['hash'][h]['s'][0]
 		with open('%s/%s' % (local['root'], base), 'rb') as f:
-			for i in range(len(not_handled)):
+			for i, item in enumerate(not_handled):
 				f.seek(0)
-				self.remote.storbinary('/%s/%s' % (config['root'], not_handled[i]), f)
+				self.remote.storbinary('/%s/%s' % (config['root'], item), f)
 
 	def update_moved_copied_minipaths(self, config, local, h, minipaths):
 		not_handled = [x for x in local['hash'][h]['d'] if x not in minipaths]
@@ -149,8 +149,8 @@ class FTPRemoteUpdater(object):
 				self.update_moved_copied_minipaths(config, local, h, minipaths)
 
 	def add_paths(self, config, local, paths):
-		for i in range(len(paths['s'])):
-			with open('%s/%s' % (local['root'], paths['s'][i]), 'rb') as f:
+		for i, path in enumerate(paths['s']):
+			with open('%s/%s' % (local['root'], path), 'rb') as f:
 				self.remote.storbinary('/%s/%s' % (config['root'], paths['d'][i]), f)
 
 	def update_added(self, config, local, server):

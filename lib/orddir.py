@@ -2,11 +2,9 @@ import os, bisect
 
 
 def split(item):
-	n = len(item)
 	x = 0
 
-	for i in range(n):
-		c = item[i]
+	for i, c in enumerate(item):
 
 		if not c.isdigit() : break
 

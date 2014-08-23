@@ -11,8 +11,8 @@ try:
 	def resolve(base, key):
 		v = semantic_version.Version(base)
 		setattr(v, key, getattr(v, key) + 1)
-		start = KEYS.index(key) + 1
-		for i in range(start, len(KEYS)) : setattr(v, KEYS[i], 0)
+		i = KEYS.index(key) + 1
+		for k in KEYS[i:] : setattr(v, k, 0)
 		return str(v)
 
 
