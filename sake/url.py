@@ -7,7 +7,7 @@ try:
 	def href(url, *args):
 		conn = urllib.request.urlopen(url)
 		parser = lxml.etree.HTMLParser(encoding = "utf-8")
-		tree = lxml.etree.parse(conn, parser=parser)
+		tree = lxml.etree.parse(conn, parser = parser)
 		title = tree.find('.//title')
 		if title is not None : text = title.text
 		else : text = url
