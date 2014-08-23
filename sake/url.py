@@ -2,11 +2,12 @@ import lib.error
 
 try:
 
-	import lxml.html, urllib.request
+	import lxml.etree, urllib.request
 
 	def href(url, *args):
 		conn = urllib.request.urlopen(url)
-		tree = lxml.html.parse(conn)
+		parser = lxml.etree.HTMLParser(encoding = "utf-8")
+		tree = lxml.etree.parse(conn, parser=parser)
 		title = tree.find('.//title')
 		if title is not None : text = title.text
 		else : text = url
