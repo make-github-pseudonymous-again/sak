@@ -11,7 +11,7 @@ def concat(src, out):
 		lib.file.walk(src, callback)
 
 
-def app(out, txt):
+def append(out, txt):
 
 	with open(out, 'a') as f:
 		f.write(txt)

@@ -1,3 +1,3 @@
-import sake.txt
+import sake.text
 
-build = sake.txt.concat
+build = sake.text.concat

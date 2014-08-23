@@ -33,7 +33,7 @@ currently available modules :
   - sublime
   - sys
   - tex
-  - txt
+  - text
 
 
 
