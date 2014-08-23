@@ -102,7 +102,7 @@ def get(owner, repo_slug, username = None, password = None):
 		"https://api.bitbucket.org/2.0/repositories/%s/%s" % (owner, repo_slug),
 	]
 
-	out, err = lib.sys.call(cmd)
+	out, err, _ = lib.sys.call(cmd)
 	return json.loads(out.decode())
 	# print()
 	# lib.check.SubprocessReturnedFalsyValueException(cmd, rc)

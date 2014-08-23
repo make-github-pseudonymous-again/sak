@@ -91,12 +91,12 @@ class helper(object):
 	BRANCH = re.compile(r'^\* (.*)')
 
 	def branch(d):
-		out, _ = lib.sys.call(['git', 'branch'], cwd = d)
+		out, _, _ = lib.sys.call(['git', 'branch'], cwd = d)
 		m = helper.BRANCH.match(out.decode())
 		return None if m is None else m.group(1)
 
 	def remotes(d):
-		out, _ = lib.sys.call(['git', 'remote'], cwd = d)
+		out, _, _ = lib.sys.call(['git', 'remote'], cwd = d)
 		return out.decode().split('\n')[:-1]
 
 	def update(d):
@@ -118,15 +118,15 @@ class helper(object):
 		return helper.commits(d, '%s/%s' % (remote, branch), 'HEAD')
 
 	def commits(d, a, b):
-		out, _ = lib.sys.call(['git', 'log', '%s..%s' % (a, b),  '--oneline'], cwd = d)
+		out, _, _ = lib.sys.call(['git', 'log', '%s..%s' % (a, b),  '--oneline'], cwd = d)
 		return out.decode().split('\n')[:-1]
 
 	def locals(d):
-		out, _ = lib.sys.call(['git', 'status', '--porcelain', '-u'], cwd = d)
+		out, _, _ = lib.sys.call(['git', 'status', '--porcelain', '-u'], cwd = d)
 		return [c for c in out.decode().split('\n')[:-1]]
 
 	def hasbranch(d, remote, branch):
-		out, _ = lib.sys.call(['git', 'branch', '-r'], cwd = d)
+		out, _, _ = lib.sys.call(['git', 'branch', '-r'], cwd = d)
 		return out.decode().find('%s/%s' % (remote, branch)) != -1
 
 

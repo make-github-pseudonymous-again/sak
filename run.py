@@ -1,12 +1,13 @@
 #!/usr/bin/python3
 
-import sys, sake, inspect, lib.main, lib.pacman, lib.error
+import sys, sake, inspect, lib.main, lib.pacman, lib.error, lib.args
 
 
 def main(inp):
 
-	action, arguments = parse(inp)
-	action(*arguments)
+	action, args = parse(inp)
+	args, kwargs = lib.args.parse(args, [], {})
+	action(*args, **kwargs)
 
 
 def parse(inp):
