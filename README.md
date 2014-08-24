@@ -13,7 +13,7 @@ usage :
 	$ <module> <action> <*args> <**kwargs>
 
 
-where `**kwargs`` are POSIX options and flags
+where `**kwargs` are POSIX-like options and flags, to set a flag to a falsy value just prepend `no` in front of the flag name. For example `--prompt` sets `kwargs["prompt"] = True` while `--noprompt` sets `kwargs["prompt"]` = False.
 
 
 currently available modules :
