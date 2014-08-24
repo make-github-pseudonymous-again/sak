@@ -10,15 +10,21 @@ Swiss Army KnifE
 
 usage :
 
-	$ <module> <action> <*arg>
+	$ <module> <action> <*args> <**kwargs>
+
+
+where `**kwargs`` are POSIX options and flags
 
 
 currently available modules :
 
   - bitbucket
+  - clipboard
   - codeclimate
   - config
+  - cpm
   - css
+  - date
   - git
   - github
   - gmail
@@ -26,14 +32,20 @@ currently available modules :
   - help
   - img
   - js
-  - lib
-  - os
+  - navigator
+  - npm
+  - orddir
+  - sake
   - site
+  - sitec
   - sty
   - sublime
-  - sys
   - tex
   - text
+  - train
+  - update
+  - url
+
 
 
 
@@ -53,9 +65,17 @@ examples :
 
   - hash remote ftp site:
 
-		$ si h
+    $ si h
 
   - concat js files in js/src and put output in js/min
 
-		$ j b js
+    $ j b js
+
+
+*All modules and action now support kwargs, example :*
+
+
+  - clone all your github repos:
+
+    $ gth d --username aureooms --noprompt
 
