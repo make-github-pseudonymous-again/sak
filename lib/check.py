@@ -1,4 +1,4 @@
-import lib.error, lib.list
+import lib.error, lib.list, lib.sys
 
 def OptionNotInListException(key, value, available):
 	if value not in available :
@@ -8,6 +8,10 @@ def SubprocessReturnedFalsyValueException(cmd, rc):
 	if rc != 0 :
 		raise lib.error.SubprocessReturnedFalsyValueException(cmd, rc)
 
+def SubprocessOutputEmptyException(cmd, out):
+	if out == b"" :
+		raise lib.error.SubprocessOutputEmptyException(cmd)
+
 def VersionNotUniqueException(versions):
 	if not lib.list.one(versions.values()) :
 		raise lib.error.VersionNotUniqueException(versions)
@@ -15,6 +19,15 @@ def VersionNotUniqueException(versions):
 def CannotInferSemverVersionNumberException(old, version):
 	if old is None :
 		raise lib.error.CannotInferSemverVersionNumberException(version)
+
+def SubprocessArgsEmptyException(args):
+	if not args :
+		raise lib.error.SubprocessArgsEmptyException()
+
+def SubprocessExecutableNotFoundException(exe):
+	if lib.sys.which(exe) is None :
+		raise lib.error.SubprocessExecutableNotFoundException(exe)
+
 
 try:
 

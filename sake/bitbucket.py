@@ -1,29 +1,28 @@
-import lib.config, lib.git, lib.error, lib.check, subprocess, json, lib.sys
+import lib.config, lib.git, lib.hg, lib.error, lib.check, subprocess, json, lib.sys, lib.bitbucket, lib.input
 
-DOMAIN = 'bitbucket.org'
-CONFIG_KEY = 'bitbucket'
+DOMAIN = lib.bitbucket.DOMAIN
+CONFIG_KEY = lib.bitbucket.CONFIG_KEY
+ALLOW_FORKS = lib.bitbucket.ALLOW_FORKS
+NO_PUBLIC_FORKS = lib.bitbucket.NO_PUBLIC_FORKS
+NO_FORKS = lib.bitbucket.NO_FORKS
+FORK_POLICIES = lib.bitbucket.FORK_POLICIES
+GIT = lib.bitbucket.GIT
+HG = lib.bitbucket.HG
+SCMS = lib.bitbucket.SCMS
+TRUE = lib.bitbucket.TRUE
+FALSE = lib.bitbucket.FALSE
+BOOLEANS = lib.bitbucket.BOOLEANS
+LANGUAGES = lib.bitbucket.LANGUAGES
+USER = lib.bitbucket.USER
+TEAM = lib.bitbucket.TEAM
 
-def clone(what, user = None):
 
-	if user is None : user = lib.config.prompt_user(DOMAIN, CONFIG_KEY)
+def clone(repo, username = None, scm = GIT):
 
-	lib.git.clone('https://%s@%s/%s.git' % (user, DOMAIN, what))
+	url = lib.http.url(DOMAIN, repo, username, secure = True)
+	if scm == GIT : lib.git.clone(url)
+	else : lib.hg.clone(url)
 
-
-ALLOW_FORKS = "allow_forks"
-NO_PUBLIC_FORKS = "no_public_forks"
-NO_FORKS = "no_forks"
-FORK_POLICIES = [ALLOW_FORKS, NO_PUBLIC_FORKS, NO_FORKS]
-
-GIT = "git"
-HG = "hg"
-SCMS = [GIT, HG]
-
-TRUE = "true"
-FALSE = "false"
-BOOLEANS = [TRUE, FALSE]
-
-LANGUAGES = [None, "c","c#","c++","html/css","java","javascript","objective-c","perl","php","python","ruby","shell","sql","other","abap","actionscript","ada","arc","apex","asciidoc","android","asp","arduino","assembly","autoit","blitzmax","boo","ceylon","clojure","coco","coffeescript","coldfusion","common lisp","component pascal","css","cuda","d","dart","delphi","duby","dylan","eiffel","elixir","emacs lisp","erlang","euphoria","f#","fantom","forth","fortran","foxpro","gambas","go","groovy","hack","haskell","haxe","igor pro","inform","io","julia","labview","lasso","latex","limbo","livescript","lua","lilypond","m","markdown","mathematica","matlab","max/msp","mercury","nemerle","nimrod","node.js","nu","object pascal","objective-j","ocaml","occam","occam-π","octave","ooc","other","oxygene","pl/sql","powerbasic","powershell","processing","prolog","puppet","pure basic","pure data","qml","quorum","r","racket","realbasic","restructuredtext","rust","sass/scss","scala","scheme","scilab","sclang","self","smalltalk","sourcepawn","standard ml","supercollider","swift","tcl","tex","typescript","unityscript","unrealscript","vala","verilog","vhdl","viml","visual basic","vb.net","xml","xojo","xpages","xquery","xtend","z shell"]
 
 def new(repository, owner = None, username = None, password = None, is_private = TRUE, scm = GIT, fork_policy = NO_PUBLIC_FORKS, name = None, description = None, language = None, has_issues = FALSE, has_wiki = FALSE):
 
@@ -51,23 +50,11 @@ def new(repository, owner = None, username = None, password = None, is_private =
 
 	jsonparameters = json.dumps(parameters)
 
-	cmd = [
-		"curl",
-		"-X",
-		"POST",
-		"-v",
-		"-u",
-		"%s:%s" % (username, password),
-		"-H",
-		"Content-Type: application/json",
-		"https://api.bitbucket.org/2.0/repositories/%s/%s" % (owner, repository),
-		"-d",
-		"%s" % (jsonparameters)
-	]
+	url = "https://api.bitbucket.org/2.0/repositories/%s/%s" % (owner, repository)
 
-	rc = subprocess.call(cmd)
+	_, _, p = lib.curl.postjson(url, jsonparameters, username, password, stddefault = None)
 	print()
-	lib.check.SubprocessReturnedFalsyValueException(cmd, rc)
+	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
 
 def group(owner, language, *repositories):
@@ -86,26 +73,32 @@ def group(owner, language, *repositories):
 		new(repository, owner, username, password, is_private, scm, fork_policy, name, description, language, has_issues, has_wiki)
 
 
+def list(target, name, username = None, password = None):
+	for repo in lib.bitbucket.list(target, name, username, password):
+		print(repo["full_name"])
+	
+
+def download(target, name, username = None, password = None, prompt = True):
+	for repo in lib.bitbucket.list(target, name, username, password):
+		slug = repo["full_name"]
+		if not prompt or lib.input.yesorno("clone '%s'?" % slug) :
+			clone(slug, username, scm = repo["scm"])
+
+
 def get(owner, repo_slug, username = None, password = None):
 
-	username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+	if username is not None :
+		username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
 
-	cmd = [
-		"curl",
-		"-X",
-		"GET",
-		"-v",
-		"-u",
-		"%s:%s" % (username, password),
-		"-H",
-		"Content-Type: application/json",
-		"https://api.bitbucket.org/2.0/repositories/%s/%s" % (owner, repo_slug),
-	]
+	url = "https://api.bitbucket.org/2.0/repositories/%s/%s" % (owner, repo_slug)
 
-	out, err, _ = lib.sys.call(cmd)
+	lib.curl.getjson(url, username = username, password = password, location = True)
+
+	out, err, p = lib.sys.call(cmd)
+
+	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
+
 	return json.loads(out.decode())
-	# print()
-	# lib.check.SubprocessReturnedFalsyValueException(cmd, rc)
 
 def exists(owner, repo_slug, username = None, password = None):
 

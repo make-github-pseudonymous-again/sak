@@ -11,8 +11,9 @@ def body(data):
 	if data is not None : return ["-d", data]
 	else : return []
 
-def resource(contenttype, url):
-	return ["-H", "Content-Type: %s" % contenttype, url]
+def resource(contenttype, location, url):
+	if not location :  return ["-H", "Content-Type: %s" % contenttype, url]
+	else : return ["-H", "Content-Type: %s" % contenttype, "-L", url]
 
 def auth(username = None, password = None):
 	if username is None : return []
@@ -22,14 +23,14 @@ def auth(username = None, password = None):
 def request(method):
 	return ["-X", method]
 
-def call(method, url, contenttype, data = None, username = None, password = None, **kwargs):
+def call(method, url, contenttype, data = None, username = None, password = None, location = False, **kwargs):
 
 	cmd = []
 	cmd.extend(CMD_CURL)
 	cmd.extend(request(method))
 	cmd.extend(FLAG_VERBOSE)
 	cmd.extend(auth(username, password))
-	cmd.extend(resource(contenttype, url))
+	cmd.extend(resource(contenttype, location, url))
 	cmd.extend(body(data))
 
 	return lib.sys.call(cmd, **kwargs)

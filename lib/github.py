@@ -43,7 +43,7 @@ def list(target = YOU, name = None, t = None, username = None, password = None):
 	if t is None : t = TYPES_DEFAULT[target]
 	lib.check.OptionNotInListException(TYPE, t, TYPES[target])
 
-	if target == YOU or t == PRIVATE :
+	if target == YOU or t == PRIVATE or username is not None :
 		username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
 
 	urls = {

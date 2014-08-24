@@ -77,6 +77,13 @@ class SubprocessReturnedFalsyValueException(MainException):
 		args = (" ".join(cmd), rc)
 		MainException.__init__(self, fmt % args)
 
+
+class SubprocessOutputEmptyException(MainException):
+	def __init__(self, cmd):
+		fmt = "subprocess '%s' output is 0 bytes long"
+		args = (" ".join(cmd))
+		MainException.__init__(self, fmt % args)
+
 class SemverVersionTagNotValidException(MainException):
 	def __init__(self, version):
 		fmt = "version tag '%s' not valid (http://semver.org/)"
@@ -116,4 +123,13 @@ class CannotInferSemverVersionNumberException(MainException):
 		args = version
 		MainException.__init__(self, fmt % args)
 
+class SubprocessArgsEmptyException(MainException):
+	def __init__(self):
+		msg = "list of arguments is empty"
+		MainException.__init__(self, msg)
 
+class SubprocessExecutableNotFoundException(MainException):
+	def __init__(self, exe):
+		fmt = "executable '%s' not found"
+		args = exe
+		MainException.__init__(self, fmt % args)

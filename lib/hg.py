@@ -1,9 +1,9 @@
 import os, lib.sys
 
-IGNORE = '.gitignore'
+IGNORE = '.hgignore'
 
 def do(action, *args, **kwargs):
-	lib.sys.call(['git', action] + list(args), stddefault = None, **kwargs)
+	lib.sys.call(['hg', action] + list(args), stddefault = None, **kwargs)
 
 def clone(*args, **kwargs):
 	do('clone', *args, **kwargs)
@@ -29,5 +29,5 @@ def diff(*args, **kwargs):
 def tag(*args, **kwargs):
 	do('tag', *args, **kwargs)
 
-def log(*args, **kwargs):
-	do('log', *args, **kwargs)
+def parents(*args, **kwargs):
+	do('parents', *args, **kwargs)
