@@ -1,7 +1,7 @@
-import subprocess
+import lib.sys
 
 def stdin():
-	subprocess.call(["xclip", "-i", "-selection", "c"])
+	lib.sys.call(["xclip", "-i", "-selection", "c"], stddefault = None)
 
 def stdout():
-	subprocess.call(["xclip", "-o", "-selection", "c"])
+	lib.sys.call(["xclip", "-o", "-selection", "c"], stddefault = None)
