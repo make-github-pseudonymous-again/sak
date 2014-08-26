@@ -1,4 +1,4 @@
-import lib.error, lib.list, lib.sys
+import lib.error, lib.list, lib.sys, inspect
 
 def OptionNotInListException(key, value, available):
 	if value not in available :
@@ -28,6 +28,13 @@ def SubprocessExecutableNotFoundException(exe):
 	if lib.sys.which(exe) is None :
 		raise lib.error.SubprocessExecutableNotFoundException(exe)
 
+def ActionDoesNotExistException(A, action, M, module):
+	if A is None or not inspect.isfunction(A):
+		raise lib.error.ActionDoesNotExistException(action, M, module)
+
+def ModuleDoesNotExistException(M, module, parent):
+	if M is None or not inspect.ismodule(M):
+		raise lib.error.ModuleDoesNotExistException(module, parent)
 
 try:
 

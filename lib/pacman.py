@@ -151,3 +151,6 @@ def __init__(t, root):
 				setattr(t, name, s)
 				t.__all__.append(name)
 				toolbox(s)
+
+def format(M, pred):
+	return ', '.join(o for o, _ in inspect.getmembers(M, pred))

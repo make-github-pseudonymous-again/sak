@@ -1,3 +1,6 @@
+imports:
+    - python
+
 filter:
     excluded_paths:
         - lib/cpplint.py
