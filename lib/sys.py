@@ -1,4 +1,4 @@
-import lib.check, functools, subprocess, os
+import lib.check, functools, subprocess, os, platform
 
 
 STDDEFAULT = "stddefault"
@@ -27,23 +27,36 @@ def call(cmd, *args, **kwargs):
 
 	return out, err, p
 
+def extensions():
+	if platform.system() == "Windows" :
+		return os.environ["PATHEXT"].split(os.pathsep)
+	else :
+		return [""]
 
-def isexecutable(fpath):
+
+def isexecutable(fpath, exts):
 	"""http://stackoverflow.com/a/377028/1582182"""
-	return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+	for ext in exts:
+		path = fpath + ext
+		if os.path.isfile(path) and os.access(path, os.X_OK) :
+			return True
+
+	return False
 
 
 def which(program):
 	"""http://stackoverflow.com/a/377028/1582182"""
 	dirname = os.path.dirname(program)
+	exts = extensions()
 	if dirname:
-		if isexecutable(program) : return program
+		if isexecutable(program, exts) : return program
 	else:
 		for path in os.environ["PATH"].split(os.pathsep):
 
 			path = path.strip('"')
 			exefile = os.path.join(path, program)
 
-			if isexecutable(exefile) : return exefile
+			if isexecutable(exefile, exts) : return exefile
 
 	return None
