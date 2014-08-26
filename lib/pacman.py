@@ -91,33 +91,35 @@ def toolbox(t):
 	setpublic(t, [inspect.isfunction])
 
 
+NAME_RESOLVER = [
+	# MATCH
+	lambda t, a, s : [x for x in t.__all__ if a(x) == s],
+	# PREFIX
+	lambda t, a, s : [x for x in t.__all__ if a(x).startswith(s)],
+	# SUFFIX
+	lambda t, a, s : [x for x in t.__all__ if a(x).endswith(s)],
+	# SUBSTR
+	lambda t, a, s : [x for x in t.__all__ if s in a(x)]
+]
+
+
+NAME_TRANSFORMER = [
+	lambda s : s,
+	lambda s : s.lower(),
+	lambda s : lib.str.cons(s),
+	lambda s : lib.str.cons(s.lower())
+]
+
 def resolve(n, t):
 
-	alter = [
-		lambda s : s,
-		lambda s : s.lower(),
-		lambda s : lib.str.cons(s),
-		lambda s : lib.str.cons(s.lower())
-	]
-
-	for a in alter:
+	for a in NAME_TRANSFORMER:
 		s = a(n)
 
-		# MATCH
-		l = [x for x in t.__all__ if a(x) == s]
-		if len(l) > 0 : return l
+		for r in NAME_RESOLVER:
+			l = r(t, a, s)
 
-		# PREFIX
-		l = [x for x in t.__all__ if a(x).startswith(s)]
-		if len(l) > 0 : return l
-
-		# SUFFIX
-		l = [x for x in t.__all__ if a(x).endswith(s)]
-		if len(l) > 0 : return l
-
-		# SUBSTR
-		l = [x for x in t.__all__ if s in a(x)]
-		if len(l) > 0 : return l
+			if len(l) > 0 :
+				return l
 
 	return []
 
