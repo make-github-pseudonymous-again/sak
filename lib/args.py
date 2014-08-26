@@ -51,3 +51,12 @@ def parse(argv, args, kwargs):
 		
 	
 	return args, kwargs
+
+
+def format(key, val):
+
+	fmt = "-%s=%s"
+
+	if len(key) > 1 : fmt = "-" + fmt
+	
+	return fmt % (key, val)
