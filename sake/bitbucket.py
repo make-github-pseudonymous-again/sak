@@ -92,9 +92,7 @@ def get(owner, repo_slug, username = None, password = None):
 
 	url = "https://api.bitbucket.org/2.0/repositories/%s/%s" % (owner, repo_slug)
 
-	lib.curl.getjson(url, username = username, password = password, location = True)
-
-	out, err, p = lib.sys.call(cmd)
+	out, err, p = lib.curl.getjson(url, username = username, password = password, location = True)
 
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
