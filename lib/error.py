@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import inspect, lib.pacman, json
 
 
@@ -132,4 +134,11 @@ class SubprocessExecutableNotFoundException(MainException):
 	def __init__(self, exe):
 		fmt = "executable '%s' not found"
 		args = exe
+		MainException.__init__(self, fmt % args)
+
+
+class FileDoesNotExist(MainException):
+	def __init__(self, fname):
+		fmt = "file '%s' does not exist"
+		args = fname
 		MainException.__init__(self, fmt % args)

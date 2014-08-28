@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import sys
 
 MSG_NOT_VALID = "Please respond with 'yes' or 'no' (or 'y' or 'n')."

@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import lib.check, lib.curl, json
 
 DOMAIN = 'bitbucket.org'

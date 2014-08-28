@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import getpass, json, os, lib.config, lib.json, lib.file
 
 def gen():

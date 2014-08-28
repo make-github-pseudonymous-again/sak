@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import os, functools
 
 def walk(s, d = None, f = print):

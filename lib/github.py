@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 import lib.config, lib.git, lib.error, lib.check, json, lib.curl
 
 

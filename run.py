@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 
 import sys, sake, inspect, lib.main, lib.pacman, lib.error, lib.args
 
@@ -7,6 +9,7 @@ def main(inp):
 
 	action, args = parse(inp)
 	args, kwargs = lib.args.parse(args, [], {})
+	lib.args.inflate(args, kwargs)
 	action(*args, **kwargs)
 
 

@@ -1,4 +1,5 @@
-#!/usr/bin/python3
+from __future__ import absolute_import, division, print_function, unicode_literals
+
 #
 # Copyright (c) 2009 Google Inc. All rights reserved.
 #
