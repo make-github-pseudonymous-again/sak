@@ -1,4 +1,4 @@
-import lib.check, functools, subprocess, os, platform
+import lib.check, functools, subprocess, os, platform, lib.iterator
 
 
 STDDEFAULT = "stddefault"
@@ -60,3 +60,21 @@ def which(program):
 			if isexecutable(exefile, exts) : return exefile
 
 	return None
+
+
+
+
+
+def pipeline(*cmds, stdin = None, stdout = None):
+	if not cmds : return
+
+	inp = stdin
+	it = lib.iterator.sentinel(subprocess.PIPE, stdout)
+
+	for cmd, out in zip(cmds, it):
+		p = subprocess.Popen(cmd, stdin = inp, stdout = out)
+		inp = p.stdout
+
+	out, err = p.communicate()
+
+	return out, err, p
