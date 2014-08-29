@@ -34,7 +34,7 @@ def sessionfile(d):
 	return os.path.join(d, "Settings", "Session.sublime_session")
 
 
-def add(directory = '.'):
+def add(directory = '.', *others):
 	path = projectpath(directory)
 
 	with open(path, 'w') as f:
@@ -48,7 +48,9 @@ def add(directory = '.'):
 		with lib.json.proxy(fsession, "w", strict = False, indent = '\t', throws = True) as config :
 			config['workspaces']['recent_workspaces'].insert(0, path)
 
-def remove(directory = '.'):
+	if others : add(*others)
+
+def remove(directory = '.', *others):
 	path = projectpath(directory)
 
 	if os.path.isfile(path) : os.remove(path)
@@ -63,3 +65,5 @@ def remove(directory = '.'):
 
 		with lib.json.proxy(fsession, "w", strict = False, indent = '\t', throws = True) as config :
 			config['workspaces']['recent_workspaces'].remove(path)
+
+	if others : remove(*others)
