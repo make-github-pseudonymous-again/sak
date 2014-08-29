@@ -7,9 +7,7 @@ import sys, sake, inspect, lib.pacman, lib.error, lib.check, lib.args
 
 def main(inp):
 
-	action, args = parse(inp)
-	args, kwargs = lib.args.parse(args, [], {})
-	lib.args.inflate(args, kwargs)
+	action, args, kwargs = parse(inp)
 	action(*args, **kwargs)
 
 
@@ -45,16 +43,19 @@ def parse(inp):
 
 	# CHECK ACTION ARGUMENTS
 
+	args, kwargs = lib.args.parse(inp[2:], [], {})
+	lib.args.inflate(args, kwargs)
+
 	spec = inspect.getargspec(action)
 	m = (0 if spec[0] is None else len(spec[0])) - (0 if spec[3] is None else len(spec[3]))
-	n = len(inp) - 2
+	n = len(args)
 
 	lib.check.NotTooFewArgumentsForAction(moduleName, actionName, n, m, spec)
 	lib.check.NotTooManyArgumentsForAction(moduleName, actionName, n, m, spec)
 
 
 	# DONE
-	return action, inp[2:]
+	return action, args, kwargs
 
 
 if __name__ == '__main__':

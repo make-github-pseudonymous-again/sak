@@ -1,1 +1,1 @@
-@call python %~dp0..\run.py %*
+@call python %~dp0..\$ %*
