@@ -1,9 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import json, os.path, inspect, lib.error
+import json, os.path, inspect, lib.error, lib.kwargs
 
 
-pretty = lambda *args, **kwargs : json.dump(*args, indent = '\t', separators=(',', ': '), **kwargs)
+def pretty(*args, **kwargs) :
+	json.dump(*args, indent = '\t', separators=(',', ': '), **kwargs)
 
 class proxy(object):
 
@@ -16,8 +17,7 @@ class proxy(object):
 
 	def __enter__(self):
 		if os.path.exists(self.fname) :
-			args = inspect.getargspec(json.load).args
-			kwargs = { key : self.kwargs[key] for key in args if key in self.kwargs}
+			kwargs = lib.kwargs.filter(self.kwargs, json.load)
 			with open(self.fname, 'r') as f : self.data = json.load(f, **kwargs)
 		elif self.throws :
 			raise lib.error.FileDoesNotExist(self.fname)
@@ -25,6 +25,5 @@ class proxy(object):
 
 	def __exit__(self, t, value, traceback):
 		if self.mode == 'w':
-			args = inspect.getargspec(json.dump).args
-			kwargs = { key : self.kwargs[key] for key in args if key in self.kwargs}
+			kwargs = lib.kwargs.filter(self.kwargs, json.dump)
 			with open(self.fname, 'w') as f : pretty(self.data, f, **kwargs)
