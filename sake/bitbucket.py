@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.config, lib.git, lib.hg, lib.error, lib.check, subprocess, json, lib.sys, lib.bitbucket, lib.input
+import lib.config, lib.git, lib.hg, lib.error, lib.check, subprocess, json, lib.sys, lib.bitbucket, lib.input, lib.bytes
 
 DOMAIN = lib.bitbucket.DOMAIN
 CONFIG_KEY = lib.bitbucket.CONFIG_KEY
@@ -75,9 +75,20 @@ def group(owner, language, *repositories):
 		new(repository, owner, username, password, is_private, scm, fork_policy, name, description, language, has_issues, has_wiki)
 
 
-def list(target, name, username = None, password = None):
+def list(target, name, username = None, password = None, size = False):
+	repos = {}
 	for repo in lib.bitbucket.list(target, name, username, password):
-		print(repo["full_name"])
+		repos[repo["full_name"]] = repo["size"]
+
+	if size :
+		total = 0
+		for key, val in sorted(repos.items(), key = lambda x : -x[1]):
+			print(key, lib.bytes.human(val))
+			total += val
+		print(lib.bytes.human(total))
+
+	else :
+		for key in sorted(repos.keys()) : print(key)
 	
 
 def download(target, name, username = None, password = None, prompt = True):
