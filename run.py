@@ -2,7 +2,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
-import sys, sake, inspect, lib.main, lib.pacman, lib.error, lib.args
+import sys, sake, inspect, lib.pacman, lib.error, lib.check, lib.args
 
 
 def main(inp):
@@ -17,13 +17,13 @@ def parse(inp):
 
 	# DETERMINE MODULE
 
-	lib.main.checkModuleNameSpecified(sake, inp)
+	lib.check.ModuleNameSpecified(sake, inp)
 	moduleName = inp[0]
 
 	modules = lib.pacman.resolve(moduleName, sake)
 
-	lib.main.checkModuleNameExists(sake, moduleName, modules)
-	lib.main.checkModuleNameNotAmbiguous(moduleName, modules)
+	lib.check.ModuleNameExists(sake, moduleName, modules)
+	lib.check.ModuleNameNotAmbiguous(moduleName, modules)
 
 	moduleName = modules[0]
 	module = getattr(sake, moduleName)
@@ -31,13 +31,13 @@ def parse(inp):
 
 	# DETERMINE ACTION
 
-	lib.main.checkActionNameSpecified(inp, moduleName, module)
+	lib.check.ActionNameSpecified(inp, moduleName, module)
 	actionName = inp[1]
 
 	actions = lib.pacman.resolve(actionName, module)
 
-	lib.main.checkActionNameExists(moduleName, module, actionName, actions)
-	lib.main.checkActionNameNotAmbiguous(moduleName, module, actionName, actions)
+	lib.check.ActionNameExists(moduleName, module, actionName, actions)
+	lib.check.ActionNameNotAmbiguous(moduleName, module, actionName, actions)
 
 	actionName = actions[0]
 	action = getattr(module, actionName)
@@ -49,8 +49,8 @@ def parse(inp):
 	m = (0 if spec[0] is None else len(spec[0])) - (0 if spec[3] is None else len(spec[3]))
 	n = len(inp) - 2
 
-	lib.main.checkNotTooFewArgumentsForAction(moduleName, actionName, n, m, spec)
-	lib.main.checkNotTooManyArgumentsForAction(moduleName, actionName, n, m, spec)
+	lib.check.NotTooFewArgumentsForAction(moduleName, actionName, n, m, spec)
+	lib.check.NotTooManyArgumentsForAction(moduleName, actionName, n, m, spec)
 
 
 	# DONE
