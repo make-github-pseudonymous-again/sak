@@ -1,6 +1,7 @@
 
-RUN = run.py
-WHICH = /usr/bin/$$
+RUN = $$
+WHICH = /usr/local/bin/$$
+OLDWHICH = /usr/bin/$$
 
 all:
 
@@ -9,5 +10,8 @@ install:
 
 uninstall:
 	rm $(WHICH)
+
+olduninstall:
+	rm $(OLDWHICH)
 
 clean:
