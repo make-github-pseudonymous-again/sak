@@ -88,3 +88,13 @@ def download(target = YOU, name = None, t = None, username = None, password = No
 		repo = repo["full_name"]
 		if not prompt or lib.input.yesorno("clone '%s'?" % repo) :
 			clone(repo, username)
+
+
+def delete(owner, repo, username = None, password = None):
+	username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+
+	url = "https://api.github.com/repos/%s/%s" % (owner, repo)
+	_, _, p = lib.curl.deletejson(url, username = username, password = password, stddefault = None)
+	print()
+	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
+	
