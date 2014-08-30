@@ -15,12 +15,12 @@ def projectjson(path):
 def projectpath(directory):
 	root = os.path.abspath(directory)
 	name = os.path.basename(root)
-	return os.path.join(root, name + '.sublime-project')
+	return root, os.path.join(root, name + '.sublime-project')
 
 def workspacepath(directory):
 	root = os.path.abspath(directory)
 	name = os.path.basename(root)
-	return os.path.join(root, name + '.sublime-workspace')
+	return root, os.path.join(root, name + '.sublime-workspace')
 
 def configdir(v):
 	return os.path.expanduser('~/.config/sublime-text-') + str(v)
@@ -35,9 +35,9 @@ def sessionfile(d):
 
 
 def add(directory = '.', *others):
-	path = projectpath(directory)
+	path, fproject = projectpath(directory)
 
-	with open(path, 'w') as f:
+	with open(fproject, 'w') as f:
 		project = projectjson(path)
 		json.dump(project, f, indent = '\t')
 
@@ -46,24 +46,25 @@ def add(directory = '.', *others):
 		fsession = sessionfile(d)
 
 		with lib.json.proxy(fsession, "w", strict = False, indent = '\t', throws = True) as config :
-			config['workspaces']['recent_workspaces'].insert(0, path)
+			config['workspaces']['recent_workspaces'].insert(0, fproject)
 
 	if others : add(*others)
 
 def remove(directory = '.', *others):
-	path = projectpath(directory)
+	path, fproject = projectpath(directory)
 
-	if os.path.isfile(path) : os.remove(path)
-	else : print("could not find '%s'" % path)
+	if os.path.isfile(fproject) : os.remove(fproject)
+	else : print("could not find '%s'" % fproject)
 
-	workspace_path = workspacepath(directory)
-	if os.path.isfile(workspace_path) : os.remove(workspace_path)
+	path, fworkspace = workspacepath(directory)
+	if os.path.isfile(fworkspace) : os.remove(fworkspace)
 
 	for d in configdirs():
 
 		fsession = sessionfile(d)
 
 		with lib.json.proxy(fsession, "w", strict = False, indent = '\t', throws = True) as config :
-			config['workspaces']['recent_workspaces'].remove(path)
+			recent = config['workspaces']['recent_workspaces']
+			if fproject in recent : recent.remove(fproject)
 
 	if others : remove(*others)
