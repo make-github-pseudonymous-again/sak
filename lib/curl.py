@@ -46,3 +46,6 @@ def getjson(url, data = None, username = None, password = None, **kwargs):
 
 def postjson(url, data = None, username = None, password = None, **kwargs):
 	return json(METHOD_POST, url, data, username, password, **kwargs)
+
+def deletejson(url, data = None, username = None, password = None, **kwargs):
+	return json(METHOD_DELETE, url, data, username, password, **kwargs)

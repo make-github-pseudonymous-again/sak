@@ -1,48 +1,70 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, json
+import os, json, lib.json
+
+def projectjson(path):
+	return {
+		'folders' : [
+			{
+				'path' : path,
+				'folder_exclude_patterns': []
+			}
+		]
+	}
+
+def projectpath(directory):
+	root = os.path.abspath(directory)
+	name = os.path.basename(root)
+	return root, os.path.join(root, name + '.sublime-project')
+
+def workspacepath(directory):
+	root = os.path.abspath(directory)
+	name = os.path.basename(root)
+	return root, os.path.join(root, name + '.sublime-workspace')
+
+def configdir(v):
+	return os.path.expanduser('~/.config/sublime-text-') + str(v)
+
+def configdirs():
+	for v in [2, 3] : 
+		d = configdir(v)
+		if os.path.isdir(d): yield d
+
+def sessionfile(d):
+	return os.path.join(d, "Settings", "Session.sublime_session")
 
 
-def add(directory = '.'):
-	full = os.path.abspath(directory)
-	path = full + '/' + os.path.basename(full) + '.sublime-project'
-	with open(path, 'w') as f:
-		project = {'folders' : [{ 'path' : os.path.abspath(directory), 'folder_exclude_patterns': [] }]}
+def add(directory = '.', *others):
+	path, fproject = projectpath(directory)
+
+	with open(fproject, 'w') as f:
+		project = projectjson(path)
 		json.dump(project, f, indent = '\t')
 
-	for i in [2, 3]:
+	for d in configdirs():
 
-		d = os.path.expanduser('~/.config/sublime-text-') + str(i)
+		fsession = sessionfile(d)
 
-		if os.path.isdir(d):
+		with lib.json.proxy(fsession, "w", strict = False, indent = '\t', throws = True) as config :
+			config['workspaces']['recent_workspaces'].insert(0, fproject)
 
-			with open(d + '/Settings/Session.sublime_session', 'r') as f:
-				config = json.load(f, strict = False)
+	if others : add(*others)
 
-			config['workspaces']['recent_workspaces'].insert(0, path)
+def remove(directory = '.', *others):
+	path, fproject = projectpath(directory)
 
-			with open(d + '/Settings/Session.sublime_session', 'w') as f:
-				json.dump(config, f, indent = '\t')
+	if os.path.isfile(fproject) : os.remove(fproject)
+	else : print("could not find '%s'" % fproject)
 
-def remove(directory = '.'):
-	full = os.path.abspath(directory)
-	path = full + '/' + os.path.basename(full) + '.sublime-project'
-	if os.path.isfile(path) : os.remove(path)
-	else : print("could not find '%s'" % path)
+	path, fworkspace = workspacepath(directory)
+	if os.path.isfile(fworkspace) : os.remove(fworkspace)
 
-	workspace_path = full + '/' + os.path.basename(full) + '.sublime-workspace'
-	if os.path.isfile(workspace_path) : os.remove(workspace_path)
+	for d in configdirs():
 
-	for i in [2, 3]:
+		fsession = sessionfile(d)
 
-		d = os.path.expanduser('~/.config/sublime-text-') + str(i)
+		with lib.json.proxy(fsession, "w", strict = False, indent = '\t', throws = True) as config :
+			recent = config['workspaces']['recent_workspaces']
+			if fproject in recent : recent.remove(fproject)
 
-		if os.path.isdir(d):
-
-			with open(d + '/Settings/Session.sublime_session', 'r') as f:
-				config = json.load(f, strict = False)
-
-			config['workspaces']['recent_workspaces'].remove(path)
-
-			with open(d + '/Settings/Session.sublime_session', 'w') as f:
-				json.dump(config, f, indent = '\t')
+	if others : remove(*others)

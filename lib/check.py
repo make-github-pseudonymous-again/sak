@@ -2,6 +2,40 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import lib.error, lib.list, lib.sys, inspect
 
+
+def ModuleNameSpecified(root, inp):
+	if len(inp) < 1:
+		raise lib.error.ModuleNameNotSpecifiedException(root)
+
+def ModuleNameExists(root, moduleName, modules):
+	if len(modules) == 0:
+		raise lib.error.ModuleDoesNotExistException(moduleName, root)
+
+def ModuleNameNotAmbiguous(moduleName, modules):
+	if len(modules) > 1:
+		raise lib.error.ModuleNameAmbiguousException(moduleName, modules)
+
+def ActionNameSpecified(inp, moduleName, module):
+	if len(inp) < 2:
+		raise lib.error.ActionNameNotSpecifiedException(module, moduleName)
+
+def ActionNameExists(moduleName, module, actionName, actions):
+	if len(actions) == 0:
+		raise lib.error.ActionDoesNotExistException(actionName, module, moduleName)
+
+def ActionNameNotAmbiguous(moduleName, module, actionName, actions):
+	if len(actions) > 1:
+		raise lib.error.ActionNameAmbiguousException(actionName, moduleName, actions)
+
+def NotTooFewArgumentsForAction(moduleName, actionName, n, m, spec):
+	if n < m:
+		raise lib.error.TooFewArgumentsForActionException(n, spec, actionName, moduleName)
+
+def NotTooManyArgumentsForAction(moduleName, actionName, n, m, spec):
+	if spec[1] is None and n > len(spec[0]):
+		raise lib.error.TooManyArgumentsForActionException(n, spec, actionName, moduleName)
+
+
 def OptionNotInListException(key, value, available):
 	if value not in available :
 		raise lib.error.OptionNotInListException(key, value, available)

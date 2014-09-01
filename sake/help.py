@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import inspect, sake, lib.pacman, lib.check, functools
+import inspect, sake, lib.pacman, lib.check, functools, lib.source
 
 def ensurefmt(fmt, n):
 	fmt = list(fmt)
@@ -46,3 +46,13 @@ def doc(module = None, action = None):
 	"""
 
 	walk(sake, module, action, inspect.getdoc)
+
+
+def source(module = None, action = None, linenos = False, filename = False):
+	"""
+		Print the source of the specified element (default = sake root module)
+	"""
+
+	fmt = functools.partial(lib.source.pretty, linenos = linenos, filename = filename)
+
+	walk(sake, module, action, fmt)

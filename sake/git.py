@@ -51,6 +51,19 @@ def push(*args):
 def ls(*args):
 	return do('ls', *args)
 
+def count(*args):
+
+	n = [0]
+
+	def callback(d):
+		n[0] += 1
+
+	helper.wrap(args, callback)
+
+	print(n[0])
+
+
+
 
 
 class helper(object):
