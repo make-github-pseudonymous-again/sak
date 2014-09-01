@@ -72,6 +72,19 @@ def ModuleDoesNotExistException(M, module, parent):
 	if M is None or not inspect.ismodule(M):
 		raise lib.error.ModuleDoesNotExistException(module, parent)
 
+def NoneValueException(key, value):
+	if value is None :
+		raise lib.error.NoneValueException(key)
+
+def FalsyValueException(key, value):
+	if not value :
+		raise lib.error.FalsyValueException(key)
+
+def NotNoneOrIntegerException(key, value):
+	if value is None : return
+	try : int(value)
+	except : raise lib.error.NotNoneOrIntegerException(key)
+
 try:
 
 	import semantic_version
