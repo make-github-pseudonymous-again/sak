@@ -45,6 +45,42 @@ def pull(*args):
 	return do('pull', *args)
 
 
+
+def commit(*cmplxargs):
+
+	try :
+		i = list(cmplxargs).index("--")
+	except Exception as e:
+		print(e)
+		return
+
+	args = cmplxargs[:i]
+	dirs = cmplxargs[i+1:]
+
+	def callback(d):
+		print('%s \'%s\'' % ("commit", d))
+		helper.commit(d, *args)
+
+	return helper.wrap(dirs, callback)
+
+def add(*cmplxargs):
+
+	try :
+		i = list(cmplxargs).index("--")
+	except Exception as e:
+		print(e)
+		return
+
+	args = cmplxargs[:i]
+	dirs = cmplxargs[i+1:]
+
+	def callback(d):
+		print('%s \'%s\'' % ("add", d))
+		helper.add(d, *args)
+
+	return helper.wrap(dirs, callback)
+
+
 def push(*args):
 	return do('push', *args)
 
@@ -116,6 +152,12 @@ class helper(object):
 
 	def update(d):
 		subprocess.call(['git', 'remote', 'update'], cwd = d)
+
+	def commit(d, *args):
+		subprocess.call(['git', 'commit'] + list(args), cwd = d)
+
+	def add(d, *args):
+		subprocess.call(['git', 'add'] + list(args), cwd = d)
 
 	def push(d):
 		subprocess.call(['git', 'push'], cwd = d)

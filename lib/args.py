@@ -5,6 +5,7 @@ import lib.json
 ARGS = "args"
 KWARGS = "kwargs"
 NO = "no"
+DIRECTIVE_ARG = "+a"
 
 def parse(argv, args, kwargs):
 
@@ -12,10 +13,15 @@ def parse(argv, args, kwargs):
 	isflag = False
 	isvalue = False
 	islist = False
+	isarg = False
 
 	for p in argv:
 
-		if len(p) > 1 and p[0] == '-' and not p[1].isdigit():
+		if isarg : args.append(p)
+
+		elif p == DIRECTIVE_ARG : isarg = True
+
+		elif len(p) > 1 and p[0] == '-' and not p[1].isdigit():
 			isvalue = False
 			isflag = False
 			islist = False
@@ -56,7 +62,6 @@ def parse(argv, args, kwargs):
 			elif islist : kwargs[key].append(p);
 			else : args.append(p)
 		
-	
 	return args, kwargs
 
 
