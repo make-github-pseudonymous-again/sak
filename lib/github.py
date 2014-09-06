@@ -38,6 +38,10 @@ TYPES_DEFAULT = {
 	ORG  : ALL	
 }
 
+
+def credentials(username = None, password = None):
+	return lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+
 def list(target = YOU, name = None, t = None, username = None, password = None):
 
 	lib.check.OptionNotInListException(TARGET, target, TARGETS)
@@ -46,7 +50,7 @@ def list(target = YOU, name = None, t = None, username = None, password = None):
 	lib.check.OptionNotInListException(TYPE, t, TYPES[target])
 
 	if target == YOU or t == PRIVATE or username is not None :
-		username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+		username, password = credentials(username, password)
 
 	urls = {
 		YOU : "https://api.github.com/user/repos",
@@ -66,7 +70,7 @@ def list(target = YOU, name = None, t = None, username = None, password = None):
 
 LICENSES = [
 	None,
-	"agpl-3.0",
+	"agpl",
 	"apache-2.0",
 	"artistic-2.0",
 	"bsd-2-clause",

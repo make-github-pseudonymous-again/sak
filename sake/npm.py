@@ -9,6 +9,9 @@ def npm(*args):
 def publish():
 	npm('publish')
 
+def unpublish(*args):
+	npm('unpublish', *args)
+
 def build():
 	npm('run', 'build')
 

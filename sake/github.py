@@ -14,7 +14,7 @@ YOU = lib.github.YOU
 def clone(repo, username = None):
 
 	url = lib.http.url(DOMAIN, repo, username, secure = True)
-	lib.git.clone(url)
+	return lib.git.clone(url)
 
 
 def new(name, org = None, team_id = None, username = None, password = None, auto_init = FALSE, private = FALSE, description = None, homepage = None, has_issues = TRUE, has_wiki = TRUE, has_downloads = TRUE, gitignore_template = None, license_template = None):
@@ -27,7 +27,7 @@ def new(name, org = None, team_id = None, username = None, password = None, auto
 	lib.check.OptionNotInListException("gitignore_template", gitignore_template, GITIGNORES)
 	lib.check.OptionNotInListException("license_template", license_template, LICENSES)
 
-	username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+	username, password = lib.github.credentials(username, password)
 
 
 	parameters = {
@@ -59,7 +59,7 @@ def new(name, org = None, team_id = None, username = None, password = None, auto
 
 def group(*names):
 
-	username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, None, None)
+	username, password = lib.github.credentials(None, None)
 
 	org = None
 	team_id = None
@@ -91,7 +91,7 @@ def download(target = YOU, name = None, t = None, username = None, password = No
 
 
 def delete(owner, repo, username = None, password = None):
-	username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+	username, password = lib.github.credentials(username, password)
 
 	url = "https://api.github.com/repos/%s/%s" % (owner, repo)
 	_, _, p = lib.curl.deletejson(url, username = username, password = password, stddefault = None)

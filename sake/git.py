@@ -45,17 +45,9 @@ def pull(*args):
 	return do('pull', *args)
 
 
-
 def commit(*cmplxargs):
 
-	try :
-		i = list(cmplxargs).index("--")
-	except Exception as e:
-		print(e)
-		return
-
-	args = cmplxargs[:i]
-	dirs = cmplxargs[i+1:]
+	args, dirs = helper.parsecmplx(*cmplxargs)
 
 	def callback(d):
 		print('%s \'%s\'' % ("commit", d))
@@ -65,14 +57,7 @@ def commit(*cmplxargs):
 
 def add(*cmplxargs):
 
-	try :
-		i = list(cmplxargs).index("--")
-	except Exception as e:
-		print(e)
-		return
-
-	args = cmplxargs[:i]
-	dirs = cmplxargs[i+1:]
+	args, dirs = helper.parsecmplx(*cmplxargs)
 
 	def callback(d):
 		print('%s \'%s\'' % ("add", d))
@@ -127,6 +112,15 @@ class helper(object):
 
 		except helper.exception as e:
 			print(e)
+
+	def parsecmplx(*cmplxargs):
+
+		try :
+			i = list(cmplxargs).index("--")
+		except Exception as e:
+			i = len(cmplxargs)
+
+		return cmplxargs[:i], cmplxargs[i+1:]
 
 
 	def recursive(args, callback):

@@ -5,31 +5,31 @@ import os, lib.sys
 IGNORE = '.gitignore'
 
 def do(action, *args, **kwargs):
-	lib.sys.call(['git', action] + list(args), stddefault = None, **kwargs)
+	return lib.sys.call(['git', action] + list(args), stddefault = None, **kwargs)
 
 def clone(*args, **kwargs):
-	do('clone', *args, **kwargs)
+	return do('clone', *args, **kwargs)
 
 def pull(*args, **kwargs):
-	do('pull', *args, **kwargs)
+	return do('pull', *args, **kwargs)
 
 def push(*args, **kwargs):
-	do('push', *args, **kwargs)
+	return do('push', *args, **kwargs)
 
 def commit(*args, **kwargs):
-	do('commit', *args, **kwargs)
+	return do('commit', *args, **kwargs)
 
 def add(*args, **kwargs):
-	do('add', *args, **kwargs)
+	return do('add', *args, **kwargs)
 
 def status(*args, **kwargs):
-	do('status', *args, **kwargs)
+	return do('status', *args, **kwargs)
 
 def diff(*args, **kwargs):
-	do('diff', *args, **kwargs)
+	return do('diff', *args, **kwargs)
 
 def tag(*args, **kwargs):
-	do('tag', *args, **kwargs)
+	return do('tag', *args, **kwargs)
 
 def log(*args, **kwargs):
-	do('log', *args, **kwargs)
+	return do('log', *args, **kwargs)
