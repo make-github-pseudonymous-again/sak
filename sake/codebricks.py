@@ -27,7 +27,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 
 	keywords = sorted(list(set(["js", "javascript", "bricks"] + keywords)))
 
-	license = dict(name = "AGPL v3", template = "agpl")
+	license = dict(name = "AGPL-3.0", template = "agpl")
 
 	qualifiedname = "%(username)s-%(repo)s" % fmtargs
 
