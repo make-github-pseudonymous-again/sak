@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, shutil, sake.github, lib.github, lib.sake, sake.npm, lib.bower, lib.chec, collections
+import os, shutil, sake.github, lib.github, lib.sake, sake.npm, lib.bower, lib.check, collections
 
 TRAVISCI = "travis-ci"
 DRONEIO = "drone.io"
