@@ -113,6 +113,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 				"pkg.json",
 				"package.json",
 				".groc.json",
+				".travis.yml",
 				".gitignore",
 				"README.md"
 			]
