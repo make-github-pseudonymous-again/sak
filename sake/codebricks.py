@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, shutil, sake.github, lib.github, lib.sake, sake.npm, lib.bower, lib.check
+import os, shutil, sake.github, lib.github, lib.sake, sake.npm, lib.bower, lib.chec, collections
 
 TRAVISCI = "travis-ci"
 DRONEIO = "drone.io"
@@ -53,7 +53,9 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 
 	try :
 
-		with lib.json.proxy(".groc.json", "w") as groc :
+		jsonhook = collections.OrderedDict
+
+		with lib.json.proxy(".groc.json", "w", object_pairs_hook = jsonhook) as groc :
 			groc["glob"] = ["js/src/**/*.js", "README.md"]
 			groc["github"] = True
 
@@ -77,13 +79,13 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			readme.write("[![devDependencies Status](https://david-dm.org/%(username)s/%(repo)s/dev-status.png)](https://david-dm.org/%(username)s/%(repo)s#info=devDependencies)\n" % fmtargs)
 			readme.write("[![Code Climate](https://codeclimate.com/github/%(username)s/%(repo)s.png)](https://codeclimate.com/github/%(username)s/%(repo)s)\n" % fmtargs)
 
-		with lib.json.proxy("package.json", "w") as npm :
+		with lib.json.proxy("package.json", "w", object_pairs_hook = jsonhook) as npm :
 			npm["name"] = qualifiedname
 			npm["version"] = "0.0.0"
 			npm["description"] = description
 			npm["main"] = "js/dist/%(name)s.js" % fmtargs
 			npm["dependencies"] = {}
-			npm["devDependencies"] = {"aureooms-node-package": "^0.3.2"}
+			npm["devDependencies"] = {"aureooms-node-package": "^1.0.0"}
 			npm["scripts"] = {}
 			npm["scripts"]["build"] = "./node_modules/.bin/aureooms-node-package-build"
 			npm["scripts"]["test"] = "./node_modules/.bin/aureooms-node-package-test"
@@ -99,7 +101,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			npm["homepage"] = homepage
 
 
-		with lib.json.proxy("bower.json", "w") as bower :
+		with lib.json.proxy("bower.json", "w", object_pairs_hook = jsonhook) as bower :
 			bower["name"] = qualifiedname
 			bower["version"] = "0.0.0"
 			bower["description"] = description
@@ -117,7 +119,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			bower["license"] = license["name"]
 			bower["homepage"] = homepage
 
-		with lib.json.proxy("pkg.json", "w") as pkg :
+		with lib.json.proxy("pkg.json", "w", object_pairs_hook = jsonhook) as pkg :
 			pkg["ns"] = name
 			pkg["src"] = "js/src/"
 			pkg["out"] = "js/dist/"
