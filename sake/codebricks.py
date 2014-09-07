@@ -1,8 +1,15 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, shutil, sake.github, lib.github, lib.sake, sake.npm, lib.bower
+import os, shutil, sake.github, lib.github, lib.sake, sake.npm, lib.bower, lib.check
 
-def new(name, subject, keywords = None, username = None, password = None):
+TRAVISCI = "travis-ci"
+DRONEIO = "drone.io"
+
+CI = [TRAVISCI, DRONEIO]
+
+def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password = None):
+
+	lib.check.OptionNotInListException("ci", ci, CI)
 
 	username, password = lib.github.credentials(username, password)
 
@@ -61,7 +68,10 @@ def new(name, subject, keywords = None, username = None, password = None):
 			readme.write("\n")
 			readme.write("%(description)s\n" % fmtargs)
 			readme.write("\n")
-			readme.write("[![Build Status](https://drone.io/github.com/%(username)s/%(repo)s/status.png)](https://drone.io/github.com/%(username)s/%(repo)s/latest)\n" % fmtargs)
+			if ci == TRAVISCI :
+				readme.write("[![Build Status](https://travis-ci.org/%(username)s/%(repo)s.svg)](https://travis-ci.org/%(username)s/%(repo)s)\n" % fmtargs)
+			elif ci == DRONEIO :
+				readme.write("[![Build Status](https://drone.io/github.com/%(username)s/%(repo)s/status.png)](https://drone.io/github.com/%(username)s/%(repo)s/latest)\n" % fmtargs)
 			readme.write("[![Coverage Status](https://coveralls.io/repos/%(username)s/%(repo)s/badge.png)](https://coveralls.io/r/%(username)s/%(repo)s)\n" % fmtargs)
 			readme.write("[![Dependencies Status](https://david-dm.org/%(username)s/%(repo)s.png)](https://david-dm.org/%(username)s/%(repo)s#info=dependencies)\n" % fmtargs)
 			readme.write("[![devDependencies Status](https://david-dm.org/%(username)s/%(repo)s/dev-status.png)](https://david-dm.org/%(username)s/%(repo)s#info=devDependencies)\n" % fmtargs)
@@ -124,6 +134,8 @@ def new(name, subject, keywords = None, username = None, password = None):
 
 		shutil.copy(lib.sake.data("codebricks", "js-index.js"), "js/index.js")
 		shutil.copy(lib.sake.data("codebricks", "test-js-index.js"), "test/js/index.js")
+		if ci == TRAVISCI :
+			shutil.copy(lib.sake.data("codebricks", ".travis.yml"), ".travis.yml")
 
 		lib.git.add("--all", ".")
 		lib.git.commit("-am", "$ codebricks new")
