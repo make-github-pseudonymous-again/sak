@@ -35,7 +35,7 @@ TYPES = {
 TYPES_DEFAULT = {
 	YOU : ALL,
 	USER : OWNER,
-	ORG  : ALL	
+	ORG  : ALL
 }
 
 
@@ -70,7 +70,7 @@ def list(target = YOU, name = None, t = None, username = None, password = None):
 
 LICENSES = [
 	None,
-	"agpl",
+	"agpl-3.0",
 	"apache-2.0",
 	"artistic-2.0",
 	"bsd-2-clause",
