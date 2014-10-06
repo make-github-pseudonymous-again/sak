@@ -20,7 +20,7 @@ def walk(src, f):
 		with open(path, 'r') as g : f(g)
 
 	lib.dir.walk(src, f = callback)
-	
+
 
 def move(a, cwd):
 
@@ -31,10 +31,21 @@ def move(a, cwd):
 	for m in a : shutil.move(*map(absolute, m))
 
 
-
 def rm(*paths, recursive = False, force = False):
 
 	for path in paths:
 		if os.path.isdir(path) : shutil.rmtree(path)
 		elif os.path.exists(path) : os.remove(path)
 		elif not force : raise Exception("path '%s' does not exist" % path)
+
+
+def touch(*files, times = None) :
+
+	"""
+		http://stackoverflow.com/a/1160227/1582182
+	"""
+
+	for fname in files :
+
+		with open(fname, 'a'):
+			os.utime(fname, times)

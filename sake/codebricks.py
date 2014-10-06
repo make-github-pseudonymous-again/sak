@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, shutil, sake.github, lib.github, lib.sake, sake.npm, lib.bower, lib.check, collections
+import os, shutil, sake.github, lib.github, lib.sake, sake.npm
+import lib.bower, lib.check, collections, lib.dir, lib.file
 
 TRAVISCI = "travis-ci"
 DRONEIO = "drone.io"
@@ -21,7 +22,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 
 	homepage = "http://%(username)s.github.io/%(repo)s/" % fmtargs
 	githubpage = "https://github.com/%(username)s/%(repo)s" % fmtargs
-	issuespage = "https://github.com/%(username)s/%(repo)s/issues" % fmtargs
+	issuespage = githubpage + "/issues"
 
 	if keywords is None : keywords = []
 
@@ -48,12 +49,10 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 		license_template = license["template"]
 	)
 
-
 	_, _, p = sake.github.clone("%(username)s/%(repo)s" % fmtargs, username)
 
-	os.chdir(repo)
 
-	try :
+	with lib.dir.cd(repo) :
 
 		jsonhook = collections.OrderedDict
 
@@ -136,14 +135,14 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			pkg["code"]["test"] = ["test", "js"]
 			pkg["debug"] = False
 
-		os.mkdir("js")
-		os.mkdir("js/src")
-		os.mkdir("test")
-		os.mkdir("test/js")
-		os.mkdir("test/js/src")
+
+		lib.dir.makedirs("js/src", "test/js/src")
+		lib.file.touch("js/src/dummy.js")
 
 		shutil.copy(lib.sake.data("codebricks", "js-index.js"), "js/index.js")
 		shutil.copy(lib.sake.data("codebricks", "test-js-index.js"), "test/js/index.js")
+		shutil.copy(lib.sake.data("codebricks", "test-js-src-dummy.js"), "test/js/src/dummy.js")
+
 		if ci == TRAVISCI :
 			shutil.copy(lib.sake.data("codebricks", ".travis.yml"), ".travis.yml")
 
@@ -154,5 +153,3 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 		sake.npm.release("0.0.1")
 		lib.bower.register(qualifiedname, "github.com/%(username)s/%(repo)s" % fmtargs, force = True)
 
-	finally :
-		os.chdir("..")
