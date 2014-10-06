@@ -31,6 +31,8 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 
 	qualifiedname = "%(username)s-%(repo)s" % fmtargs
 
+	fmtargs["qualifiedname"] = qualifiedname
+
 	sake.github.new(
 		repo,
 		username = username,
@@ -70,6 +72,9 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			readme.write("\n")
 			readme.write("%(description)s\n" % fmtargs)
 			readme.write("\n")
+			readme.write("[![NPM license](http://img.shields.io/npm/l/%(qualifiedname)s.svg)](https://raw.githubusercontent.com/%(username)s/%(repo)s/master/LICENSE)\n" % fmtargs)
+			readme.write("[![NPM version](http://img.shields.io/npm/v/%(qualifiedname)s.svg)](https://www.npmjs.org/package/%(qualifiedname)s)\n" % fmtargs)
+			readme.write("[![Bower version](http://img.shields.io/bower/v/%(qualifiedname)s.svg)](http://bower.io/search/?q=%(qualifiedname)s)\n" % fmtargs)
 			if ci == TRAVISCI :
 				readme.write("[![Build Status](https://travis-ci.org/%(username)s/%(repo)s.svg)](https://travis-ci.org/%(username)s/%(repo)s)\n" % fmtargs)
 			elif ci == DRONEIO :
@@ -78,6 +83,8 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			readme.write("[![Dependencies Status](https://david-dm.org/%(username)s/%(repo)s.png)](https://david-dm.org/%(username)s/%(repo)s#info=dependencies)\n" % fmtargs)
 			readme.write("[![devDependencies Status](https://david-dm.org/%(username)s/%(repo)s/dev-status.png)](https://david-dm.org/%(username)s/%(repo)s#info=devDependencies)\n" % fmtargs)
 			readme.write("[![Code Climate](https://codeclimate.com/github/%(username)s/%(repo)s.png)](https://codeclimate.com/github/%(username)s/%(repo)s)\n" % fmtargs)
+			readme.write("[![NPM downloads per month](http://img.shields.io/npm/dm/%(qualifiedname)s.svg)](https://www.npmjs.org/package/%(qualifiedname)s)\n" % fmtargs)
+			readme.write("[![GitHub issues](http://img.shields.io/github/issues/%(username)s/%(repo)s.svg)](https://github.com/%(username)s/%(repo)s/issues)\n" % fmtargs)
 
 		with lib.json.proxy("package.json", "w", object_pairs_hook = jsonhook) as npm :
 			npm["name"] = qualifiedname
@@ -85,7 +92,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			npm["description"] = description
 			npm["main"] = "js/dist/%(name)s.js" % fmtargs
 			npm["dependencies"] = {}
-			npm["devDependencies"] = {"aureooms-node-package": "^1.0.0"}
+			npm["devDependencies"] = {"aureooms-node-package": "^1.1.1"}
 			npm["scripts"] = {}
 			npm["scripts"]["build"] = "./node_modules/.bin/aureooms-node-package-build"
 			npm["scripts"]["test"] = "./node_modules/.bin/aureooms-node-package-test"
