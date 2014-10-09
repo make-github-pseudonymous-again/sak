@@ -2,11 +2,11 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import os, shutil, sake.github, lib.github, lib.sake, sake.npm
 import lib.bower, lib.check, collections, lib.dir, lib.file
+import lib.codebricks
 
-TRAVISCI = "travis-ci"
-DRONEIO = "drone.io"
-
-CI = [TRAVISCI, DRONEIO]
+TRAVISCI = lib.codebricks.TRAVISCI
+DRONEIO = lib.codebricks.DRONEIO
+CI = lib.codebricks.CI
 
 def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password = None):
 
@@ -71,19 +71,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			readme.write("\n")
 			readme.write("%(description)s\n" % fmtargs)
 			readme.write("\n")
-			readme.write("[![NPM license](http://img.shields.io/npm/l/%(qualifiedname)s.svg)](https://raw.githubusercontent.com/%(username)s/%(repo)s/master/LICENSE)\n" % fmtargs)
-			readme.write("[![NPM version](http://img.shields.io/npm/v/%(qualifiedname)s.svg)](https://www.npmjs.org/package/%(qualifiedname)s)\n" % fmtargs)
-			readme.write("[![Bower version](http://img.shields.io/bower/v/%(qualifiedname)s.svg)](http://bower.io/search/?q=%(qualifiedname)s)\n" % fmtargs)
-			if ci == TRAVISCI :
-				readme.write("[![Build Status](https://travis-ci.org/%(username)s/%(repo)s.svg)](https://travis-ci.org/%(username)s/%(repo)s)\n" % fmtargs)
-			elif ci == DRONEIO :
-				readme.write("[![Build Status](https://drone.io/github.com/%(username)s/%(repo)s/status.png)](https://drone.io/github.com/%(username)s/%(repo)s/latest)\n" % fmtargs)
-			readme.write("[![Coverage Status](https://coveralls.io/repos/%(username)s/%(repo)s/badge.png)](https://coveralls.io/r/%(username)s/%(repo)s)\n" % fmtargs)
-			readme.write("[![Dependencies Status](https://david-dm.org/%(username)s/%(repo)s.png)](https://david-dm.org/%(username)s/%(repo)s#info=dependencies)\n" % fmtargs)
-			readme.write("[![devDependencies Status](https://david-dm.org/%(username)s/%(repo)s/dev-status.png)](https://david-dm.org/%(username)s/%(repo)s#info=devDependencies)\n" % fmtargs)
-			readme.write("[![Code Climate](https://codeclimate.com/github/%(username)s/%(repo)s.png)](https://codeclimate.com/github/%(username)s/%(repo)s)\n" % fmtargs)
-			readme.write("[![NPM downloads per month](http://img.shields.io/npm/dm/%(qualifiedname)s.svg)](https://www.npmjs.org/package/%(qualifiedname)s)\n" % fmtargs)
-			readme.write("[![GitHub issues](http://img.shields.io/github/issues/%(username)s/%(repo)s.svg)](https://github.com/%(username)s/%(repo)s/issues)\n" % fmtargs)
+			lib.codebricks.badges(username, repo, ci, lambda s : readme.write(s + "\n"))
 
 		with lib.json.proxy("package.json", "w", object_pairs_hook = jsonhook) as npm :
 			npm["name"] = qualifiedname
@@ -153,3 +141,9 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 		sake.npm.release("0.0.1")
 		lib.bower.register(qualifiedname, "github.com/%(username)s/%(repo)s" % fmtargs, force = True)
 
+
+
+
+def badges ( username, repo, ci = TRAVISCI ) :
+
+	lib.codebricks.badges( username, repo, ci, print )
