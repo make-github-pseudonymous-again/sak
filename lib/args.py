@@ -41,27 +41,27 @@ def parse(argv, args, kwargs):
 
 			elif len(p) == 2:
 
-				p = p[1:]
-				
-				kwargs[p] = v
+				p = p[1]
+
+				kwargs[p] = True
 				key = p
 				isflag = True
-			
+
 			else:
 				for c in p[1:] : kwargs[c] = True
-					
+
 		else :
 			if isflag :
 				isflag = False
 				isvalue = True
 				kwargs[key] = p
-			elif isvalue : 
+			elif isvalue :
 				isvalue = False
 				islist = True
 				kwargs[key] = [kwargs[key], p]
 			elif islist : kwargs[key].append(p);
 			else : args.append(p)
-		
+
 	return args, kwargs
 
 
@@ -70,7 +70,7 @@ def format(key, val):
 	fmt = "-%s=%s"
 
 	if len(key) > 1 : fmt = "-" + fmt
-	
+
 	return fmt % (key, val)
 
 
