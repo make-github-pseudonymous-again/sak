@@ -44,15 +44,13 @@ def new(name, org = None, team_id = None, username = None, password = None, auto
 		"license_template" : license_template
 	}
 
-	jsonparameters = json.dumps(parameters)
-
 
 	if org is None :
 		url = "https://api.github.com/user/repos"
 	else :
 		url = "https://api.github.com/orgs/%s/repos" % org
 
-	_, _, p = lib.curl.postjson(url, jsonparameters, username, password, stddefault = None)
+	_, _, p = lib.curl.postjson(url, parameters, username, password, stddefault = None)
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
@@ -73,7 +71,7 @@ def group(*names):
 	gitignore_template = None
 	license_template = None
 
-	
+
 	for name in names:
 		new(name, org, team_id, username, password, auto_init, private, description, homepage, has_issues, has_wiki, has_downloads, gitignore_template, license_template)
 
@@ -81,7 +79,7 @@ def group(*names):
 def list(target = YOU, name = None, t = None, username = None, password = None):
 	for repo in lib.github.list(target, name, t, username, password):
 		print(repo["full_name"])
-	
+
 
 def download(target = YOU, name = None, t = None, username = None, password = None, prompt = True):
 	for repo in lib.github.list(target, name, t, username, password):
@@ -97,4 +95,34 @@ def delete(owner, repo, username = None, password = None):
 	_, _, p = lib.curl.deletejson(url, username = username, password = password, stddefault = None)
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
-	
+
+
+
+def issues( user = False, org = None, username = None, password = None, filter = None, state = None, labels = None, sort = None, direction = None, since = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/
+	"""
+
+	username, password = lib.github.credentials(username, password)
+
+	if user :
+		url = "https://api.github.com/user/issues"
+	elif org is None :
+		url = "https://api.github.com/orgs/%s/issues" % org
+	else :
+		url = "https://api.github.com/issues"
+
+	parameters = {
+		"filter" : filter,
+		"state" : state,
+		"labels" : labels,
+		"sort": sort,
+		"direction" : direction,
+		"since" : since
+	}
+
+	_, _, p = lib.curl.getjson(url, parameters, username, password, stddefault = None)
+	print()
+	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
+

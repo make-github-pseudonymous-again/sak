@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.sys
+import lib.sys, json
 
 CMD_CURL = ["curl"]
 FLAG_VERBOSE = ["-v"]
@@ -38,14 +38,15 @@ def call(method, url, contenttype, data = None, username = None, password = None
 	return lib.sys.call(cmd, **kwargs)
 
 
-def json(method, url, data = None, username = None, password = None, **kwargs):
+def sendjson(method, url, data = None, username = None, password = None, **kwargs):
+	if data is not None : data = json.dumps(data)
 	return call(method, url, "application/json", data, username, password, **kwargs)
 
 def getjson(url, data = None, username = None, password = None, **kwargs):
-	return json(METHOD_GET, url, data, username, password, **kwargs)
+	return sendjson(METHOD_GET, url, data, username, password, **kwargs)
 
 def postjson(url, data = None, username = None, password = None, **kwargs):
-	return json(METHOD_POST, url, data, username, password, **kwargs)
+	return sendjson(METHOD_POST, url, data, username, password, **kwargs)
 
 def deletejson(url, data = None, username = None, password = None, **kwargs):
-	return json(METHOD_DELETE, url, data, username, password, **kwargs)
+	return sendjson(METHOD_DELETE, url, data, username, password, **kwargs)

@@ -50,11 +50,9 @@ def new(repository, owner = None, username = None, password = None, is_private =
 		"has_wiki" : has_wiki
 	}
 
-	jsonparameters = json.dumps(parameters)
-
 	url = "https://api.bitbucket.org/2.0/repositories/%s/%s" % (owner, repository)
 
-	_, _, p = lib.curl.postjson(url, jsonparameters, username, password, stddefault = None)
+	_, _, p = lib.curl.postjson(url, parameters, username, password, stddefault = None)
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
@@ -89,7 +87,7 @@ def list(target, name, username = None, password = None, size = False):
 
 	else :
 		for key in sorted(repos.keys()) : print(key)
-	
+
 
 def download(target, name, username = None, password = None, prompt = True):
 	for repo in lib.bitbucket.list(target, name, username, password):
