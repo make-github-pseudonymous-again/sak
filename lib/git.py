@@ -33,3 +33,6 @@ def tag(*args, **kwargs):
 
 def log(*args, **kwargs):
 	return do('log', *args, **kwargs)
+
+def checkout(*args, **kwargs):
+	return do('checkout', *args, **kwargs)

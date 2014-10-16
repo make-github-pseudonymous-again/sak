@@ -1,28 +1,28 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
-import subprocess, lib.file, lib.error, lib.check, lib.npm
+import subprocess, lib.file, lib.error, lib.check, lib.npm, lib.git
 
 def npm(*args):
-	subprocess.call(['npm'] + list(args))
+	return subprocess.call(['npm'] + list(args))
 
 def publish():
-	npm('publish')
+	return npm('publish')
 
 def unpublish(*args):
-	npm('unpublish', *args)
+	return npm('unpublish', *args)
 
 def build():
-	npm('run', 'build')
+	return npm('run', 'build')
 
 def doc():
-	npm('run', 'doc')
+	return npm('run', 'doc')
 
 def test():
-	npm('test')
+	return npm('test')
 
 def install(*args):
-	npm('install', *args)
+	return npm('install', *args)
 
 def clean():
 	lib.file.rm('node_modules', 'coverage', 'doc', recursive = True, force = True)
@@ -36,11 +36,15 @@ try:
 
 
 	def release(version, message = None):
-		doc()
-		build()
-		version = lib.npm.setversion(version)
-		lib.npm.upload(version, message)
-		publish()
+		try :
+			doc()
+			build()
+			version = lib.npm.setversion(version)
+			lib.npm.upload(version, message)
+			publish()
+
+		finally :
+			lib.git.checkout( "master" )
 
 	def setversion(version):
 		version = lib.npm.setversion(version)
