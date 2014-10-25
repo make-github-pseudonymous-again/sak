@@ -6,4 +6,5 @@ filter:
         - lib/cpplint.py
 
 tools:
-    external_code_coverage: true
+    external_code_coverage:
+        timeout: 600
