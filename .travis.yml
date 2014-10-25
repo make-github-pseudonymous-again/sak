@@ -17,4 +17,5 @@ install:
 
 # command to run tests
 script:
+  - coverage run alldoctest.py
   - ocular
