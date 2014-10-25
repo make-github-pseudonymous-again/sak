@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, doctest
+import os, sys, doctest
 
-def recurse ( source ) :
+def doctestrecurse ( source ) :
 
 	if os.path.isfile( source ) :
 
@@ -11,12 +11,24 @@ def recurse ( source ) :
 
 			print( source )
 
-			doctest.testfile( source )
+			return doctest.testfile( source )
 
 	elif os.path.isdir( source ) :
 
+		failurecount, testcount = 0, 0
+
 		for child in os.listdir( source ) :
 
-			recurse( os.path.join( source, child ) )
+			fc, tc = doctestrecurse( os.path.join( source, child ) )
 
-recurse( "lib" )
+			failurecount += fc
+			testcount += tc
+
+		return failurecount, testcount
+
+	return 0, 0
+
+
+failurecount, testcount = doctestrecurse( "lib" )
+
+sys.exit( failurecount )
