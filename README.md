@@ -1,6 +1,8 @@
 Swiss Army KnifE
 ================
 
+[![Build Status](https://travis-ci.org/aureooms/sake.svg)](https://travis-ci.org/aureooms/sake)
+[![Code Coverage](https://scrutinizer-ci.com/g/aureooms/sake/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/aureooms/sake/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/aureooms/sake/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/aureooms/sake/?branch=master)
 [![GitHub issues](http://img.shields.io/github/issues/aureooms/sake.svg)](https://github.com/aureooms/sake/issues)
 
