@@ -7,7 +7,16 @@ KWARGS = "kwargs"
 NO = "no"
 DIRECTIVE_ARG = "+a"
 
-def parse(argv, args, kwargs):
+def parse ( argv, args, kwargs ) :
+
+	"""
+
+		>>> from lib.args import *
+
+		>>> parse( ["a", "b", "c", "--flag"], [], {} )
+		(['a', 'b', 'c'], {'flag': True})
+
+	"""
 
 	key = ""
 	isflag = False
@@ -116,4 +125,3 @@ def inflate(args, kwargs):
 		with lib.json.proxy(source, throws = True) as data : args.extend(data)
 
 	args.extend(argscopy)
-

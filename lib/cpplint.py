@@ -4347,6 +4347,7 @@ def _DropCommonSuffixes(filename):
 	"""Drops common suffixes like _test.cc or -inl.h from filename.
 
 	For example:
+		>>> from lib.cpplint import _DropCommonSuffixes
 		>>> _DropCommonSuffixes('foo/foo-inl.h')
 		'foo/foo'
 		>>> _DropCommonSuffixes('foo/bar/foo.cc')
@@ -4388,7 +4389,8 @@ def _IsTestFilename(filename):
 
 
 def _ClassifyInclude(fileinfo, include, is_system):
-	"""Figures out what kind of header 'include' is.
+	"""
+	Figures out what kind of header 'include' is.
 
 	Args:
 		fileinfo: The current file cpplint is running over. A FileInfo instance.
@@ -4399,17 +4401,19 @@ def _ClassifyInclude(fileinfo, include, is_system):
 		One of the _XXX_HEADER constants.
 
 	For example:
+		>>> from lib.cpplint import _ClassifyInclude, FileInfo
 		>>> _ClassifyInclude(FileInfo('foo/foo.cc'), 'stdio.h', True)
-		_C_SYS_HEADER
+		1
 		>>> _ClassifyInclude(FileInfo('foo/foo.cc'), 'string', True)
-		_CPP_SYS_HEADER
+		2
 		>>> _ClassifyInclude(FileInfo('foo/foo.cc'), 'foo/foo.h', False)
-		_LIKELY_MY_HEADER
+		4
 		>>> _ClassifyInclude(FileInfo('foo/foo_unknown_extension.cc'),
 		...                  'bar/foo_other_ext.h', False)
-		_POSSIBLE_MY_HEADER
+		4
 		>>> _ClassifyInclude(FileInfo('foo/foo.cc'), 'foo/bar.h', False)
-		_OTHER_HEADER
+		5
+
 	"""
 	# This is a list of all standard c++ header files, except
 	# those already checked for above.
@@ -4649,7 +4653,7 @@ def CheckLanguage(filename, clean_lines, linenum, file_extension,
 
 	# Make Windows paths like Unix.
 	fullname = os.path.abspath(filename).replace('\\', '/')
-	
+
 	# Perform other checks now that we are sure that this is not an include line
 	CheckCasts(filename, clean_lines, linenum, error)
 	CheckGlobalStatic(filename, clean_lines, linenum, error)
