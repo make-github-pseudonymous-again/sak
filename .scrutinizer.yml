@@ -4,3 +4,6 @@ imports:
 filter:
     excluded_paths:
         - lib/cpplint.py
+
+tools:
+    external_code_coverage: true
