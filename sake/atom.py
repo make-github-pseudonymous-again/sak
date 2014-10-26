@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, lib.cson, sake.cat
+import os, lib.cson, sake.cat, itertools
 
 PROJECTSFILE = os.path.expanduser( "~/.atom/projects.cson" )
 
@@ -20,30 +20,35 @@ def projects() :
 
 def add( directory = ".", *others ) :
 
-	path, name = project( directory )
-
 	with open( PROJECTSFILE ) as f :
 		projects = lib.cson.load( f )
 
-	projects[name] = dict( title = name, paths = [path] )
+
+	for target in itertools.chain( [directory], others ) :
+
+		path, name = project( target )
+
+		projects[name] = dict( title = name, paths = [path] )
+
 
 	with open( PROJECTSFILE, "w" ) as f :
 		lib.cson.dump( projects, f )
 
-	if others : add( *others )
 
 
 def remove( directory = ".", *others ) :
 
-	path, name = project( directory )
-
 	with open( PROJECTSFILE ) as f :
 		projects = lib.cson.load( f )
 
-	if name in projects :
-		del projects[name]
+
+	for target in itertools.chain( [directory], others ) :
+
+		path, name = project( target )
+
+		if name in projects :
+			del projects[name]
+
 
 	with open( PROJECTSFILE, "w" ) as f :
 		lib.cson.dump( projects, f )
-
-	if others : remove( *others )
