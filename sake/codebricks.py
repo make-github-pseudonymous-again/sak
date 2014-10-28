@@ -71,7 +71,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			readme.write("\n")
 			readme.write("%(description)s\n" % fmtargs)
 			readme.write("\n")
-			lib.codebricks.badges(username, repo, ci, lambda s : readme.write(s + "\n"))
+			lib.codebricks.badges( username, repo, ci, lambda s : readme.write(s + "\n") )
 
 		with lib.json.proxy("package.json", "w", object_pairs_hook = jsonhook) as npm :
 			npm["name"] = qualifiedname
@@ -142,8 +142,9 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 		lib.bower.register(qualifiedname, "github.com/%(username)s/%(repo)s" % fmtargs, force = True)
 
 
+FLAT = lib.codebricks.FLAT
+SVG = lib.codebricks.SVG
 
+def badges ( username, repo, ci = TRAVISCI, style = FLAT, fmt = SVG ) :
 
-def badges ( username, repo, ci = TRAVISCI ) :
-
-	lib.codebricks.badges( username, repo, ci, print )
+	lib.codebricks.badges( username, repo, ci, print, style, fmt )
