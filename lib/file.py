@@ -3,18 +3,18 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import hashlib, lib.dir, shutil, os, os.path
 
 
-def read(f, callback, blocksize = 2**15):
+def read ( f, callback, blocksize = 2**15 ) :
 	chunk = f.read(blocksize)
 	while len(chunk) > 0:
 		callback(chunk)
 		chunk = f.read(blocksize)
 
-def hash(f, h = None, blocksize = 2**15):
+def hash ( f, h = None, blocksize = 2**15 ) :
 	if h is None : h = hashlib.sha256()
 	read(f, h.update, blocksize)
 	return h
 
-def walk(src, f):
+def walk ( src, f ) :
 
 	def callback(path):
 		with open(path, 'r') as g : f(g)
@@ -22,7 +22,7 @@ def walk(src, f):
 	lib.dir.walk(src, f = callback)
 
 
-def move(a, cwd):
+def move ( a, cwd ) :
 
 	if not isinstance(a, (list)) : a = [a]
 
@@ -31,7 +31,10 @@ def move(a, cwd):
 	for m in a : shutil.move(*map(absolute, m))
 
 
-def rm(*paths, recursive = False, force = False):
+def rm ( *paths, **kwargs ) :
+
+	recursive = kwargs.get( "recursive", False )
+	force = kwargs.get( "force", False )
 
 	for path in paths:
 		if os.path.isdir(path) : shutil.rmtree(path)
@@ -39,11 +42,13 @@ def rm(*paths, recursive = False, force = False):
 		elif not force : raise Exception("path '%s' does not exist" % path)
 
 
-def touch(*files, times = None) :
+def touch ( *files, **kwargs ) :
 
 	"""
 		http://stackoverflow.com/a/1160227/1582182
 	"""
+
+	times = kwargs.get( "times", None )
 
 	for fname in files :
 
