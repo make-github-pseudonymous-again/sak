@@ -1,9 +1,14 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import urllib.parse, http.client
+import http.client
+
+try :
+	import urllib.parse as urlparse
+except :
+	import urlparse
 
 def access(url):
-	p = urllib.parse.urlparse(url)
+	p = urlparse.urlparse(url)
 	conn = http.client.HTTPConnection(p.netloc)
 	conn.request('HEAD', p.path)
 	resp = conn.getresponse()

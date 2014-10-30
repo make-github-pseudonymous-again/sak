@@ -1,6 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, lib, urllib, getpass
+import os, lib, getpass
+
+try :
+	import urllib.parse as urllib
+except :
+	import urllib
 
 fname = os.path.expanduser('~/.sake')
 
@@ -43,7 +48,7 @@ def prompt_user(host, module, user = None, passwd = None, scheme = "https", port
 
 def prompt_passwd(host, module, user, passwd = None, scheme = "https", port = 80):
 
-	url = '%s://%s@%s:%d' % (scheme, urllib.parse.quote_plus(user), host, port)
+	url = '%s://%s@%s:%d' % (scheme, urllib.quote_plus(user), host, port)
 
 	if passwd is None : passwd = lib.config.user(user)
 	if passwd is None : passwd = getpass.getpass('Password for \'%s\' : ' % url)

@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.cpm, sake.github, sake.bitbucket, urllib.parse, lib.config, lib.git, lib.http, os.path
+import lib.cpm, sake.github, sake.bitbucket, lib.config, lib.git, lib.http, os.path
 
 
 def update():

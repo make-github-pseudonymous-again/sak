@@ -1,6 +1,11 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import urllib.request as urllib2, lib
+import lib.sys, lib.config
+
+try :
+	import urllib.request as urllib2
+except :
+	import urllib2
 
 def get(user = None, passwd = None):
 

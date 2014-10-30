@@ -4,10 +4,15 @@ import lib.error
 
 try:
 
-	import lxml.etree, urllib.request
+	import lxml.etree
+
+	try :
+		import urllib.request as urllib2
+	except :
+		import urllib2
 
 	def href(url, *args):
-		conn = urllib.request.urlopen(url)
+		conn = urllib2.urlopen(url)
 		parser = lxml.etree.HTMLParser(encoding = "utf-8")
 		tree = lxml.etree.parse(conn, parser = parser)
 		title = tree.find('.//title')
