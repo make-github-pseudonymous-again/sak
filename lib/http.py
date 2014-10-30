@@ -1,6 +1,10 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import http.client
+
+try :
+	import http.client as httplib
+except :
+	import httplib
 
 try :
 	import urllib.parse as urlparse
@@ -9,7 +13,7 @@ except :
 
 def access(url):
 	p = urlparse.urlparse(url)
-	conn = http.client.HTTPConnection(p.netloc)
+	conn = httplib.HTTPConnection(p.netloc)
 	conn.request('HEAD', p.path)
 	resp = conn.getresponse()
 	return resp.status < 400
