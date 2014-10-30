@@ -135,16 +135,18 @@ def issues( user = False, org = None, username = None, password = None, filter =
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
 
-def labels ( owner, repo, name = None, username = None, password = None ) :
+def labels ( owner, repo, name = None, issue = None, username = None, password = None ) :
 
 	"""
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	if name is None :
-		url = apiurl( "repos", owner, repo, "labels" )
-	else :
+	if issue is not None :
+		url = apiurl( "repos", owner, repo, "issues", issue, "labels" )
+	elif name is not None :
 		url = apiurl( "repos", owner, repo, "labels", name )
+	else :
+		url = apiurl( "repos", owner, repo, "labels" )
 
 	_, _, p = lib.curl.getjson(url, None, username, password, stddefault = None)
 	print()
