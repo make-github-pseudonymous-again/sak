@@ -6,6 +6,7 @@ CMD_CURL = ["curl"]
 FLAG_VERBOSE = ["-v"]
 METHOD_GET = "GET"
 METHOD_POST = "POST"
+METHOD_PATCH = "PATCH"
 METHOD_UPDATE = "UPDATE"
 METHOD_DELETE = "DELETE"
 
@@ -47,6 +48,12 @@ def getjson(url, data = None, username = None, password = None, **kwargs):
 
 def postjson(url, data = None, username = None, password = None, **kwargs):
 	return sendjson(METHOD_POST, url, data, username, password, **kwargs)
+
+def updatejson(url, data = None, username = None, password = None, **kwargs):
+	return sendjson(METHOD_UPDATE, url, data, username, password, **kwargs)
+
+def patchjson(url, data = None, username = None, password = None, **kwargs):
+	return sendjson(METHOD_PATCH, url, data, username, password, **kwargs)
 
 def deletejson(url, data = None, username = None, password = None, **kwargs):
 	return sendjson(METHOD_DELETE, url, data, username, password, **kwargs)

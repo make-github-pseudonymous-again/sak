@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.config, lib.git, lib.error, lib.check, json, lib.curl, lib.github, lib.input, lib.http
+import lib.config, lib.git, lib.error, lib.check, lib.curl, lib.github, lib.input, lib.http
 
 DOMAIN = lib.github.DOMAIN
 CONFIG_KEY = lib.github.CONFIG_KEY
@@ -10,6 +10,14 @@ TRUE = lib.github.TRUE
 FALSE = lib.github.FALSE
 BOOLEANS = lib.github.BOOLEANS
 YOU = lib.github.YOU
+
+
+def apiurl ( *args ) :
+
+	args = map( str, args )
+
+	return "https://api.github.com/" + '/'.join( args )
+
 
 def clone(repo, username = None):
 
@@ -124,5 +132,70 @@ def issues( user = False, org = None, username = None, password = None, filter =
 
 	_, _, p = lib.curl.getjson(url, parameters, username, password, stddefault = None)
 	print()
-	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
+
+def labels ( owner, repo, name = None, username = None, password = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/labels/
+	"""
+
+	if name is None :
+		url = apiurl( "repos", owner, repo, "labels" )
+	else :
+		url = apiurl( "repos", owner, repo, "labels", name )
+
+	_, _, p = lib.curl.getjson(url, None, username, password, stddefault = None)
+	print()
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+
+def createlabel ( owner, repo, name, color, username = None, password = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/labels/
+	"""
+
+	url = apiurl( "repos", owner, repo, "labels" )
+
+	parameters = dict( name = name, color = color )
+
+	username, password = lib.github.credentials(username, password)
+
+	_, _, p = lib.curl.postjson(url, parameters, username, password, stddefault = None)
+	print()
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+
+def updatelabel ( owner, repo, oldname, newname, color, username = None, password = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/labels/
+	"""
+
+	url = apiurl( "repos", owner, repo, "labels", oldname )
+
+	parameters = dict( name = newname, color = color )
+
+	username, password = lib.github.credentials(username, password)
+
+	_, _, p = lib.curl.patchjson(url, parameters, username, password, stddefault = None)
+	print()
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+
+
+def deletelabel ( owner, repo, name, username = None, password = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/labels/
+	"""
+
+	url = apiurl( "repos", owner, repo, "labels", name )
+
+	username, password = lib.github.credentials( username, password )
+
+	_, _, p = lib.curl.deletejson( url, None, username, password, stddefault = None )
+	print()
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
