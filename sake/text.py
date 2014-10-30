@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os, sys, lib.file, lib.check
@@ -59,4 +60,4 @@ def lineprepend(src = sys.stdin, string = "", width = 1):
 
 	if src != sys.stdin :
 		src.close()
-	
+

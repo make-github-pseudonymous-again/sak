@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import hashlib, base64, tempfile, lib.json, os
@@ -89,7 +90,7 @@ class FTP(object):
 			if type(entry) == dict:
 				if item not in model:
 					self._removedirs(root, entry, current + item)
-				else:	
+				else:
 					self.removedirs(root, model[item], entry, current + item + '/')
 
 

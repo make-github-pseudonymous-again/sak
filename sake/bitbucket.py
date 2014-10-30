@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.config, lib.git, lib.hg, lib.error, lib.check, subprocess, json, lib.sys, lib.bitbucket, lib.input, lib.bytes
+import lib.config, lib.git, lib.hg, lib.error, lib.check, json, lib.sys, lib.bitbucket, lib.input, lib.bytes
 
 DOMAIN = lib.bitbucket.DOMAIN
 CONFIG_KEY = lib.bitbucket.CONFIG_KEY

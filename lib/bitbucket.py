@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import lib.check, lib.curl, json
@@ -50,7 +51,7 @@ def list(target, name, username = None, password = None):
 		lib.check.SubprocessOutputEmptyException(p.args, out)
 
 		data = json.loads(out.decode())
-		
+
 		repositories.extend(data["values"])
 
 		if not "next" in data : break

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import lib.cpm, sake.github, sake.bitbucket, lib.config, lib.git, lib.http, os.path

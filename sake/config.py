@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import getpass, json, os, lib.config, lib.json, lib.file
+import lib.config, lib.json, lib.file
 
 def gen():
-	with open(lib.config.fname, 'w') as f : lib.json.pretty(lib.config.new(), f)	
+	with open(lib.config.fname, 'w') as f : lib.json.pretty(lib.config.new(), f)
 
 def cat():
 	with open(lib.config.fname, 'r') as f : lib.file.read(f, print)

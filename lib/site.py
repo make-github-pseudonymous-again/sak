@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os, json, socket, tempfile, lib.ftp, lib.nice.ftp, lib.nice.file
@@ -16,7 +17,7 @@ class FTPSite(object):
 
 		"down"   : ".htaccess",
 		"up"     : ".htaccess",
-		
+
 		"tree"   : {},
 		"ignore" : []
 	}
@@ -74,7 +75,7 @@ class FTPSite(object):
 
 
 
-	
+
 
 class FTPRemoteHasher(object):
 
@@ -110,7 +111,7 @@ class FTPRemoteUpdater(object):
 			self.remote.delete('/%s/%s' % (root, minipath))
 
 
-	def update_moved(self, config, local, h, not_handled, minipaths):	
+	def update_moved(self, config, local, h, not_handled, minipaths):
 		for minipath in minipaths:
 
 			# moved files
@@ -138,7 +139,7 @@ class FTPRemoteUpdater(object):
 		self.update_moved(config, local, h, not_handled, minipaths)
 
 		if len(not_handled) > 0 : self.update_copied(config, local, h, not_handled)
-		
+
 
 	def update_deleted_moved_copied(self, config, local, server):
 		for h, minipaths in server['hash'].items():

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
@@ -24,7 +25,7 @@ def rgb2hsl(r, g, b):
 def hsl2rgb(h, s, l):
 	C = (255 - abs(2*l - 255)) * s
 	X = C * (1 - abs((h / 60) % 2 - 1))
-	if   h < 60  : r, g, b = C, X, 0 
+	if   h < 60  : r, g, b = C, X, 0
 	elif h < 120 : r, g, b = X, C, 0
 	elif h < 180 : r, g, b = 0, C, X
 	elif h < 240 : r, g, b = 0, X, C
@@ -39,4 +40,4 @@ def hsla2rgba(h, s, l, a):
 
 def rgba2hsla(r, g, b, a):
 	return rgb2hsl(r, g, b) + [a]
-	
+

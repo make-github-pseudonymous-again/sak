@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import sys
@@ -23,7 +24,7 @@ def yesorno(question, default = YES):
 
 	The "answer" return value is one of "yes" or "no".
 	"""
-	
+
 	if default is None:
 		prompt = " [y/n] "
 	elif default == YES:

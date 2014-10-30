@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
@@ -14,7 +15,7 @@ def __init__():
 			if os.path.isfile(path + '/__init__.py'):
 				__import__(module + '.' + f)
 				__all__.append(f)
-				
+
 		if os.path.isfile(path) and f != '__init__.py':
 			name, ext = os.path.splitext(f)
 
@@ -22,6 +23,6 @@ def __init__():
 				__import__(module + '.' + name)
 				__all__.append(name)
 
-		
+
 
 __init__()

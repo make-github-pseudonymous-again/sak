@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, shutil, sake.github, lib.github, lib.sake, sake.npm
+import shutil, sake.github, lib.github, lib.sake, sake.npm
 import lib.bower, lib.check, collections, lib.dir, lib.file
 import lib.codebricks, fileinput
 

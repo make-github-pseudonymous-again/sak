@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import inspect, lib.pacman, json
@@ -104,15 +105,15 @@ class NewSemverVersionTagNotGreaterException(MainException):
 		args = (a, b)
 		MainException.__init__(self, fmt % args)
 
-		
+
 
 class ModuleMissingException(MainException):
 	def __init__(self, cause, name):
 		fmt = "'%s' : to fix this --> pip3 install %s"
 		args = (cause, name)
 		MainException.__init__(self, fmt % args)
-		
-		
+
+
 class VersionNotUniqueException(MainException):
 	def __init__(self, versions):
 		fmt = "versions MUST be equal in packages configuration files %s"

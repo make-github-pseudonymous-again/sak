@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os, json, lib.json
@@ -26,7 +27,7 @@ def configdir(v):
 	return os.path.expanduser('~/.config/sublime-text-') + str(v)
 
 def configdirs():
-	for v in [2, 3] : 
+	for v in [2, 3] :
 		d = configdir(v)
 		if os.path.isdir(d): yield d
 
