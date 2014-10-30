@@ -4,6 +4,7 @@ import lib.sys, json
 
 CMD_CURL = ["curl"]
 FLAG_VERBOSE = ["-v"]
+METHOD_PUT = "PUT"
 METHOD_GET = "GET"
 METHOD_POST = "POST"
 METHOD_PATCH = "PATCH"
@@ -42,6 +43,9 @@ def call(method, url, contenttype, data = None, username = None, password = None
 def sendjson(method, url, data = None, username = None, password = None, **kwargs):
 	if data is not None : data = json.dumps(data)
 	return call(method, url, "application/json", data, username, password, **kwargs)
+
+def putjson(url, data = None, username = None, password = None, **kwargs):
+	return sendjson(METHOD_PUT, url, data, username, password, **kwargs)
 
 def getjson(url, data = None, username = None, password = None, **kwargs):
 	return sendjson(METHOD_GET, url, data, username, password, **kwargs)

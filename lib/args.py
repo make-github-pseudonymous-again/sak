@@ -83,6 +83,17 @@ def format(key, val):
 	return fmt % (key, val)
 
 
+def listify ( arg ) :
+
+	if arg is None :
+		return []
+	elif isinstance( arg, str ) :
+		return [ arg ]
+	else :
+		return arg
+
+
+
 def inflate(args, kwargs):
 	"""
 		Loads more arguments if JSON ARGS or KWARGS source have been specified.
