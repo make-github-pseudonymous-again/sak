@@ -16,7 +16,8 @@ def public(t, pred = None):
 	if pred is None : pred = []
 
 	if len(pred) == 0:
-		return (e for e in t.__all__)
+		for key in t.__all__ :
+			yield key
 
 	for key in t.__all__:
 		for p in pred:
@@ -26,7 +27,7 @@ def public(t, pred = None):
 
 def setpublic(t, pred = None):
 	if pred is None : pred = []
-	
+
 	if len(pred) == 0 :
 		t.__all__ = t.__dict__.keys()
 		return
