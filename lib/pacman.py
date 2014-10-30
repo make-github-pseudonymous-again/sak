@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import inspect, lib, importlib, os, types
+import inspect, lib, os, types
+
+try :
+	from importlib import import_module as importmodule
+except :
+	importmodule = __import__
 
 def reset(t):
 	t.__all__ = []
@@ -140,7 +145,7 @@ def __init__(t, root):
 
 		if os.path.isdir(path):
 			if os.path.isfile(path + '/__init__.py'):
-				setattr(t, f, importlib.import_module(module + '.' + f))
+				setattr(t, f, importmodule(module + '.' + f))
 				t.__all__.append(f)
 
 			elif f != '__pycache__':
@@ -151,7 +156,7 @@ def __init__(t, root):
 			name, ext = os.path.splitext(f)
 
 			if ext == '.py':
-				s = importlib.import_module(module + '.' + name)
+				s = importmodule(module + '.' + name)
 				setattr(t, name, s)
 				t.__all__.append(name)
 				toolbox(s)
