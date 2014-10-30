@@ -45,7 +45,10 @@ def custom ( subject, status, color, style = FLAT, fmt = SVG ) :
 	return imgurl( path, style, fmt )
 
 
-def service ( *args, style = FLAT, fmt = SVG ) :
+def service ( *args, **kwargs ) :
+
+	style = kwargs.get( "style", FLAT )
+	fmt = kwargs.get( "fmt", SVG )
 
 	args = map( str, args )
 
