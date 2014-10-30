@@ -5,7 +5,10 @@ import lib.sys
 
 BOWER_CMD = "bower"
 
-def runcmd(*args, force = False):
+def runcmd(*args, **kwargs):
+
+	force = kwargs.get( "force", False )
+
 	cmd = []
 	cmd.append(BOWER_CMD)
 	if force : cmd.append("--force")
