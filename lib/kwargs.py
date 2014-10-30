@@ -5,4 +5,4 @@ import inspect
 
 def filter(kwargs, fn):
 	args = inspect.getargspec(fn).args
-	return { key : kwargs[key] for key in args if key in kwargs}
+	return dict( (key, kwargs[key]) for key in args if key in kwargs )
