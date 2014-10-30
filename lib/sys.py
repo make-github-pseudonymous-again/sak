@@ -65,16 +65,22 @@ def which(program):
 
 
 
+STDIN = "stdin"
+STDOUT = "stdout"
 
 
-def pipeline(*cmds, stdin = None, stdout = None):
+def pipeline ( *cmds, **kwargs ) :
+
 	if not cmds : return
 
-	inp = stdin
-	it = lib.iterator.sentinel(subprocess.PIPE, stdout)
+	stdin = kwargs.get( STDIN, None )
+	stdout = kwargs.get( STDOUT, None )
 
-	for cmd, out in zip(cmds, it):
-		p = subprocess.Popen(cmd, stdin = inp, stdout = out)
+	inp = stdin
+	it = lib.iterator.sentinel( subprocess.PIPE, stdout )
+
+	for cmd, out in zip( cmds, it ):
+		p = subprocess.Popen( cmd, stdin = inp, stdout = out )
 		inp = p.stdout
 
 	out, err = p.communicate()
