@@ -1770,7 +1770,7 @@ def CheckForBadCharacters(filename, lines, error):
 		error: The function to call with any errors found.
 	"""
 	for linenum, line in enumerate(lines):
-		if u'\ufffd' in line:
+		if '\ufffd' in line:
 			error(filename, linenum, 'readability/utf8', 5,
 						'Line contains invalid UTF-8 (or Unicode replacement character).')
 		if '\0' in line:
