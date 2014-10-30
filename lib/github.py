@@ -39,8 +39,8 @@ TYPES_DEFAULT = {
 }
 
 
-def credentials(username = None, password = None):
-	return lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+def credentials ( username = None, password = None ) :
+	return lib.config.prompt_cred( DOMAIN, CONFIG_KEY, username, password )
 
 def list(target = YOU, name = None, t = None, username = None, password = None):
 
@@ -207,3 +207,9 @@ GITIGNORES = [
 TRUE = True
 FALSE = False
 BOOLEANS = [TRUE, FALSE]
+
+NEWEST = "newest"
+OLDEST = "oldest"
+STARGAZERS = "stargazers"
+
+SORT = [ NEWEST, OLDEST, STARGAZERS ]

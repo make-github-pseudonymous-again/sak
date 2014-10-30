@@ -19,6 +19,9 @@ def push(*args, **kwargs):
 def commit(*args, **kwargs):
 	return do('commit', *args, **kwargs)
 
+def remote(*args, **kwargs):
+	return do('remote', *args, **kwargs)
+
 def add(*args, **kwargs):
 	return do('add', *args, **kwargs)
 

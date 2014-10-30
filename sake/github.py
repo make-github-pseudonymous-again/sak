@@ -10,6 +10,10 @@ TRUE = lib.github.TRUE
 FALSE = lib.github.FALSE
 BOOLEANS = lib.github.BOOLEANS
 YOU = lib.github.YOU
+NEWEST = lib.github.NEWEST
+OLDEST = lib.github.OLDEST
+STARGAZERS = lib.github.STARGAZERS
+SORT = lib.github.SORT
 
 
 def apiurl ( *args ) :
@@ -19,21 +23,25 @@ def apiurl ( *args ) :
 	return "https://api.github.com/" + '/'.join( args )
 
 
-def clone(repo, username = None):
+def clone( repo, dest = None, username = None ):
 
-	url = lib.http.url(DOMAIN, repo, username, secure = True)
-	return lib.git.clone(url)
+	url = lib.http.url( DOMAIN, repo, username, secure = True )
+
+	if dest is not None :
+		return lib.git.clone( url, dest )
+	else :
+		return lib.git.clone( url )
 
 
 def new(name, org = None, team_id = None, username = None, password = None, auto_init = FALSE, private = FALSE, description = None, homepage = None, has_issues = TRUE, has_wiki = TRUE, has_downloads = TRUE, gitignore_template = None, license_template = None):
 
-	lib.check.OptionNotInListException("private", private, BOOLEANS)
-	lib.check.OptionNotInListException("has_issues", has_issues, BOOLEANS)
-	lib.check.OptionNotInListException("has_wiki", has_wiki, BOOLEANS)
-	lib.check.OptionNotInListException("has_downloads", has_downloads, BOOLEANS)
-	lib.check.OptionNotInListException("auto_init", auto_init, BOOLEANS)
-	lib.check.OptionNotInListException("gitignore_template", gitignore_template, GITIGNORES)
-	lib.check.OptionNotInListException("license_template", license_template, LICENSES)
+	lib.check.OptionNotInListException( "private", private, BOOLEANS )
+	lib.check.OptionNotInListException( "has_issues", has_issues, BOOLEANS )
+	lib.check.OptionNotInListException( "has_wiki", has_wiki, BOOLEANS )
+	lib.check.OptionNotInListException( "has_downloads", has_downloads, BOOLEANS )
+	lib.check.OptionNotInListException( "auto_init", auto_init, BOOLEANS )
+	lib.check.OptionNotInListException( "gitignore_template", gitignore_template, GITIGNORES )
+	lib.check.OptionNotInListException( "license_template", license_template, LICENSES )
 
 	username, password = lib.github.credentials(username, password)
 
@@ -278,3 +286,67 @@ def milestonelabels ( owner, repo, milestone, username = None, password = None )
 	_, _, p = lib.curl.getjson( url, None, username, password, stddefault = None )
 	print()
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+
+def listforks ( owner, repo, sort = NEWEST, username = None, password = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/labels/
+	"""
+
+	if username is not None :
+		username, password = lib.github.credentials( username, password )
+
+	url = apiurl( "repos", owner, repo, "forks" )
+
+	parameters = dict( sort = sort )
+
+	_, _, p = lib.curl.getjson( url, parameters, username, password, stddefault = None )
+	print()
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+
+def fork ( owner, repo, organization = None, username = None, password = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/labels/
+	"""
+
+	username, password = lib.github.credentials( username, password )
+
+	url = apiurl( "repos", owner, repo, "forks" )
+
+	parameters = dict( organization = organization )
+
+	_, _, p = lib.curl.postjson( url, parameters, username, password, stddefault = None )
+	print()
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+
+def patch ( owner, repo, name, username = None, password = None, private = FALSE, description = None, homepage = None, has_issues = TRUE, has_wiki = TRUE, has_downloads = TRUE, default_branch = None ) :
+
+	lib.check.OptionNotInListException( "private", private, BOOLEANS )
+	lib.check.OptionNotInListException( "has_issues", has_issues, BOOLEANS )
+	lib.check.OptionNotInListException( "has_wiki", has_wiki, BOOLEANS )
+	lib.check.OptionNotInListException( "has_downloads", has_downloads, BOOLEANS )
+
+	username, password = lib.github.credentials(username, password)
+
+
+	parameters = {
+		"name" : name,
+		"description" : description,
+		"homepage" : homepage,
+		"private": private,
+		"has_issues" : has_issues,
+		"has_wiki" : has_wiki,
+		"has_downloads" : has_downloads,
+		"default_branch": default_branch
+	}
+
+
+	url = apiurl( "repos", owner, repo )
+
+	_, _, p = lib.curl.patchjson(url, parameters, username, password, stddefault = None)
+	print()
+	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)

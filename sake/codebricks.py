@@ -2,11 +2,14 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import os, shutil, sake.github, lib.github, lib.sake, sake.npm
 import lib.bower, lib.check, collections, lib.dir, lib.file
-import lib.codebricks
+import lib.codebricks, fileinput
 
 TRAVISCI = lib.codebricks.TRAVISCI
 DRONEIO = lib.codebricks.DRONEIO
 CI = lib.codebricks.CI
+FLAT = lib.codebricks.FLAT
+SVG = lib.codebricks.SVG
+README = "README.md"
 
 def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password = None):
 
@@ -57,7 +60,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 		jsonhook = collections.OrderedDict
 
 		with lib.json.proxy(".groc.json", "w", object_pairs_hook = jsonhook) as groc :
-			groc["glob"] = ["js/src/**/*.js", "README.md"]
+			groc["glob"] = ["js/src/**/*.js", README]
 			groc["github"] = True
 
 		with open(".gitignore", "a") as gitignore :
@@ -65,7 +68,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 			gitignore.write("# groc\n")
 			gitignore.write("doc\n")
 
-		with open("README.md", "w") as readme :
+		with open(README, "w") as readme :
 			readme.write("[%(repo)s](http://%(username)s.github.io/%(repo)s)\n" % fmtargs)
 			readme.write("==\n")
 			readme.write("\n")
@@ -109,7 +112,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 				".groc.json",
 				".travis.yml",
 				".gitignore",
-				"README.md"
+				README
 			]
 			bower["license"] = license["name"]
 			bower["homepage"] = homepage
@@ -142,9 +145,85 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 		lib.bower.register(qualifiedname, "github.com/%(username)s/%(repo)s" % fmtargs, force = True)
 
 
-FLAT = lib.codebricks.FLAT
-SVG = lib.codebricks.SVG
-
 def badges ( username, repo, ci = TRAVISCI, style = FLAT, fmt = SVG ) :
 
 	lib.codebricks.badges( username, repo, ci, print, style, fmt )
+
+
+def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = None, password = None ) :
+
+	username, password = lib.github.credentials( username, password )
+
+	oldowner, oldslug = oldrepo.split('/')
+
+	slug = "js-" + name
+
+	qualifiedname = "%s-%s" % ( username, slug )
+
+	description = "%s code bricks for JavaScript" % subject
+
+	homepage = "http://%s.github.io/%s/" % ( username, slug )
+	githubpage = "https://github.com/%s/%s" % ( username, slug )
+	issuespage = githubpage + "/issues"
+
+	if keywords is None : keywords = []
+
+	sake.github.new(
+		slug,
+		username = username,
+		password = password,
+		auto_init = lib.github.FALSE,
+		private = lib.github.FALSE,
+		description = description,
+		homepage = homepage,
+		has_issues = lib.github.TRUE,
+		has_wiki = lib.github.TRUE,
+		has_downloads = lib.github.TRUE
+	)
+
+	sake.github.clone( oldrepo, slug, username )
+
+	with lib.dir.cd( slug ) :
+
+		jsonhook = collections.OrderedDict
+
+		for line in fileinput.input( README, inplace = True ) :
+			print( line.replace( oldslug, slug ).replace( oldowner, username ) )
+
+		with open( README, "a" ) as readme :
+			readme.write( "\n" )
+			readme.write( "***( forked from [%s](https://github.com/%s) )***" % ( oldslug, oldrepo ) )
+			readme.write( "\n" )
+
+		with lib.json.proxy("package.json", "w", object_pairs_hook = jsonhook) as npm :
+			npm["name"] = qualifiedname
+			npm["description"] = description
+			npm["main"] = "js/dist/%s.js" % name
+			npm["repository"]["url"] = "https://github.com/%s/%s.git" % ( username, slug )
+			npm["keywords"] = keywords
+			npm["author"] = username
+			npm["bugs"]["url"] = issuespage
+			npm["homepage"] = homepage
+
+		with lib.json.proxy("bower.json", "w", object_pairs_hook = jsonhook) as bower :
+			bower["name"] = qualifiedname
+			bower["description"] = description
+			bower["main"] = "js/dist/%s.js" % name
+			bower["homepage"] = homepage
+
+		with lib.json.proxy( "pkg.json", "w", object_pairs_hook = jsonhook ) as pkg :
+			pkg["ns"] = name
+			pkg["code"]["main"] = ["js", "dist", "%s.js" % name]
+
+
+		lib.file.rm( "js/dist" )
+
+
+
+		lib.git.remote( "set-url", "origin", "https://github.com/%s/%s" % ( username, slug ) )
+		lib.git.add( "--all", "." )
+		lib.git.commit( "-am", "$ codebricks fork %s" % oldrepo )
+		lib.git.push( "-u", "origin", "master" )
+		sake.npm.install()
+		sake.npm.release( "major" )
+		lib.bower.register( qualifiedname, "github.com/%s/%s" % ( username, slug ), force = True )
