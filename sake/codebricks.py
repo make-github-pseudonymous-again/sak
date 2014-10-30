@@ -52,7 +52,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 		license_template = license["template"]
 	)
 
-	_, _, p = sake.github.clone("%(username)s/%(repo)s" % fmtargs, username)
+	_, _, p = sake.github.clone( "%(username)s/%(repo)s" % fmtargs, username = username )
 
 
 	with lib.dir.cd(repo) :
