@@ -255,8 +255,11 @@ class FTPLocalFetcher(object):
 			if os.path.isfile(path):
 				FTPLocalFetcher.local_file(config['online'], hash_t, tree_i, tree, dir_list, item, minipath, path)
 
-			elif os.path.isdir(path):
-				if what is None : what = { sub : None for sub in os.listdir(path)}
+			elif os.path.isdir( path ) :
+
+				if what is None :
+					what = dict( ( sub, None ) for sub in os.listdir( path ) )
+
 				tree_i[item] = {}
 				self.local(root, config, hash_t, tree_i[item], current + item + '/', what)
 
