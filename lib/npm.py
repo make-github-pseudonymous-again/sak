@@ -70,6 +70,7 @@ def upload(version, message = None):
 
 	lib.git.add('--all', '.')
 	lib.git.commit('-am', message)
+	lib.git.pull()
 	lib.git.push()
 	lib.git.tag('-a', version, '-m', message)
 	lib.git.push('--tags')
