@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import shutil, sake.github, lib.github, lib.sake, sake.npm
 import lib.bower, lib.check, collections, lib.dir, lib.file
-import lib.codebricks, fileinput
+import lib.codebricks, fileinput, lib.args
 
 TRAVISCI = lib.codebricks.TRAVISCI
 DRONEIO = lib.codebricks.DRONEIO
@@ -12,7 +12,7 @@ FLAT = lib.codebricks.FLAT
 SVG = lib.codebricks.SVG
 README = "README.md"
 
-def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password = None):
+def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, password = None ) :
 
 	lib.check.OptionNotInListException("ci", ci, CI)
 
@@ -28,7 +28,7 @@ def new(name, subject, keywords = None, ci = TRAVISCI, username = None, password
 	githubpage = "https://github.com/%(username)s/%(repo)s" % fmtargs
 	issuespage = githubpage + "/issues"
 
-	if keywords is None : keywords = []
+	keywords = lib.args.listify( keywords )
 
 	keywords = sorted(list(set(["js", "javascript", "bricks"] + keywords)))
 
@@ -167,7 +167,9 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 	githubpage = "https://github.com/%s/%s" % ( username, slug )
 	issuespage = githubpage + "/issues"
 
-	if keywords is None : keywords = []
+	keywords = lib.args.listify( keywords )
+
+	keywords = sorted(list(set(["js", "javascript", "bricks"] + keywords)))
 
 	sake.github.new(
 		slug,
@@ -189,14 +191,16 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 		jsonhook = collections.OrderedDict
 
 		for line in fileinput.input( README, inplace = True ) :
-			print( line.replace( oldslug, slug ).replace( oldowner, username ) )
+			line = line.replace( oldslug, slug )
+			line = line.replace( oldowner, username )
+			print( line, end = "" )
 
 		with open( README, "a" ) as readme :
 			readme.write( "\n" )
 			readme.write( "***( forked from [%s](https://github.com/%s) )***" % ( oldslug, oldrepo ) )
 			readme.write( "\n" )
 
-		with lib.json.proxy("package.json", "w", object_pairs_hook = jsonhook) as npm :
+		with lib.json.proxy( "package.json", "w", object_pairs_hook = jsonhook ) as npm :
 			npm["name"] = qualifiedname
 			npm["description"] = description
 			npm["main"] = "js/dist/%s.js" % name
@@ -206,7 +210,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 			npm["bugs"]["url"] = issuespage
 			npm["homepage"] = homepage
 
-		with lib.json.proxy("bower.json", "w", object_pairs_hook = jsonhook) as bower :
+		with lib.json.proxy( "bower.json", "w", object_pairs_hook = jsonhook ) as bower :
 			bower["name"] = qualifiedname
 			bower["description"] = description
 			bower["main"] = "js/dist/%s.js" % name
