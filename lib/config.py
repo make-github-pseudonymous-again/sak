@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, lib, getpass
+import os, lib, getpass, functools
 
 try :
 	import urllib.parse as urllib
@@ -13,16 +13,23 @@ fname = os.path.expanduser('~/.sake')
 def new():
 	return {'u':{}, 'm':{}}
 
+def proxy ( mode = 'r', default = None, throws = False, **kwargs ) :
+
+	if default is None :
+		default = new()
+
+	return lib.json.proxy( fname, mode, default, throws, **kwargs )
+
 def user(user):
 
-	with lib.json.proxy(lib.config.fname, default = new()) as config :
+	with lib.config.proxy() as config :
 		passwd = config['u'].get(user, None)
 
 	return passwd
 
 def module(module):
 
-	with lib.json.proxy(lib.config.fname, default = new()) as config :
+	with lib.config.proxy() as config :
 		user = config['m'].get(module, None)
 		passwd = config['u'].get(user, None)
 
@@ -55,5 +62,3 @@ def prompt_passwd(host, module, user, passwd = None, scheme = "https", port = 80
 	if passwd is None : passwd = getpass.getpass('Password for \'%s\' : ' % url)
 
 	return passwd
-
-

@@ -90,11 +90,20 @@ def list(target, name, username = None, password = None, size = False):
 		for key in sorted(repos.keys()) : print(key)
 
 
-def download(target, name, username = None, password = None, prompt = True):
+def download ( target, name, username = None, password = None, prompt = True, prefix = "", suffix = "", regexp = "" ):
+	
 	for repo in lib.bitbucket.list(target, name, username, password):
+
 		slug = repo["full_name"]
-		if not prompt or lib.input.yesorno("clone '%s'?" % slug) :
-			clone(slug, username, scm = repo["scm"])
+
+		take = True
+
+		take = take and ( not prefix or slug.startswith( prefix ) )
+		take = take and ( not suffix or slug.endswith( prefix ) )
+		take = take and ( not regexp or re.match( regexp, slug ) is not None )
+
+		if take and ( not prompt or lib.input.yesorno( "clone '%s'?" % slug ) ) :
+			clone( slug, username, scm = repo["scm"] )
 
 
 def get(owner, repo_slug, username = None, password = None):

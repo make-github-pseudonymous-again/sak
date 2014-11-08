@@ -43,12 +43,12 @@ TYPES_DEFAULT = {
 def credentials ( username = None, password = None ) :
 	return lib.config.prompt_cred( DOMAIN, CONFIG_KEY, username, password )
 
-def list(target = YOU, name = None, t = None, username = None, password = None):
+def list ( target = YOU, name = None, t = None, username = None, password = None ) :
 
-	lib.check.OptionNotInListException(TARGET, target, TARGETS)
+	lib.check.OptionNotInListException( TARGET, target, TARGETS )
 
 	if t is None : t = TYPES_DEFAULT[target]
-	lib.check.OptionNotInListException(TYPE, t, TYPES[target])
+	lib.check.OptionNotInListException( TYPE, t, TYPES[target] )
 
 	if target == YOU or t == PRIVATE or username is not None :
 		username, password = credentials(username, password)

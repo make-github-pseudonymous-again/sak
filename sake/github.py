@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.config, lib.git, lib.error, lib.check, lib.curl, lib.github, lib.input, lib.http, lib.args
+import lib.config, lib.git, lib.error, lib.check, lib.curl
+import lib.github, lib.input, lib.http, lib.args
+import re
 
 DOMAIN = lib.github.DOMAIN
 CONFIG_KEY = lib.github.CONFIG_KEY
@@ -72,9 +74,9 @@ def new(name, org = None, team_id = None, username = None, password = None, auto
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
 
-def group(*names):
+def group ( *names ) :
 
-	username, password = lib.github.credentials(None, None)
+	username, password = lib.github.credentials( None, None )
 
 	org = None
 	team_id = None
@@ -89,7 +91,7 @@ def group(*names):
 	license_template = None
 
 
-	for name in names:
+	for name in names :
 		new(name, org, team_id, username, password, auto_init, private, description, homepage, has_issues, has_wiki, has_downloads, gitignore_template, license_template)
 
 
@@ -98,11 +100,20 @@ def list(target = YOU, name = None, t = None, username = None, password = None):
 		print(repo["full_name"])
 
 
-def download(target = YOU, name = None, t = None, username = None, password = None, prompt = True):
-	for repo in lib.github.list(target, name, t, username, password):
+def download ( target = YOU, name = None, t = None, username = None, password = None, prompt = True, prefix = "", suffix = "", regexp = "" ) :
+
+	for repo in lib.github.list( target, name, t, username, password):
+
 		repo = repo["full_name"]
-		if not prompt or lib.input.yesorno("clone '%s'?" % repo) :
-			clone(repo, username)
+
+		take = True
+
+		take = take and ( not prefix or repo.startswith( prefix ) )
+		take = take and ( not suffix or repo.endswith( prefix ) )
+		take = take and ( not regexp or re.match( regexp, repo ) is not None )
+
+		if take and ( not prompt or lib.input.yesorno( "clone '%s'?" % repo ) ) :
+			clone( repo, username )
 
 
 def delete(owner, repo, username = None, password = None):
