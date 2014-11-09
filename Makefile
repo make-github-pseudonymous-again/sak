@@ -1,12 +1,12 @@
 
-RUN = $$
+MAIN = main.py
 WHICH = /usr/local/bin/$$
 OLDWHICH = /usr/bin/$$
 
 all:
 
 install:
-	ln -s $(CURDIR)/$(RUN) $(WHICH)
+	ln -s $(CURDIR)/$(MAIN) $(WHICH)
 
 uninstall:
 	rm $(WHICH)
