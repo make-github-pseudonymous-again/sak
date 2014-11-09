@@ -100,37 +100,9 @@ def toolbox(t):
 	setpublic(t, [inspect.isfunction])
 
 
-NAME_RESOLVER = [
-	# MATCH
-	lambda t, a, s : [x for x in t.__all__ if a(x) == s],
-	# PREFIX
-	lambda t, a, s : [x for x in t.__all__ if a(x).startswith(s)],
-	# SUFFIX
-	lambda t, a, s : [x for x in t.__all__ if a(x).endswith(s)],
-	# SUBSTR
-	lambda t, a, s : [x for x in t.__all__ if s in a(x)]
-]
+def resolve ( target, module ) :
 
-
-NAME_TRANSFORMER = [
-	lambda s : s,
-	lambda s : s.lower(),
-	lambda s : lib.str.cons(s),
-	lambda s : lib.str.cons(s.lower())
-]
-
-def resolve(n, t):
-
-	for a in NAME_TRANSFORMER:
-		s = a(n)
-
-		for r in NAME_RESOLVER:
-			l = r(t, a, s)
-
-			if len(l) > 0 :
-				return l
-
-	return []
+	return lib.str.mostlikely( target, module.__all__ )
 
 
 
