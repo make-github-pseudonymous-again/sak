@@ -54,6 +54,24 @@ class ActionDoesNotExistException(MainException):
 		args = (action_name, module_name, ', '.join(sorted(lib.pacman.public(module, [inspect.isfunction]))))
 		MainException.__init__(self, fmt % args)
 
+class KwargsNotSupportedException(MainException):
+	def __init__(self, action_name):
+		fmt = 'kwargs in action \'%s\' are not supported'
+		args = (action_name)
+		MainException.__init__(self, fmt % args)
+
+class KwargNameAmbiguousException(MainException):
+	def __init__(self, kwarg_name, action_name, matching):
+		fmt = 'kwarg \'%s\' in action \'%s\' is ambiguous, matching kwargs are : %s'
+		args = (kwarg_name, action_name, ', '.join( matching ))
+		MainException.__init__(self, fmt % args)
+
+class KwargDoesNotExistException(MainException):
+	def __init__(self, kwarg_name, action_name, available):
+		fmt = 'kwarg \'%s\' in action \'%s\' does not exist, available kwargs are : %s'
+		args = (kwarg_name, action_name, ', '.join( available ))
+		MainException.__init__(self, fmt % args)
+
 class TooFewArgumentsForActionException(MainException):
 	def __init__(self, n, spec, action_name, module_name):
 		fmt = 'Too few arguments for action \'%s\' in module \'%s\', signature is %s, got %d'

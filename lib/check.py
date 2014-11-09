@@ -28,6 +28,18 @@ def ActionNameNotAmbiguous(moduleName, module, actionName, actions):
 	if len(actions) > 1:
 		raise lib.error.ActionNameAmbiguousException(actionName, moduleName, actions)
 
+def KwargsNotSupportedException( actionname, available ):
+	if len( available ) == 0:
+		raise lib.error.KwargsNotSupportedException( actionname )
+
+def KwargNameExists( kwargname, actionname, matching, available ):
+	if len( matching ) == 0:
+		raise lib.error.KwargDoesNotExistException( kwargname, actionname, available )
+
+def KwargNameNotAmbiguous( kwargname, actionname, matching ):
+	if len( matching ) > 1:
+		raise lib.error.KwargNameAmbiguousException( kwargname, actionname, matching )
+
 def NotTooFewArgumentsForAction(moduleName, actionName, n, m, spec):
 	if n < m:
 		raise lib.error.TooFewArgumentsForActionException(n, spec, actionName, moduleName)

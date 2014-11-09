@@ -43,8 +43,8 @@ NAME_RESOLVER = [
 NAME_TRANSFORMER = [
 	lambda string : string,
 	lambda string : string.lower(),
-	lambda string : lib.str.cons( string ),
-	lambda string : lib.str.cons( string.lower() )
+	lambda string : cons( string ),
+	lambda string : cons( string.lower() )
 ]
 
 

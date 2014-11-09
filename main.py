@@ -3,63 +3,107 @@
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 
-import sys, sake, inspect, lib.pacman, lib.error, lib.check, lib.args
+import sys, sake, inspect, lib.pacman, lib.error, lib.check, lib.args, lib.str
 
 
-def main(inp):
+def main ( inp ) :
 
-	action, args, kwargs = parse(inp)
-	action(*args, **kwargs)
+	hierarchy, action, inp = findaction( inp, [] )
+	args, kwargs = assignarguments( hierarchy, action, inp )
+	action( *args, **kwargs )
 
 
-def parse(inp):
+def findaction ( inp, hierarchy ) :
 
 	# DETERMINE MODULE
 
-	lib.check.ModuleNameSpecified(sake, inp)
+	lib.check.ModuleNameSpecified( sake, inp )
 	moduleName = inp[0]
 
-	modules = lib.pacman.resolve(moduleName, sake)
+	modules = lib.pacman.resolve( moduleName, sake )
 
-	lib.check.ModuleNameExists(sake, moduleName, modules)
-	lib.check.ModuleNameNotAmbiguous(moduleName, modules)
+	lib.check.ModuleNameExists( sake, moduleName, modules )
+	lib.check.ModuleNameNotAmbiguous( moduleName, modules )
 
 	moduleName = modules[0]
-	module = getattr(sake, moduleName)
+	module = getattr( sake, moduleName )
+
+	hierarchy.append( moduleName )
 
 
 	# DETERMINE ACTION
 
-	lib.check.ActionNameSpecified(inp, moduleName, module)
+	lib.check.ActionNameSpecified( inp, moduleName, module )
 	actionName = inp[1]
 
-	actions = lib.pacman.resolve(actionName, module)
+	actions = lib.pacman.resolve( actionName, module )
 
-	lib.check.ActionNameExists(moduleName, module, actionName, actions)
-	lib.check.ActionNameNotAmbiguous(moduleName, module, actionName, actions)
+	lib.check.ActionNameExists( moduleName, module, actionName, actions )
+	lib.check.ActionNameNotAmbiguous( moduleName, module, actionName, actions )
 
 	actionName = actions[0]
-	action = getattr(module, actionName)
+	action = getattr( module, actionName )
 
+	hierarchy.append( actionName )
+
+	return hierarchy, action, inp[2:]
+
+
+def assignarguments ( hierarchy, action, inp ) :
 
 	# CHECK ACTION ARGUMENTS
 
-	args, kwargs = lib.args.parse(inp[2:], [], {})
-	lib.args.inflate(args, kwargs)
+	moduleName = ".".join( hierarchy[:-1] )
+	actionName = hierarchy[-1]
 
-	spec = inspect.getargspec(action)
-	m = (0 if spec[0] is None else len(spec[0])) - (0 if spec[3] is None else len(spec[3]))
-	n = len(args)
+	args, kwargs = lib.args.parse( inp, [], {} )
 
-	lib.check.NotTooFewArgumentsForAction(moduleName, actionName, n, m, spec)
-	lib.check.NotTooManyArgumentsForAction(moduleName, actionName, n, m, spec)
+	spec = inspect.getargspec( action )
+
+	kwargslist = lib.args.kwargslist( spec )
+
+	if kwargs :
+		
+		lib.check.KwargsNotSupportedException( actionName, kwargslist )
+
+		_kwargs = dict()
+
+		for kwarg in kwargs :
+
+			matching = lib.str.mostlikely( kwarg, kwargslist )
+
+			if not matching and spec.keywords :
+				_kwargs[kwarg] = kwargs[kwarg]
+			else :
+				lib.check.KwargNameExists( kwarg, actionName, matching, kwargslist )
+				lib.check.KwargNameNotAmbiguous( kwarg, actionName, matching )
+
+				_kwargs[matching[0]] = kwargs[kwarg]
+
+		kwargs = _kwargs
+
+	# WE INFLATE AFTER RESOLVING KWARGS THUS
+	# KWARGS IN JSON ARGS FILES MUST BE
+	# EXACTLY MATCHING SPECS OF ACTIONS
+
+	lib.args.inflate( args, kwargs )
+
+	m = ( 0 if spec[0] is None else len( spec[0] ) ) -\
+	    ( 0 if spec[3] is None else len( spec[3] ) )
+	n = len( args )
+
+	lib.check.NotTooFewArgumentsForAction( moduleName, actionName, n, m, spec )
+	lib.check.NotTooManyArgumentsForAction( moduleName, actionName, n, m, spec )
 
 
 	# DONE
-	return action, args, kwargs
+	return args, kwargs
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' :
 
-	try : main(sys.argv[1:])
-	except lib.error.MainException as e : print(e)
+	try :
+		main( sys.argv[1:] )
+
+	except lib.error.MainException as e :
+		print( e )

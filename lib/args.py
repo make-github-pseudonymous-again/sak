@@ -94,8 +94,24 @@ def listify ( arg ) :
 		return arg
 
 
+def kwargslist( spec ) :
 
-def inflate(args, kwargs):
+	out = []
+
+	if spec.args is not None and spec.defaults is not None :
+		out.extend( spec.args[-len( spec.defaults ):] )
+
+	if spec.varargs is not None :
+		out.append( spec.varargs )
+
+	if spec.keywords is not None :
+		out.append( spec.keywords )
+
+	return out
+
+
+
+def inflate ( args, kwargs ) :
 	"""
 		Loads more arguments if JSON ARGS or KWARGS source have been specified.
 		Since JSON KWARGS could contain more ARGS or KWARGS directives
