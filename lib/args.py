@@ -75,7 +75,19 @@ def parse ( argv, args, kwargs ) :
 	return args, kwargs
 
 
-def format(key, val):
+def format ( key, val ) :
+
+	"""
+
+		>>> from lib.args import *
+
+		>>> format( 'filter', 'false' )
+		'--filter=false'
+
+		>>> format( 'i', 'input.json' )
+		'-i=input.json'
+
+	"""
 
 	fmt = "-%s=%s"
 
@@ -85,6 +97,21 @@ def format(key, val):
 
 
 def listify ( arg ) :
+
+	"""
+
+		>>> from lib.args import *
+
+		>>> listify( None )
+		[]
+
+		>>> listify( 'value' )
+		['value']
+
+		>>> listify( ['value1', 'value2'] )
+		['value1', 'value2']
+
+	"""
 
 	if arg is None :
 		return []
