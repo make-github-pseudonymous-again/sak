@@ -18,4 +18,5 @@ def commit ( message, duration, authors = None ) :
 
 		} )
 
+	lib.git.add( "contributions.json" )
 	lib.git.commit( "-m", message )
