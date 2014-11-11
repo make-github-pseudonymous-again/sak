@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.json
+import lib.json, itertools
 
 ARGS = "args"
 KWARGS = "kwargs"
@@ -180,3 +180,50 @@ def inflate ( args, kwargs ) :
 		with lib.json.proxy(source, throws = True) as data : args.extend(data)
 
 	args.extend(argscopy)
+
+
+
+def accepts ( handle = print, **types ) :
+
+	"""
+
+		>>> from lib.args import *
+
+		>>> @accepts( a = int, b = list, c = str )
+		... def test ( a, b = None, c = None ) :
+		... 	print( 'ok' )
+
+		>>> test ( 13, c = 'df', b = [] )
+		ok
+
+		>>> test ( 13.2, c = 'df', b = [] )
+		arg 'a' = 13.2 does not match <class 'int'>
+		ok
+
+		>>> test ( 13, c = 'df' )
+		ok
+
+	"""
+
+	def wrap ( fn ) :
+
+		def wrapper( *args, **kwargs ) :
+
+			argkeys = fn.__code__.co_varnames
+
+			argpairs = ( ( argkeys[i], v ) for i, v in enumerate( args ) )
+			kwargpairs = kwargs.items()
+
+			fmt = "arg '%s' = %r does not match %s"
+
+			for k, v in itertools.chain( argpairs, kwargpairs ) :
+
+				if k in types and not isinstance( v, types[k] ) :
+					handle( fmt % ( k, v, types[k] ) )
+
+			return fn( *args, **kwargs )
+
+		wrapper.__name__ = fn.__name__
+		return wrapper
+
+	return wrap
