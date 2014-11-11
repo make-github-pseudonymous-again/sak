@@ -7,8 +7,6 @@ def commit ( message, duration, authors = None ) :
 
 	authors = lib.args.listify( authors )
 
-	lib.git.commit( "-m", message )
-
 	with lib.json.proxy( "contributions.json", mode = "w", default = [] ) as contribs :
 
 		contribs.append( {
@@ -20,3 +18,4 @@ def commit ( message, duration, authors = None ) :
 
 		} )
 
+	lib.git.commit( "-m", message )
