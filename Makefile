@@ -7,6 +7,7 @@ all:
 
 install:
 	ln -s $(CURDIR)/$(MAIN) $(WHICH)
+	chmod a+x $(WHICH)
 
 uninstall:
 	rm $(WHICH)
