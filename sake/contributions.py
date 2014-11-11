@@ -14,7 +14,7 @@ def commit ( message, duration, authors = None ) :
 			"authors" : authors,
 			"message" : message,
 			"duration" : duration,
-			"timestamp" : lib.time.nanoseconds()
+			"timestamp" : str( lib.time.nanoseconds() )
 
 		} )
 
