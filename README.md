@@ -2,8 +2,8 @@ Swiss Army KnifE
 ================
 
 [![Build Status](http://img.shields.io/travis/aureooms/sake.svg?style=flat)](https://travis-ci.org/aureooms/sake)
-[![Code Coverage](http://img.shields.io/scrutinizer/g/aureooms/sake.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sake/?branch=master)
-[![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/coverage/g/aureooms/sake.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sake/?branch=master)
+[![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/aureooms/sake.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sake/?branch=master)
+[![Code Coverage](http://img.shields.io/scrutinizer/coverage/g/aureooms/sake.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sake/?branch=master)
 [![GitHub issues](http://img.shields.io/github/issues/aureooms/sake.svg?style=flat)](https://github.com/aureooms/sake/issues)
 
 ***sake*** is a module based tool
