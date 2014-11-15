@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.config, lib.git, lib.error, lib.check, json, lib.curl
+import lib.config, lib.git, lib.error, lib.check, json, lib.curl, lib.url
 
 
 DOMAIN = 'github.com'
@@ -62,11 +62,25 @@ def list ( target = YOU, name = None, t = None, username = None, password = None
 
 	url = urls[target]
 
-	out, err, p = lib.curl.getjson(url, username = username, password = password)
+	pageid = 1
 
-	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
+	while True :
 
-	return json.loads(out.decode())
+		pageurl = url + lib.url.get( page = str( pageid ) )
+
+		out, err, p = lib.curl.getjson( pageurl, username = username, password = password )
+
+		lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+		pagecontent = json.loads( out.decode() )
+
+		if not pagecontent :
+			break
+
+		for item in pagecontent :
+			yield item
+
+		pageid += 1
 
 
 LICENSES = [

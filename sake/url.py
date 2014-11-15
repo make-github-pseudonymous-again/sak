@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.error
+import lib.error, lib.url
 
 try:
 
@@ -29,3 +29,7 @@ except ImportError as cause:
 	e = lib.error.ModuleMissingException(cause, "lxml")
 
 	href = lambda url, *args : lib.error.throw(e)
+
+
+def asgetparams ( **kwargs ) :
+	print( lib.url.get( **kwargs ) )
