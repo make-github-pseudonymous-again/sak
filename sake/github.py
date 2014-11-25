@@ -113,7 +113,7 @@ def download ( target = YOU, name = None, t = None, username = None, password = 
 		take = take and ( not regexp or re.match( regexp, repo ) is not None )
 
 		if take and ( not prompt or lib.input.yesorno( "clone '%s'?" % repo ) ) :
-			clone( repo, username )
+			clone( repo, username = username )
 
 
 def delete(owner, repo, username = None, password = None):
