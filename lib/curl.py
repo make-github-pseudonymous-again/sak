@@ -12,13 +12,26 @@ METHOD_PATCH = "PATCH"
 METHOD_UPDATE = "UPDATE"
 METHOD_DELETE = "DELETE"
 
+
 def body(data):
 	if data is not None : return ["-d", data]
 	else : return []
 
-def resource(contenttype, location, url):
-	if not location :  return ["-H", "Content-Type: %s" % contenttype, url]
-	else : return ["-H", "Content-Type: %s" % contenttype, "-L", url]
+
+def resource(contenttype, location, url, accept = None):
+
+	params = ["-H", "Content-Type: %s" % contenttype]
+
+	if accept is not None :
+		params += ["-H", "Accept: %s" % accept]
+
+	if location :
+		params.append("-L")
+
+	params.append(url)
+
+	return params
+
 
 def auth(username = None, password = None):
 	if username is None : return []
@@ -28,7 +41,7 @@ def auth(username = None, password = None):
 def request(method):
 	return ["-X", method]
 
-def call(method, url, contenttype, data = None, username = None, password = None, location = False, **kwargs):
+def call(method, url, contenttype, data = None, username = None, password = None, location = False, accept = None, **kwargs):
 
 	cmd = []
 	cmd.extend(CMD_CURL)

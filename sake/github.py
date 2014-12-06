@@ -136,7 +136,7 @@ def issues( user = False, org = None, username = None, password = None, filter =
 
 	if user :
 		url = "https://api.github.com/user/issues"
-	elif org is None :
+	elif org is not None :
 		url = "https://api.github.com/orgs/%s/issues" % org
 	else :
 		url = "https://api.github.com/issues"
@@ -150,9 +150,30 @@ def issues( user = False, org = None, username = None, password = None, filter =
 		"since" : since
 	}
 
-	_, _, p = lib.curl.getjson(url, parameters, username, password, stddefault = None)
+	_, _, p = lib.curl.getjson(url, parameters, username, password, accept = "application/vnd.github.v3.raw+json", stddefault = None)
 	print()
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+
+
+def createissue ( owner, repo, title, body = None, assignee = None, milestone = None, labels = None, username = None, password = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/#create-an-issue
+	"""
+
+	url = apiurl( "repos", owner, repo, "issues" )
+
+	labels = lib.args.listify( labels )
+
+	parameters = dict( title = title, body = body, assignee = assignee, milestone = milestone, labels = labels )
+
+	username, password = lib.github.credentials(username, password)
+
+	_, _, p = lib.curl.postjson(url, parameters, username, password, stddefault = None)
+	print()
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
 
 
 def labels ( owner, repo, name = None, issue = None, username = None, password = None ) :
