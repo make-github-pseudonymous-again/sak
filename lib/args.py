@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.json, itertools
+import lib.json, itertools, lib.error
 
 ARGS = "args"
 KWARGS = "kwargs"
@@ -220,6 +220,65 @@ def accepts ( handle = print, **types ) :
 
 				if k in types and not isinstance( v, types[k] ) :
 					handle( fmt % ( k, v, types[k] ) )
+
+			return fn( *args, **kwargs )
+
+		wrapper.__name__ = fn.__name__
+		return wrapper
+
+	return wrap
+
+
+def convert ( handle = lambda msg : lib.error.throw( Exception( msg ) ), **convertors ) :
+
+	"""
+
+		>>> from lib.args import *
+
+		>>> @convert( print, a = int, b = list, c = str )
+		... def test ( a, b = list("abc"), c = "2" ) :
+		... 	print( [a , b , c] )
+
+		>>> test ( "13", c = 5, b = "123" )
+		[13, ['1', '2', '3'], '5']
+
+		>>> test ( 13.2, c = 'df', b = (1,) )
+		[13, [1], 'df']
+
+		>>> test ( 13, c = 'df' )
+		[13, ['a', 'b', 'c'], 'df']
+
+		>>> test ( 13, 1, c = 'df' )
+		error in the conversion of arg 'b' = 1 using <class 'list'>, the error is 'int' object is not iterable
+		[13, 1, 'df']
+
+	"""
+
+	def wrap ( fn ) :
+
+		def wrapper( *args, **kwargs ) :
+
+			argkeys = fn.__code__.co_varnames
+
+			argpairs = ( ( i, argkeys[i], v ) for i, v in enumerate( args ) )
+			kwargpairs = ( ( k , k , v ) for k , v in kwargs.items() )
+			m = len ( args )
+			n = len ( kwargs )
+
+			fmt = "error in the conversion of arg '%s' = %r using %s, the error is %s"
+
+			args = list( args )
+			kwargs = dict( kwargs )
+
+			for a, ikv in zip( itertools.chain( itertools.repeat(args, m ), itertools.repeat(kwargs, n) ),  itertools.chain( argpairs, kwargpairs ) ) :
+
+				i, k, v = ikv
+
+				if k in convertors :
+					try :
+						 a[i] = convertors[k]( v )
+					except Exception as e:
+						handle( fmt % ( k, v, convertors[k], e ) )
 
 			return fn( *args, **kwargs )
 

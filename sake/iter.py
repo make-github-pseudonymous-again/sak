@@ -14,4 +14,13 @@ def each ( iterable = None , callable = None ) :
 	for item in iterable :
 
 		lib.sys.call( [ arg.replace( "%i", item ) for arg in callable ] , stddefault = None )
- 
+
+
+@lib.args.convert( n = int )
+def repeat ( item , n ) :
+
+	for i in range( n ) :
+		print( item )
+
+
+
