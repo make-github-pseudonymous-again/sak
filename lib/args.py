@@ -182,6 +182,51 @@ def inflate ( args, kwargs ) :
 	args.extend(argscopy)
 
 
+def validate ( handle = print, **predicates ) :
+
+	"""
+
+		>>> from lib.args import *
+
+		>>> @validate( a = lambda v : v <= 13 , b = lambda v : len(v) > 0, c = lambda v : v[:2] == "ab" )
+		... def test ( a, b = None, c = None ) :
+		... 	print( 'ok' )
+
+		>>> test ( 13, c = 'abdf', b = [1] )
+		ok
+
+		>>> test ( 13.2, c = 'abdf', b = [1,2] )
+		cannot validate arg 'a' = 13.2
+		ok
+
+		>>> test ( 13, c = 'df' )
+		cannot validate arg 'c' = 'df'
+		ok
+
+	"""
+
+	def wrap ( fn ) :
+
+		def wrapper( *args, **kwargs ) :
+
+			argkeys = fn.__code__.co_varnames
+
+			argpairs = ( ( argkeys[i], v ) for i, v in enumerate( args ) )
+			kwargpairs = kwargs.items()
+
+			fmt = "cannot validate arg '%s' = %r"
+
+			for k, v in itertools.chain( argpairs, kwargpairs ) :
+
+				if k in predicates and not predicates[k](v) :
+					handle( fmt % ( k , v ) )
+
+			return fn( *args, **kwargs )
+
+		wrapper.__name__ = fn.__name__
+		return wrapper
+
+	return wrap
 
 def accepts ( handle = print, **types ) :
 
