@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.args, lib.sys, fileinput
+import lib.args, lib.sys, fileinput, itertools, getpass
 
 def each ( iterable = None , callable = None ) :
 
@@ -17,10 +17,23 @@ def each ( iterable = None , callable = None ) :
 
 
 @lib.args.convert( n = int )
-def repeat ( item , n ) :
+def repeat ( item , n = -1 ) :
 
-	for i in range( n ) :
+	"""
+		Repeat given string n times. If n is negative then repeat given string an infinite number of times.
+	"""
+
+	if n < 0 :
+		args = [ None ]
+	else :
+		args = [ None , n ]
+
+	for _ in itertools.repeat( *args ) :
 		print( item )
 
 
+def password ( n = -1 ) :
+
+	item = getpass.getpass('Password to repeat : ')
+	repeat( item , n )
 
