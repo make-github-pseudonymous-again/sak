@@ -8,6 +8,65 @@ KWARGS = "kwargs"
 NO = "no"
 DIRECTIVE_ARG = "+a"
 
+def split ( string , argv , i = 0 , j = None , eos = None , buf = "" , escapefirst = False ) :
+
+	"""
+		Splits a command line argument string into tokens. Tokens are separated by whitespace. Whitespace can be included inside tokens
+		by wrapping tokens with single or double quotes. Whitespace can also be included by escaping them without the need for quote wrapping.
+		When inside a string standard escape sequence are allowed : line-feed and tabulations for example.
+		This method will return a tuple that can be used to continue the analysis of a string that was incomplete the first time the method was run.
+	"""
+
+	if j == None :
+		j = len( string )
+
+	if escapefirst and i < j :
+		buf += string[i]
+		i += 1
+
+	while i < j :
+
+		c = string[i]
+
+		if c == '\\' :
+			# escaped character
+			i += 1
+
+			if i == j :
+				return i , eos , buf , True
+
+			buf += string[i]
+
+		elif eos is None and c == ' ' :
+			if buf :
+				argv.append( buf )
+				buf = ""
+
+		elif c == '\'' or c == '"' :
+			if eos is None :
+				# beginning of a new string
+				eos = c
+			elif c == eos :
+				# this is the end of the current string
+				eos = None
+			else :
+				# this is simply an quote character
+				buf += c
+
+		else :
+			buf += c
+
+		i += 1
+
+	if eos is None :
+		if buf :
+			argv.append( buf )
+		return i , None , "" , False
+
+	else :
+		return i , eos , buf , False
+
+
 def parse ( argv, args, kwargs ) :
 
 	"""
