@@ -8,7 +8,7 @@ KWARGS = "kwargs"
 NO = "no"
 DIRECTIVE_ARG = "+a"
 
-def split ( string , argv , i = 0 , j = None , eos = None , buf = "" , escapefirst = False ) :
+def splitparts ( string , argv , i = 0 , j = None , eos = None , buf = "" , escapefirst = False ) :
 
 	"""
 		Splits a command line argument string into tokens. Tokens are separated by whitespace. Whitespace can be included inside tokens
@@ -33,7 +33,7 @@ def split ( string , argv , i = 0 , j = None , eos = None , buf = "" , escapefir
 			i += 1
 
 			if i == j :
-				return i , eos , buf , True
+				return eos , buf , True
 
 			buf += string[i]
 
@@ -58,13 +58,25 @@ def split ( string , argv , i = 0 , j = None , eos = None , buf = "" , escapefir
 
 		i += 1
 
-	if eos is None :
-		if buf :
-			argv.append( buf )
-		return i , None , "" , False
+	return eos , buf , False
 
-	else :
-		return i , eos , buf , False
+
+def split ( string ) :
+
+	argv = []
+
+	eos , buf , escaped = splitparts( string , argv )
+
+	if eos is not None:
+		raise Exception( "could not split arguments : incomplete string" )
+
+	elif escaped :
+		raise Exception( "could not split arguments : trailing escape char" )
+
+	if buf :
+		argv.append( buf )
+
+	return argv
 
 
 def parse ( argv, args, kwargs ) :

@@ -3,11 +3,21 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import lib.args, lib.sys, fileinput, itertools, getpass, lib.file
 
+# polyfill for generator zip function
 
-def each ( iterable = None , callable = None ) :
+if hasattr( itertools , "izip" ) :
+	_zip = itertools.izip
+
+else :
+	_zip = zip
+
+
+def imap ( callable = None , iterable = None ) :
 
 	iterable = lib.args.listify( iterable )
 	callable = lib.args.listify( callable )
+
+	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
 
 	if not iterable :
 		iterable = ( s[:-1] for s in fileinput.input( [] ) )
@@ -17,19 +27,19 @@ def each ( iterable = None , callable = None ) :
 		lib.sys.call( [ arg.format( item ) for arg in callable ] , stddefault = None )
 
 
-def stareach ( iterable = None , callable = None ) :
+def starmap ( callable = None , iterable = None ) :
 
 	iterable = lib.args.listify( iterable )
 	callable = lib.args.listify( callable )
+
+	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
 
 	if not iterable :
 		iterable = ( s[:-1] for s in fileinput.input( [] ) )
 
 	for item in iterable :
 
-		argv = []
-
-		lib.args.split( item , argv )
+		argv = lib.args.split( item )
 
 		args , kwargs = lib.args.parse( argv , [] , {} )
 
@@ -52,34 +62,21 @@ def repeat ( item , n = -1 ) :
 		print( item )
 
 
+@lib.args.convert( n = int )
 def password ( n = -1 ) :
 
 	item = getpass.getpass('Password to repeat : ')
 	repeat( item , n )
 
-if hasattr( itertools , "izip" ) :
 
-	_zip = itertools.izip
-
-else :
-
-	_zip = zip
-
-
-def izip ( callables = None ) :
+def izip ( callables = None , sep = " " ) :
 
 	callables = lib.args.listify( callables )
 
-	iterables = []
+	callables = map( lib.args.split , callables )
 
-	for callable in callables :
-
-		argv = []
-
-		lib.args.split( callable , argv )
-
-		iterables.append( lib.file.lineiterator( lib.sys.popen( argv ).stdout ) )
+	iterables = [ lib.file.lineiterator( lib.sys.popen( callable ).stdout ) for callable in callables ]
 
 	for t in _zip( *iterables ) :
 
-		print ( " ".join( t ) )
+		print ( *t , sep = sep )

@@ -150,7 +150,7 @@ class CannotInferSemverVersionNumberException ( MainException ) :
 
 class SubprocessArgsEmptyException ( MainException ) :
 	def __init__(self):
-		msg = "list of arguments is empty"
+		msg = "error in subprocess : list of arguments is empty"
 		MainException.__init__(self, msg)
 
 class SubprocessExecutableNotFoundException ( MainException ) :
