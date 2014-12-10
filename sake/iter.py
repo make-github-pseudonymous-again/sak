@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.args, lib.sys, fileinput, itertools, getpass
+import lib.args, lib.sys, fileinput, itertools, getpass, lib.file
 
 
 def each ( iterable = None , callable = None ) :
@@ -57,3 +57,29 @@ def password ( n = -1 ) :
 	item = getpass.getpass('Password to repeat : ')
 	repeat( item , n )
 
+if hasattr( itertools , "izip" ) :
+
+	_zip = itertools.izip
+
+else :
+
+	_zip = zip
+
+
+def izip ( callables = None ) :
+
+	callables = lib.args.listify( callables )
+
+	iterables = []
+
+	for callable in callables :
+
+		argv = []
+
+		lib.args.split( callable , argv )
+
+		iterables.append( lib.file.lineiterator( lib.sys.popen( argv ).stdout ) )
+
+	for t in _zip( *iterables ) :
+
+		print ( " ".join( t ) )

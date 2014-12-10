@@ -6,10 +6,11 @@ import lib.check, functools, subprocess, os, platform, lib.iterator
 
 STDDEFAULT = "stddefault"
 
-def call(cmd, *args, **kwargs):
 
-	lib.check.SubprocessArgsEmptyException(cmd)
-	lib.check.SubprocessExecutableNotFoundException(cmd[0])
+def popen ( cmd , *args , **kwargs ) :
+
+	lib.check.SubprocessArgsEmptyException( cmd )
+	lib.check.SubprocessExecutableNotFoundException( cmd[0] )
 
 	if STDDEFAULT in kwargs :
 		stddefault = kwargs[STDDEFAULT]
@@ -17,18 +18,24 @@ def call(cmd, *args, **kwargs):
 	else :
 		stddefault = subprocess.PIPE
 
-	popen = functools.partial(
+	Popen = functools.partial(
 		subprocess.Popen,
 		stdin = stddefault,
 		stdout = stddefault,
 		stderr = stddefault
 	)
 
-	p = popen(cmd, *args, **kwargs)
+	return Popen(cmd, *args, **kwargs)
+
+
+def call ( cmd , *args , **kwargs ) :
+
+	p = popen( cmd , *args , **kwargs )
 
 	out, err = p.communicate()
 
 	return out, err, p
+
 
 def extensions():
 	if platform.system() == "Windows" :

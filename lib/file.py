@@ -55,3 +55,8 @@ def touch ( *files, **kwargs ) :
 
 		with open(fname, 'a'):
 			os.utime(fname, times)
+
+
+def lineiterator ( fp ) :
+
+	return ( line[:-1].decode() for line in iter( fp.readline , b"" ) )
