@@ -40,3 +40,6 @@ def log(*args, **kwargs):
 
 def checkout(*args, **kwargs):
 	return do('checkout', *args, **kwargs)
+
+def submodule(*args, **kwargs):
+	return do('submodule', *args, **kwargs)
