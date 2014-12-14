@@ -7,6 +7,9 @@ import inspect, lib.pacman, json
 def throw ( e ) :
 	raise e
 
+def throws ( MyException ) :
+	return lambda *args : throw( MyException( *args ) )
+
 class MainException ( Exception ) :
 	def __init__(self, what):
 		Exception.__init__(self, what)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import os, sys, lib.file, lib.check
+import os, sys, lib.file, lib.check, fileinput, lib.args
 
 def concat(src, out):
 
@@ -61,3 +61,24 @@ def lineprepend(src = sys.stdin, string = "", width = 1):
 	if src != sys.stdin :
 		src.close()
 
+
+def uppercase ( *args ) :
+
+	for line in fileinput.input( args ) :
+
+		print( line.upper() , end = "" )
+
+
+def lowercase ( *args ) :
+
+	for line in fileinput.input( args ) :
+
+		print( line.lower() , end = "" )
+
+@lib.args.mandatory( n = True )
+@lib.args.convert( n = int )
+def truncate ( *args , n = None ) :
+
+	for line in fileinput.input( args ) :
+
+		print( line[:n] , end = "" )

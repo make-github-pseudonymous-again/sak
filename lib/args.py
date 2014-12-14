@@ -253,13 +253,75 @@ def inflate ( args, kwargs ) :
 	args.extend(argscopy)
 
 
-def validate ( handle = print, **predicates ) :
+def pairs ( fn , args , kwargs ) :
+
+	argkeys = fn.__code__.co_varnames
+
+	argpairs = ( ( argkeys[i], v ) for i, v in enumerate( args ) )
+	kwargpairs = kwargs.items()
+
+	return itertools.chain( argpairs, kwargpairs )
+
+
+def names ( fn , args , kwargs ) :
+
+	return set( [ name for name , _ in lib.args.pairs( fn , args , kwargs ) ] )
+
+
+def mandatory ( handle = lib.error.throws(Exception), **names ) :
 
 	"""
 
 		>>> from lib.args import *
 
-		>>> @validate( a = lambda v : v <= 13 , b = lambda v : len(v) > 0, c = lambda v : v[:2] == "ab" )
+		>>> @mandatory( print, c = True, b = False )
+		... def test ( a = 12, b = None, c = None ) :
+		... 	print( 'ok' )
+
+		>>> test ( 13, c = 'abdf', b = [1] )
+		ok
+
+		>>> test ( 13.2, b = [1,2] )
+		missing mandatory argument 'c'
+		ok
+
+		>>> test ( 13, c = 'df' )
+		ok
+
+		>>> test ( b = 2 , c = 'df' )
+		ok
+
+	"""
+
+	def wrap ( fn ) :
+
+		def wrapper( *args, **kwargs ) :
+
+			fmt = "missing mandatory argument '%s'"
+
+			keys = lib.args.names( fn , args , kwargs )
+
+			for k, v in names.items() :
+
+				if v and not k in keys :
+
+					handle( fmt % k )
+
+			return fn( *args, **kwargs )
+
+		wrapper.__name__ = fn.__name__
+		return wrapper
+
+	return wrap
+
+
+def validate ( handle = lib.error.throws(Exception), **predicates ) :
+
+	"""
+
+		>>> from lib.args import *
+
+		>>> @validate( print, a = lambda v : v <= 13 , b = lambda v : len(v) > 0, c = lambda v : v[:2] == "ab" )
 		... def test ( a, b = None, c = None ) :
 		... 	print( 'ok' )
 
@@ -280,14 +342,9 @@ def validate ( handle = print, **predicates ) :
 
 		def wrapper( *args, **kwargs ) :
 
-			argkeys = fn.__code__.co_varnames
-
-			argpairs = ( ( argkeys[i], v ) for i, v in enumerate( args ) )
-			kwargpairs = kwargs.items()
-
 			fmt = "cannot validate arg '%s' = %r"
 
-			for k, v in itertools.chain( argpairs, kwargpairs ) :
+			for k, v in lib.args.pairs( fn , args , kwargs ) :
 
 				if k in predicates and not predicates[k](v) :
 					handle( fmt % ( k , v ) )
@@ -299,13 +356,13 @@ def validate ( handle = print, **predicates ) :
 
 	return wrap
 
-def accepts ( handle = print, **types ) :
+def accepts ( handle = lib.error.throws(Exception), **types ) :
 
 	"""
 
 		>>> from lib.args import *
 
-		>>> @accepts( a = int, b = list, c = str )
+		>>> @accepts( print, a = int, b = list, c = str )
 		... def test ( a, b = None, c = None ) :
 		... 	print( 'ok' )
 
@@ -325,14 +382,9 @@ def accepts ( handle = print, **types ) :
 
 		def wrapper( *args, **kwargs ) :
 
-			argkeys = fn.__code__.co_varnames
-
-			argpairs = ( ( argkeys[i], v ) for i, v in enumerate( args ) )
-			kwargpairs = kwargs.items()
-
 			fmt = "arg '%s' = %r does not match %s"
 
-			for k, v in itertools.chain( argpairs, kwargpairs ) :
+			for k, v in lib.args.pairs( fn , args , kwargs ) :
 
 				if k in types and not isinstance( v, types[k] ) :
 					handle( fmt % ( k, v, types[k] ) )
@@ -345,7 +397,7 @@ def accepts ( handle = print, **types ) :
 	return wrap
 
 
-def convert ( handle = lambda msg : lib.error.throw( Exception( msg ) ), **convertors ) :
+def convert ( handle = lib.error.throws( Exception ), **convertors ) :
 
 	"""
 
