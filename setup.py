@@ -14,7 +14,7 @@ setup(
 	url='https://github.com/aureooms/sake',
 	license='LICENSE',
 	description='Swiss Army KnifE',
-	long_description=open('README.md').read(),
+	long_description=open('README').read(),
 	install_requires=[
 		"lxml",
 		"semantic_version"
