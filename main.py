@@ -63,7 +63,7 @@ def assignarguments ( hierarchy, action, inp ) :
 	kwargslist = lib.args.kwargslist( spec )
 
 	if kwargs :
-		
+
 		lib.check.KwargsNotSupportedException( actionName, kwargslist )
 
 		_kwargs = dict()
@@ -100,10 +100,14 @@ def assignarguments ( hierarchy, action, inp ) :
 	return args, kwargs
 
 
-if __name__ == '__main__' :
+def wrapped ( argv ) :
 
 	try :
-		main( sys.argv[1:] )
+		main( argv )
 
 	except lib.error.MainException as e :
 		print( e )
+
+
+if __name__ == '__main__' :
+	wrapped( sys.argv[1:] )

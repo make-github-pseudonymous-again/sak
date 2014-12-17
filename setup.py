@@ -1,6 +1,7 @@
 
 try:
     from setuptools import setup
+
 except ImportError:
     from distutils.core import setup
 
@@ -9,8 +10,7 @@ setup(
 	version='0.0.1',
 	author='aureooms',
 	author_email='aurelien.ooms@gmail.com',
-	packages=['sake'],
-	scripts=['main.py'],
+	scripts=['bin/$'],
 	url='https://github.com/aureooms/sake',
 	license='LICENSE',
 	description='Swiss Army KnifE',
