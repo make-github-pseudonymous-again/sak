@@ -6,7 +6,7 @@ except ImportError:
     from distutils.core import setup
 
 setup(
-	name='Sake',
+	name='sak',
 	version='0.0.1',
 	author='aureooms',
 	author_email='aurelien.ooms@gmail.com',
