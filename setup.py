@@ -6,7 +6,7 @@ setup(
 	version='0.0.1',
 	author='aureooms',
 	author_email='aurelien.ooms@gmail.com',
-	packages=['sake'],
+	packages=['sak'],
 	scripts=['main.py'],
 	url='http://pypi.python.org/pypi/TowelStuff/',
 	license='LICENSE',
