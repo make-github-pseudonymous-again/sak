@@ -7,7 +7,7 @@ except ImportError:
 
 setup(
 	name='sak',
-	version='0.0.1',
+	version='0.0.2',
 	author='aureooms',
 	author_email='aurelien.ooms@gmail.com',
 	scripts=['sak'],
