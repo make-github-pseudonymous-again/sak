@@ -1,5 +1,5 @@
 
-MAIN = main.py
+MAIN = sak
 WHICH = /usr/local/bin/$$
 OLDWHICH = /usr/bin/$$
 

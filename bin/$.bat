@@ -1,1 +1,1 @@
-@call python %~dp0..\main.py %*
+@call python %~dp0..\sak.py %*

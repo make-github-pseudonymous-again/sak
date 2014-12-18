@@ -10,7 +10,7 @@ setup(
 	version='0.0.1',
 	author='aureooms',
 	author_email='aurelien.ooms@gmail.com',
-	scripts=['bin/$'],
+	scripts=['sak'],
 	url='https://github.com/aureooms/sake',
 	license='LICENSE',
 	description='Swiss Army KnifE',
