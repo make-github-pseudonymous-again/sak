@@ -40,10 +40,22 @@ class FTP(object):
 		return base64.b64encode(h).decode('ascii')
 
 
-	def hash(self, root, htree, tree, skip, current = ''):
-		for t, item in self.ftp.ls(current):
+	def ls( self , path ) :
 
-			if item == '.' or item == '..' or skip(current, item) : continue
+		for itemtype , item in self.ftp.ls( path ) :
+
+			if item != '.' and item != '..' :
+
+				yield itemtype , item
+
+
+	def hash(self, root, htree, tree, skip, current = ''):
+
+		for t , item in self.ls( current ) :
+
+			if skip( current , item ) :
+
+				continue
 
 			minipath = current + item
 
@@ -58,6 +70,21 @@ class FTP(object):
 			elif t == self.ftp.DIR:
 				tree[item] = {}
 				self.hash(root, htree, tree[item], skip, current + item + '/')
+
+
+	def recursivermd( self , path ) :
+
+		for itemtype , item in self.ls( path ):
+
+			itempath = path + '/' + item
+
+			if itemtype == self.ftp.FILE:
+				self.delete( itempath )
+
+			elif itemtype == self.ftp.DIR:
+				self.recursivermd( itempath )
+
+		self.rmd( path )
 
 
 	def _makedirs(self, root, model, current):

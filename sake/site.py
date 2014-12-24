@@ -23,6 +23,25 @@ def up(directory = '.', config_file = 'json/config.json', dry_run = False):
 	toggle('up', directory, config_file, dry_run)
 
 
+def clear ( target , directory = '.' , config_file = 'json/config.json' , dry_run = False ) :
+
+	local = {
+		'root' : os.path.abspath( directory ) ,
+		'hash' : {} ,
+		'tree' : {}
+	}
+
+	if not lib.site.FTPSite.check_local_root( local['root'] ) :
+		return
+
+	def pre ( helper , config ) :
+		pass
+
+	def callback ( helper , config ) :
+		helper.remote.recursivermd( target )
+
+	lib.site.FTPSite.wrap( local , config_file , dry_run , pre , callback )
+
 
 def push(directory = '.', config_file = 'json/config.json', dry_run = False):
 
