@@ -18,7 +18,8 @@ try:
 	def title ( url, *args ) :
 		request = urllib2.Request(url)
 		request.add_header("User-Agent", SPOOF_USER_AGENT)
-		conn = urllib2.urlopen(request)
+		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor)
+		conn = opener.open(request)
 		parser = lxml.etree.HTMLParser(encoding = "utf-8")
 		tree = lxml.etree.parse(conn, parser = parser)
 		title = tree.find('.//title')
@@ -33,7 +34,8 @@ try:
 	def href(url, *args):
 		request = urllib2.Request(url)
 		request.add_header("User-Agent", SPOOF_USER_AGENT)
-		conn = urllib2.urlopen(request)
+		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor)
+		conn = opener.open(request)
 		parser = lxml.etree.HTMLParser(encoding = "utf-8")
 		tree = lxml.etree.parse(conn, parser = parser)
 		title = tree.find('.//title')
