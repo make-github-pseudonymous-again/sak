@@ -3,6 +3,8 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 
 import lib.error, lib.url
 
+SPOOF_USER_AGENT = "Mozilla/5.0 (X11; U; Linux x86_64; fr; rv:1.9.1.5) Gecko/20091109 Ubuntu/9.10 (karmic) Firefox/3.5.5"
+
 try:
 
 	import lxml.etree
@@ -12,8 +14,26 @@ try:
 	except :
 		import urllib2
 
+
+	def title ( url, *args ) :
+		request = urllib2.Request(url)
+		request.add_header("User-Agent", SPOOF_USER_AGENT)
+		conn = urllib2.urlopen(request)
+		parser = lxml.etree.HTMLParser(encoding = "utf-8")
+		tree = lxml.etree.parse(conn, parser = parser)
+		title = tree.find('.//title')
+		if title is not None : text = title.text
+		else : text = url
+
+		print ( text )
+
+		if len(args) : href(*args)
+
+
 	def href(url, *args):
-		conn = urllib2.urlopen(url)
+		request = urllib2.Request(url)
+		request.add_header("User-Agent", SPOOF_USER_AGENT)
+		conn = urllib2.urlopen(request)
 		parser = lxml.etree.HTMLParser(encoding = "utf-8")
 		tree = lxml.etree.parse(conn, parser = parser)
 		title = tree.find('.//title')
@@ -28,6 +48,7 @@ except ImportError as cause:
 
 	e = lib.error.ModuleMissingException(cause, "lxml")
 
+	title = lambda url, *args : lib.error.throw(e)
 	href = lambda url, *args : lib.error.throw(e)
 
 
