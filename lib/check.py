@@ -1,28 +1,16 @@
 import lib.error, lib.list, lib.sys, inspect
 
-def ModuleNameSpecified(root, inp):
-	if len(inp) < 1:
-		raise lib.error.ModuleNameNotSpecifiedException(root)
+def ModuleOrActionNameSpecified (parent, root , inp , i ) :
+	if len( inp ) <= i :
+		raise lib.error.ModuleOrActionNameNotSpecifiedException( parent , root )
 
-def ModuleNameExists(root, moduleName, modules):
+def ModuleOrActionNameExists(parent, root, moduleName, modules):
 	if len(modules) == 0:
-		raise lib.error.ModuleDoesNotExistException(moduleName, root)
+		raise lib.error.ModuleOrActionNameDoesNotExistException(parent , moduleName, root)
 
-def ModuleNameNotAmbiguous(moduleName, modules):
+def ModuleOrActionNameNotAmbiguous(parent, moduleName, modules):
 	if len(modules) > 1:
-		raise lib.error.ModuleNameAmbiguousException(moduleName, modules)
-
-def ActionNameSpecified(inp, moduleName, module):
-	if len(inp) < 2:
-		raise lib.error.ActionNameNotSpecifiedException(module, moduleName)
-
-def ActionNameExists(moduleName, module, actionName, actions):
-	if len(actions) == 0:
-		raise lib.error.ActionDoesNotExistException(actionName, module, moduleName)
-
-def ActionNameNotAmbiguous(moduleName, module, actionName, actions):
-	if len(actions) > 1:
-		raise lib.error.ActionNameAmbiguousException(actionName, moduleName, actions)
+		raise lib.error.ModuleOrActionNameAmbiguousException(parent, moduleName, modules)
 
 def KwargsNotSupportedException( actionname, available ):
 	if len( available ) == 0:

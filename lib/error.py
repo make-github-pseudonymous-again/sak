@@ -19,41 +19,24 @@ class MainException ( Exception ) :
 		return self.what()
 
 
-class ModuleNameNotSpecifiedException ( MainException ) :
-	def __init__(self, main_module):
-		fmt = 'Module name not specified, available modules are : %s'
-		args = (', '.join(sorted(lib.pacman.public(main_module, [inspect.ismodule]))))
+class ModuleOrActionNameNotSpecifiedException ( MainException ) :
+	def __init__( self , parent , main_module ) :
+		fmt = 'Module or action name in module \'%s\' not specified, available modules and actions are : %s'
+		args = (parent, ', '.join(sorted(lib.pacman.public(main_module, [inspect.ismodule, inspect.isfunction]))))
 		MainException.__init__(self, fmt % args)
 
-class ModuleNameAmbiguousException ( MainException ) :
-	def __init__(self, module_name, l):
-		fmt = 'Module \'%s\' is ambiguous, matching modules are : %s'
-		args = (module_name, ', '.join(l))
+class ModuleOrActionNameAmbiguousException ( MainException ) :
+	def __init__( self , parent , module_name , matching ) :
+		fmt = 'Module or action \'%s\' in module \'%s\' is ambiguous, matching modules and actions are : %s'
+		args = (module_name, parent ,', '.join(matching))
 		MainException.__init__(self, fmt % args)
 
-class ModuleDoesNotExistException ( MainException ) :
-	def __init__(self, module_name, main_module):
-		fmt = 'Module \'%s\' does not exist, available modules are : %s'
-		args = (module_name, ', '.join(sorted(lib.pacman.public(main_module, [inspect.ismodule]))))
+class ModuleOrActionNameDoesNotExistException ( MainException ) :
+	def __init__(self, parent , module_name, main_module):
+		fmt = 'Module or action \'%s\' in module \'%s\' does not exist, available modules and actions are : %s'
+		args = (module_name, parent , ', '.join(sorted(lib.pacman.public(main_module, [inspect.ismodule, inspect.isfunction]))))
 		MainException.__init__(self, fmt % args)
 
-class ActionNameNotSpecifiedException ( MainException ) :
-	def __init__(self, module, module_name):
-		fmt = 'Action name in module \'%s\' not specified, available actions are : %s'
-		args = (module_name, ', '.join(sorted(lib.pacman.public(module, [inspect.isfunction]))))
-		MainException.__init__(self, fmt % args)
-
-class ActionNameAmbiguousException ( MainException ) :
-	def __init__(self, action_name, module_name, l):
-		fmt = 'Action \'%s\' in module \'%s\' is ambiguous, matching actions are : %s'
-		args = (action_name, module_name, ', '.join(l))
-		MainException.__init__(self, fmt % args)
-
-class ActionDoesNotExistException ( MainException ) :
-	def __init__(self, action_name, module, module_name):
-		fmt = 'Action \'%s\' in module \'%s\' does not exist, available actions are : %s'
-		args = (action_name, module_name, ', '.join(sorted(lib.pacman.public(module, [inspect.isfunction]))))
-		MainException.__init__(self, fmt % args)
 
 class KwargsNotSupportedException ( MainException ) :
 	def __init__(self, action_name):

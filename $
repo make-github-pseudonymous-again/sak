@@ -1,49 +1,43 @@
 #!/usr/bin/env python3
 
-import sys, sak, inspect, lib.pacman, lib.error, lib.check, lib.args, lib.str
+import sys, sak, inspect, lib.pacman, lib.error, lib.check, lib.args, lib.str , lib.fn
 
 
 def main ( inp ) :
 
-	hierarchy, action, inp = findaction( inp, [] )
+	hierarchy, action, inp = findaction( sak , inp , ['sak'] )
 	args, kwargs = assignarguments( hierarchy, action, inp )
 	action( *args, **kwargs )
 
 
-def findaction ( inp, hierarchy ) :
+def findaction ( module , inp , hierarchy ) :
 
 	# DETERMINE MODULE
 
-	lib.check.ModuleNameSpecified( sak, inp )
-	moduleName = inp[0]
+	i = 0
 
-	modules = lib.pacman.resolve( moduleName, sak )
+	while True :
 
-	lib.check.ModuleNameExists( sak, moduleName, modules )
-	lib.check.ModuleNameNotAmbiguous( moduleName, modules )
+		parent = '.'.join(hierarchy)
 
-	moduleName = modules[0]
-	module = getattr( sak, moduleName )
+		lib.check.ModuleOrActionNameSpecified( parent , module , inp , i )
+		moduleName = inp[i]
 
-	hierarchy.append( moduleName )
+		modules = lib.pacman.resolve( moduleName , module )
 
+		lib.check.ModuleOrActionNameExists( parent, module , moduleName , modules )
+		lib.check.ModuleOrActionNameNotAmbiguous( parent, moduleName, modules )
 
-	# DETERMINE ACTION
+		moduleName = modules[0]
+		module = getattr( module , moduleName )
 
-	lib.check.ActionNameSpecified( inp, moduleName, module )
-	actionName = inp[1]
+		hierarchy.append( moduleName )
 
-	actions = lib.pacman.resolve( actionName, module )
+		i += 1
 
-	lib.check.ActionNameExists( moduleName, module, actionName, actions )
-	lib.check.ActionNameNotAmbiguous( moduleName, module, actionName, actions )
+		if lib.fn.callable( module ) : break
 
-	actionName = actions[0]
-	action = getattr( module, actionName )
-
-	hierarchy.append( actionName )
-
-	return hierarchy, action, inp[2:]
+	return hierarchy , module , inp[i:]
 
 
 def assignarguments ( hierarchy, action, inp ) :

@@ -6,12 +6,12 @@ try :
 except :
 	importmodule = __import__
 
-def reset(t):
+def reset ( t ) :
 	t.__all__ = []
 
-def init(t):
-	if type(getattr(t, '__all__', None)) != list:
-		reset(t)
+def init ( t ) :
+	if type( getattr( t , '__all__' , None ) ) != list :
+		reset( t )
 
 def exists(s, t):
 	return s in t.__dict__
@@ -99,28 +99,36 @@ def toolbox(t):
 
 
 def resolve ( target, module ) :
-
 	return lib.str.mostlikely( target, module.__all__ )
 
 
+def __init__(t, root, ancestors = None):
 
-def __init__(t, root):
+	if ancestors is None :
+		ancestors = [ ]
 
-	reset(t)
+	uid = ancestors + [os.path.basename(root)]
 
-	module = os.path.basename(root)
+	module = '.'.join( uid )
+
+	_all = []
 
 	for f in os.listdir(root):
 		path = root + '/' + f
 
 		if os.path.isdir(path):
-			if os.path.isfile(path + '/__init__.py'):
-				setattr(t, f, importmodule(module + '.' + f))
-				t.__all__.append(f)
 
-			elif f != '__pycache__':
-				setattr(t, f, types.ModuleType(f))
-				__init__(t, path)
+			if f != '__pycache__' :
+
+				if os.path.isfile( path + '/__init__.py' ) :
+					child = importmodule( module + '.' + f )
+
+				else :
+					child = types.ModuleType( f )
+					__init__( child , path , uid )
+
+				setattr( t , f , child )
+				_all.append( f )
 
 		elif os.path.isfile(path) and f != '__init__.py':
 			name, ext = os.path.splitext(f)
@@ -128,8 +136,10 @@ def __init__(t, root):
 			if ext == '.py':
 				s = importmodule(module + '.' + name)
 				setattr(t, name, s)
-				t.__all__.append(name)
+				_all.append(name)
 				toolbox(s)
+
+	t.__all__ = _all
 
 def format(M, pred):
 	return ', '.join(o for o, _ in inspect.getmembers(M, pred))
