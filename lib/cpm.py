@@ -1,11 +1,11 @@
 
-import lib.json, os.path, lib.fn, lib.github, lib.bitbucket, sake.github, sake.bitbucket
+import lib.json, os.path, lib.fn, lib.github, lib.bitbucket, sak.github, sak.bitbucket
 
 
 
 VENDORS = {
-	lib.github.DOMAIN : sake.github,
-	lib.bitbucket.DOMAIN : sake.bitbucket
+	lib.github.DOMAIN : sak.github,
+	lib.bitbucket.DOMAIN : sak.bitbucket
 }
 
 

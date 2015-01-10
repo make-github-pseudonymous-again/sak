@@ -1,4 +1,4 @@
-import shutil, sake.github, lib.github, lib.sake, sake.npm
+import shutil, sak.github, lib.github, lib.sak, sak.npm
 import lib.bower, lib.check, collections, lib.dir, lib.file
 import lib.codebricks, fileinput, lib.args
 
@@ -35,7 +35,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 
 	fmtargs["qualifiedname"] = qualifiedname
 
-	sake.github.new(
+	sak.github.new(
 		repo,
 		username = username,
 		password = password,
@@ -50,7 +50,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 		license_template = license["template"]
 	)
 
-	_, _, p = sake.github.clone( "%(username)s/%(repo)s" % fmtargs, username = username )
+	_, _, p = sak.github.clone( "%(username)s/%(repo)s" % fmtargs, username = username )
 
 
 	with lib.dir.cd(repo) :
@@ -128,18 +128,18 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 		lib.dir.makedirs("js/src", "test/js/src")
 		lib.file.touch("js/src/dummy.js")
 
-		shutil.copy(lib.sake.data("codebricks", "js-index.js"), "js/index.js")
-		shutil.copy(lib.sake.data("codebricks", "test-js-index.js"), "test/js/index.js")
-		shutil.copy(lib.sake.data("codebricks", "test-js-src-dummy.js"), "test/js/src/dummy.js")
+		shutil.copy(lib.sak.data("codebricks", "js-index.js"), "js/index.js")
+		shutil.copy(lib.sak.data("codebricks", "test-js-index.js"), "test/js/index.js")
+		shutil.copy(lib.sak.data("codebricks", "test-js-src-dummy.js"), "test/js/src/dummy.js")
 
 		if ci == TRAVISCI :
-			shutil.copy(lib.sake.data("codebricks", ".travis.yml"), ".travis.yml")
+			shutil.copy(lib.sak.data("codebricks", ".travis.yml"), ".travis.yml")
 
 		lib.git.add("--all", ".")
 		lib.git.commit("-am", "$ codebricks new")
 		lib.git.push()
-		sake.npm.install()
-		sake.npm.release("0.0.1")
+		sak.npm.install()
+		sak.npm.release("0.0.1")
 		lib.bower.register(qualifiedname, "github.com/%(username)s/%(repo)s" % fmtargs, force = True)
 
 
@@ -168,7 +168,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 
 	keywords = sorted(list(set(["js", "javascript", "bricks"] + keywords)))
 
-	sake.github.new(
+	sak.github.new(
 		slug,
 		username = username,
 		password = password,
@@ -181,7 +181,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 		has_downloads = lib.github.TRUE
 	)
 
-	sake.github.clone( oldrepo, slug, username )
+	sak.github.clone( oldrepo, slug, username )
 
 	with lib.dir.cd( slug ) :
 
@@ -226,6 +226,6 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 		lib.git.add( "--all", "." )
 		lib.git.commit( "-am", "$ codebricks fork %s" % oldrepo )
 		lib.git.push( "-u", "origin", "master" )
-		sake.npm.install()
-		sake.npm.release( "major" )
+		sak.npm.install()
+		sak.npm.release( "major" )
 		lib.bower.register( qualifiedname, "github.com/%s/%s" % ( username, slug ), force = True )

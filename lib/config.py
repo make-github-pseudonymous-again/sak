@@ -5,7 +5,7 @@ try :
 except :
 	import urllib
 
-fname = os.path.expanduser('~/.sake')
+fname = os.path.expanduser('~/.sak')
 
 def new():
 	return {'u':{}, 'm':{}}

@@ -1,4 +1,4 @@
-import os, lib.cson, sake.cat, itertools, lib.atom
+import os, lib.cson, sak.cat, itertools, lib.atom
 
 PROJECTSFILE = os.path.expanduser( "~/.atom/projects.cson" )
 
@@ -10,7 +10,7 @@ def project ( directory ) :
 
 def projects () :
 
-	sake.cat.text( PROJECTSFILE )
+	sak.cat.text( PROJECTSFILE )
 
 
 def add ( directory = ".", *others ) :

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, sake, inspect, lib.pacman, lib.error, lib.check, lib.args, lib.str
+import sys, sak, inspect, lib.pacman, lib.error, lib.check, lib.args, lib.str
 
 
 def main ( inp ) :
@@ -14,16 +14,16 @@ def findaction ( inp, hierarchy ) :
 
 	# DETERMINE MODULE
 
-	lib.check.ModuleNameSpecified( sake, inp )
+	lib.check.ModuleNameSpecified( sak, inp )
 	moduleName = inp[0]
 
-	modules = lib.pacman.resolve( moduleName, sake )
+	modules = lib.pacman.resolve( moduleName, sak )
 
-	lib.check.ModuleNameExists( sake, moduleName, modules )
+	lib.check.ModuleNameExists( sak, moduleName, modules )
 	lib.check.ModuleNameNotAmbiguous( moduleName, modules )
 
 	moduleName = modules[0]
-	module = getattr( sake, moduleName )
+	module = getattr( sak, moduleName )
 
 	hierarchy.append( moduleName )
 

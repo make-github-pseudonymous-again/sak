@@ -1,9 +1,9 @@
 
-MAIN = sak
-WHICH = /usr/local/bin/$$
-OLDWHICH = /usr/bin/$$
+# installation makefile for people willing to install locally
+# ~/bin must be on the PATH
 
-all:
+MAIN = $$
+WHICH = ~/bin/$$
 
 install:
 	ln -s $(CURDIR)/$(MAIN) $(WHICH)
@@ -11,8 +11,3 @@ install:
 
 uninstall:
 	rm $(WHICH)
-
-olduninstall:
-	rm $(OLDWHICH)
-
-clean:

@@ -1,4 +1,4 @@
-import inspect, sake, lib.pacman, lib.check, functools, lib.source
+import inspect, sak, lib.pacman, lib.check, functools, lib.source
 
 def ensurefmt(fmt, n):
 	fmt = list(fmt)
@@ -35,22 +35,22 @@ def info(module = None, action = None):
 	fmtM = functools.partial(lib.pacman.format, pred = inspect.isfunction)
 	fmtA = lambda A : inspect.formatargspec(*inspect.getargspec(A))
 
-	walk(sake, module, action, fmtR, fmtM, fmtA)
+	walk(sak, module, action, fmtR, fmtM, fmtA)
 
 
 def doc(module = None, action = None):
 	"""
-		Print the doc of the specified element (default = sake root module)
+		Print the doc of the specified element (default = sak root module)
 	"""
 
-	walk(sake, module, action, inspect.getdoc)
+	walk(sak, module, action, inspect.getdoc)
 
 
 def source(module = None, action = None, linenos = False, filename = False):
 	"""
-		Print the source of the specified element (default = sake root module)
+		Print the source of the specified element (default = sak root module)
 	"""
 
 	fmt = functools.partial(lib.source.pretty, linenos = linenos, filename = filename)
 
-	walk(sake, module, action, fmt)
+	walk(sak, module, action, fmt)

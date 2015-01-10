@@ -1,4 +1,4 @@
-import lib.cpm, sake.github, sake.bitbucket, lib.config, lib.git, lib.http, os.path
+import lib.cpm, lib.config, lib.git, lib.http, os.path
 
 
 def update():
