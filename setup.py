@@ -4,7 +4,7 @@ except ImportError : from distutils.core import setup
 
 setup (
 
-	name = 'sak' , version = '0.0.4 ,
+	name = 'sak' , version = '0.0.4' ,
 
 	description = 'Swiss Army Knife',
 	long_description = open( 'README.md' ).read( ) ,
