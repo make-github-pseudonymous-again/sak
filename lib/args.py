@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function, unicode_literals
 
-import lib.json, itertools, lib.error
+import lib.json , itertools , lib.error , inspect
 
 ARGS = "args"
 KWARGS = "kwargs"
@@ -11,10 +11,13 @@ DIRECTIVE_ARG = "+a"
 def splitparts ( string , argv , i = 0 , j = None , eos = None , buf = "" , escapefirst = False ) :
 
 	"""
-		Splits a command line argument string into tokens. Tokens are separated by whitespace. Whitespace can be included inside tokens
-		by wrapping tokens with single or double quotes. Whitespace can also be included by escaping them without the need for quote wrapping.
-		When inside a string standard escape sequence are allowed : line-feed and tabulations for example.
-		This method will return a tuple that can be used to continue the analysis of a string that was incomplete the first time the method was run.
+		Splits a command line argument string into tokens. Tokens are separated
+		by whitespace. Whitespace can be included inside tokens by wrapping tokens with
+		single or double quotes. Whitespace can also be included by escaping them
+		without the need for quote wrapping. When inside a string standard escape
+		sequence are allowed : line-feed and tabulations for example. This method will
+		return a tuple that can be used to continue the analysis of a string that was
+		incomplete the first time the method was run.
 	"""
 
 	if j == None :
@@ -454,3 +457,19 @@ def convert ( handle = lib.error.throws( Exception ), **convertors ) :
 		return wrapper
 
 	return wrap
+
+
+def forward ( callable , locals ) :
+
+	argspec = inspect.getfullargspec( callable )
+
+	if argspec.args is None : args = []
+	else : args = [ locals[key] for key in argspec.args ]
+
+	if argspec.varkw is None : kwargs = {}
+	else : kwargs = { key : item for key , item in locals.items( ) if key in argspec.varkw }
+
+	return callable( *args , **kwargs )
+
+
+
