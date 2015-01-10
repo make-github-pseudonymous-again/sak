@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os, json, socket, tempfile, lib.ftp, lib.nice.ftp, lib.nice.file
 

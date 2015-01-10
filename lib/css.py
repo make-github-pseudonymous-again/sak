@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
-
 
 def rgba2hex(r, g, b, a = None):
 	if a is None : return rgb2hex(r, g, b)
