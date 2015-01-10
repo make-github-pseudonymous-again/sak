@@ -19,12 +19,6 @@ STARGAZERS = lib.github.STARGAZERS
 SORT = lib.github.SORT
 
 
-def apiurl ( *args ) :
-
-	args = map( str, args )
-
-	return "https://api.github.com/" + '/'.join( args )
-
 
 def clone( repo, dest = None, username = None ):
 
@@ -65,9 +59,9 @@ def new(name, org = None, team_id = None, username = None, password = None, auto
 
 
 	if org is None :
-		url = "https://api.github.com/user/repos"
+		url = lib.github.api( "user" , "repos" )
 	else :
-		url = "https://api.github.com/orgs/%s/repos" % org
+		url = lib.github.api( "orgs" , org , "repos" )
 
 	_, _, p = lib.curl.postjson(url, parameters, username, password, stddefault = None)
 	print()
@@ -119,40 +113,18 @@ def download ( target = YOU, name = None, t = None, username = None, password = 
 def delete(owner, repo, username = None, password = None):
 	username, password = lib.github.credentials(username, password)
 
-	url = "https://api.github.com/repos/%s/%s" % (owner, repo)
+	url = lib.github.api( "repos" , owner , repo )
 	_, _, p = lib.curl.deletejson(url, username = username, password = password, stddefault = None)
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
 
 
-def issues( user = False, org = None, username = None, password = None, filter = None, state = None, labels = None, sort = None, direction = None, since = None ) :
+def issues( owner = None , repo = None , user = False, org = None, username = None, password = None, filter = None, state = None, labels = None, sort = None, direction = None, since = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/
-	"""
+	for issue in lib.args.forward( lib.github.issues , locals( ) ) :
 
-	username, password = lib.github.credentials(username, password)
-
-	if user :
-		url = "https://api.github.com/user/issues"
-	elif org is not None :
-		url = "https://api.github.com/orgs/%s/issues" % org
-	else :
-		url = "https://api.github.com/issues"
-
-	parameters = {
-		"filter" : filter,
-		"state" : state,
-		"labels" : labels,
-		"sort": sort,
-		"direction" : direction,
-		"since" : since
-	}
-
-	_, _, p = lib.curl.getjson(url, parameters, username, password, accept = "application/vnd.github.v3.raw+json", stddefault = None)
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+		print( issue )
 
 
 
@@ -162,7 +134,7 @@ def createissue ( owner, repo, title, body = None, assignee = None, milestone = 
 		https://developer.github.com/v3/issues/#create-an-issue
 	"""
 
-	url = apiurl( "repos", owner, repo, "issues" )
+	url = lib.github.api( "repos", owner, repo, "issues" )
 
 	labels = lib.args.listify( labels )
 
@@ -175,6 +147,12 @@ def createissue ( owner, repo, title, body = None, assignee = None, milestone = 
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
 
+def closeissues ( owner , repo , *issuenos , username = None , password = None ) :
+	pass
+
+def migrateissues ( owner , origin , destination , *issuenos , username = None , password = None ) :
+	pass
+
 
 def labels ( owner, repo, name = None, issue = None, username = None, password = None ) :
 
@@ -183,11 +161,11 @@ def labels ( owner, repo, name = None, issue = None, username = None, password =
 	"""
 
 	if issue is not None :
-		url = apiurl( "repos", owner, repo, "issues", issue, "labels" )
+		url = lib.github.api( "repos", owner, repo, "issues", issue, "labels" )
 	elif name is not None :
-		url = apiurl( "repos", owner, repo, "labels", name )
+		url = lib.github.api( "repos", owner, repo, "labels", name )
 	else :
-		url = apiurl( "repos", owner, repo, "labels" )
+		url = lib.github.api( "repos", owner, repo, "labels" )
 
 	_, _, p = lib.curl.getjson( url, None, username, password, stddefault = None )
 	print()
@@ -200,7 +178,7 @@ def createlabel ( owner, repo, name, color, username = None, password = None ) :
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	url = apiurl( "repos", owner, repo, "labels" )
+	url = lib.github.api( "repos", owner, repo, "labels" )
 
 	parameters = dict( name = name, color = color )
 
@@ -217,7 +195,7 @@ def updatelabel ( owner, repo, oldname, newname, color, username = None, passwor
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	url = apiurl( "repos", owner, repo, "labels", oldname )
+	url = lib.github.api( "repos", owner, repo, "labels", oldname )
 
 	parameters = dict( name = newname, color = color )
 
@@ -235,7 +213,7 @@ def deletelabel ( owner, repo, name, username = None, password = None ) :
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	url = apiurl( "repos", owner, repo, "labels", name )
+	url = lib.github.api( "repos", owner, repo, "labels", name )
 
 	username, password = lib.github.credentials( username, password )
 
@@ -254,7 +232,7 @@ def addlabels ( owner, repo, issue, labels = None, username = None, password = N
 
 	username, password = lib.github.credentials( username, password )
 
-	url = apiurl( "repos", owner, repo, "issues", issue, "labels" )
+	url = lib.github.api( "repos", owner, repo, "issues", issue, "labels" )
 
 	_, _, p = lib.curl.postjson( url, labels, username, password, stddefault = None )
 	print()
@@ -269,7 +247,7 @@ def removelabel ( owner, repo, issue, label, username = None, password = None ) 
 
 	username, password = lib.github.credentials( username, password )
 
-	url = apiurl( "repos", owner, repo, "issues", issue, "labels", label )
+	url = lib.github.api( "repos", owner, repo, "issues", issue, "labels", label )
 
 	_, _, p = lib.curl.deletejson( url, None, username, password, stddefault = None )
 	print()
@@ -286,7 +264,7 @@ def updatelabels ( owner, repo, issue, labels = None, username = None, password 
 
 	username, password = lib.github.credentials( username, password )
 
-	url = apiurl( "repos", owner, repo, "issues", issue, "labels" )
+	url = lib.github.api( "repos", owner, repo, "issues", issue, "labels" )
 
 	_, _, p = lib.curl.putjson( url, labels, username, password, stddefault = None )
 	print()
@@ -301,7 +279,7 @@ def removealllabels ( owner, repo, issue, username = None, password = None ) :
 
 	username, password = lib.github.credentials( username, password )
 
-	url = apiurl( "repos", owner, repo, "issues", issue, "labels" )
+	url = lib.github.api( "repos", owner, repo, "issues", issue, "labels" )
 
 	_, _, p = lib.curl.deletejson( url, None, username, password, stddefault = None )
 	print()
@@ -314,7 +292,7 @@ def milestonelabels ( owner, repo, milestone, username = None, password = None )
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	url = apiurl( "repos", owner, repo, "milestones", milestone, "labels" )
+	url = lib.github.api( "repos", owner, repo, "milestones", milestone, "labels" )
 
 	_, _, p = lib.curl.getjson( url, None, username, password, stddefault = None )
 	print()
@@ -330,7 +308,7 @@ def listforks ( owner, repo, sort = NEWEST, username = None, password = None ) :
 	if username is not None :
 		username, password = lib.github.credentials( username, password )
 
-	url = apiurl( "repos", owner, repo, "forks" )
+	url = lib.github.api( "repos", owner, repo, "forks" )
 
 	parameters = dict( sort = sort )
 
@@ -347,7 +325,7 @@ def fork ( owner, repo, organization = None, username = None, password = None ) 
 
 	username, password = lib.github.credentials( username, password )
 
-	url = apiurl( "repos", owner, repo, "forks" )
+	url = lib.github.api( "repos", owner, repo, "forks" )
 
 	parameters = dict( organization = organization )
 
@@ -378,8 +356,100 @@ def patch ( owner, repo, name, username = None, password = None, private = FALSE
 	}
 
 
-	url = apiurl( "repos", owner, repo )
+	url = lib.github.api( "repos", owner, repo )
 
 	_, _, p = lib.curl.patchjson(url, parameters, username, password, stddefault = None)
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
+
+
+
+def archive ( username , forks = False , gist = True , metadata = True ) :
+	"""
+		All credits go to Filippo Valsorda (https://filippo.io).
+
+		original -> https://filippo.io/archive-your-github-repo-and-data/
+
+		# This is free and unencumbered software released into the public domain.
+
+		# Anyone is free to copy, modify, publish, use, compile, sell, or
+		# distribute this software, either in source code form or as a compiled
+		# binary, for any purpose, commercial or non-commercial, and by any
+		# means.
+
+		# In jurisdictions that recognize copyright laws, the author or authors
+		# of this software dedicate any and all copyright interest in the
+		# software to the public domain. We make this dedication for the benefit
+		# of the public at large and to the detriment of our heirs and
+		# successors. We intend this dedication to be an overt act of
+		# relinquishment in perpetuity of all present and future rights to this
+		# software under copyright law.
+
+		# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+		# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+		# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+		# IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+		# OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+		# ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+		# OTHER DEALINGS IN THE SOFTWARE.
+
+		# For more information, please refer to <http://unlicense.org/>
+
+		usage: gh_dump.py [-h] [--forks] [--no-gist] [--no-metadata] username
+
+		Dump an user's public GitHub data into current directory.
+
+		positional arguments:
+		username the GH username
+
+		optional arguments:
+		-h, --help show this help message and exit
+		--forks git clone also forks (default is don't)
+		--no-gist don't download user gists (default is do)
+		--no-metadata don't download user metadata (default is do)
+	"""
+
+	from urllib.request import urlopen
+	from subprocess import call
+	import json
+	import re
+	import os.path
+
+	def clear_url(url):
+		return re.sub(r'\{[^\}]*\}', '', url)
+
+	data = urlopen('https://api.github.com/users/' + args.user).read()
+	user = json.loads(data.decode('utf-8'))
+	if args.metadata:
+		with open('user.json', 'wb') as f:
+			f.write(data)
+
+	data = urlopen(clear_url(user['repos_url'])).read()
+	repos = json.loads(data.decode('utf-8'))
+	if args.metadata:
+		with open('repos.json', 'wb') as f:
+			f.write(data)
+	for repo in repos:
+		if not repo['fork']:
+			call(['git', 'clone', repo['clone_url']])
+		elif args.forks:
+			if not os.path.exists('forks'):
+				os.makedirs('forks')
+			call(['git', 'clone', repo['clone_url'], os.path.join('forks', repo['name'])])
+
+	data = urlopen(clear_url(user['gists_url'])).read()
+	gists = json.loads(data.decode('utf-8'))
+	if args.metadata:
+		with open('gists.json', 'wb') as f:
+			f.write(data)
+	if args.gists:
+		if not os.path.exists('gists'):
+			os.makedirs('gists')
+		for gist in gists:
+			call(['git', 'clone', gist['git_pull_url'], os.path.join('gists', gist['id'])])
+
+	if args.metadata:
+		for name in ['received_events', 'events', 'organizations', 'followers', 'starred', 'following', 'subscriptions']:
+			data = urlopen(clear_url(user[name + '_url'])).read()
+			with open(name + '.json', 'wb') as f:
+				f.write(data)

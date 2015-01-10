@@ -40,8 +40,45 @@ TYPES_DEFAULT = {
 }
 
 
-def credentials ( username = None, password = None ) :
-	return lib.config.prompt_cred( DOMAIN, CONFIG_KEY, username, password )
+def api ( *args ) :
+
+	return "https://api.github.com/" + '/'.join( map( str , args ) )
+
+
+def credentials ( username = None , password = None ) :
+
+	return lib.config.prompt_cred( DOMAIN , CONFIG_KEY , username , password )
+
+
+def paginate ( url , username = None , password = None ) :
+
+	username , password = credentials( username , password )
+
+	pageid = 1
+
+	while True :
+
+		pageurl = url + lib.url.get( page = str( pageid ) )
+
+		out , err , p = lib.curl.getjson( pageurl , username = username , password = password )
+
+		lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+
+		pagecontent = json.loads( out.decode() )
+
+		if not pagecontent : break
+
+		yield pagecontent
+
+		pageid += 1
+
+
+def itemize ( url , username = None , password = None ) :
+
+	for page in paginate( url , username = username , password = password ) :
+
+		for item in page : yield item
+
 
 def list ( target = YOU, name = None, t = None, username = None, password = None ) :
 
@@ -51,36 +88,45 @@ def list ( target = YOU, name = None, t = None, username = None, password = None
 	lib.check.OptionNotInListException( TYPE, t, TYPES[target] )
 
 	if target == YOU or t == PRIVATE or username is not None :
-		username, password = credentials(username, password)
+		username , password = credentials( username , password )
 
-	urls = {
-		YOU : "https://api.github.com/user/repos",
-		USER : "https://api.github.com/users/%s/repos" % name,
-		ORG  : "https://api.github.com/orgs/%s/repos" % name
+	if   target ==  YOU : url = api( "user" , "repos" )
+	elif target == USER : url = api( "users" , name , "repos" )
+	elif target ==  ORG : url = api( "orgs" , name , "repos" )
+
+	return itemize( url , username = username , password = password )
+
+
+def issues( owner = None , repo = None , user = False, org = None, username = None, password = None, filter = None, state = None, labels = None, sort = None, direction = None, since = None ) :
+
+	"""
+		https://developer.github.com/v3/issues/
+	"""
+
+	username , password = credentials( username , password )
+
+	if owner is not None and repo is not None :
+		url = api( "repos" , owner , repo , "issues" )
+	elif user :
+		url = api( "user" , "issues" )
+	elif org is not None :
+		url = api( "orgs" , org , "issues" )
+	else :
+		url = api( "issues" )
+
+	parameters = {
+		"filter" : filter,
+		"state" : state,
+		"labels" : labels,
+		"sort": sort,
+		"direction" : direction,
+		"since" : since
 	}
 
+	out , err , p = lib.curl.getjson(url, parameters, username, password, accept = "application/vnd.github.v3.raw+json" )
+	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
-	url = urls[target]
-
-	pageid = 1
-
-	while True :
-
-		pageurl = url + lib.url.get( page = str( pageid ) )
-
-		out, err, p = lib.curl.getjson( pageurl, username = username, password = password )
-
-		lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
-
-		pagecontent = json.loads( out.decode() )
-
-		if not pagecontent :
-			break
-
-		for item in pagecontent :
-			yield item
-
-		pageid += 1
+	return json.loads( out.decode() )
 
 
 LICENSES = [
