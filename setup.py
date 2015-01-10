@@ -7,7 +7,7 @@ setup (
 	name = 'sak' , version = '0.0.4' ,
 
 	description = 'Swiss Army Knife',
-	long_description = open( 'README.md' ).read( ) ,
+	long_description = 'sak is a module, submodule and action based tool' ,
 
 	author = 'aureooms' ,
 	author_email = 'aurelien.ooms@gmail.com' ,

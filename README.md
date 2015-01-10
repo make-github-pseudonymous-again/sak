@@ -8,6 +8,10 @@ sak : Swiss Army Knife
 
 ***sak*** is a module, submodule and action based tool
 
+install :
+
+	pip3 install sak
+
 usage :
 
 	$ <module> <submodule>* <action> <*args> <**kwargs>
