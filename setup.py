@@ -6,7 +6,7 @@ setup (
 
 	name = 'sak' , version = '0.0.3' ,
 
-	description = 'Swiss Army KnifE',
+	description = 'Swiss Army Knife',
 	long_description = open( 'README.md' ).read( ) ,
 
 	author = 'aureooms' ,
