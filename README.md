@@ -1,5 +1,5 @@
-Swiss Army Knife
-================
+sak : Swiss Army Knife
+======================
 
 [![Build Status](http://img.shields.io/travis/aureooms/sak.svg?style=flat)](https://travis-ci.org/aureooms/sak)
 [![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/aureooms/sak.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sak/?branch=master)
