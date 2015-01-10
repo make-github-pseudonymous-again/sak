@@ -1,15 +1,17 @@
-var pkg = require( "aureooms-node-package" );
+var pkg , fs , data , opt ;
 
-var fs  = require( "fs" );
-var data = fs.readFileSync( pkg.config, "utf8" );
-var opt = JSON.parse( data );
+pkg  = require( "aureooms-node-package" ) ;
+
+fs   = require( "fs" ) ;
+data = fs.readFileSync( pkg.config, "utf8" ) ;
+opt  = JSON.parse( data ) ;
 
 opt = {
-	ns      : opt.ns,
-	src     : __dirname + "/src/",
-	exports : module.exports,
-	base    : 0,
+	ns      : opt.ns ,
+	src     : __dirname + "/src/" ,
+	exports : module.exports ,
+	base    : 0 ,
 	debug   : opt.debug
-};
+} ;
 
-pkg.include( opt );
+pkg.include( opt ) ;

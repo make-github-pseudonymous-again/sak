@@ -1,6 +1,6 @@
 
-test( "dummy" , function () {
+test( "dummy" , function ( ) {
 
-	ok( false, "tests implemented" );
-	
-} );
+	ok( false , "tests implemented" ) ;
+
+} ) ;
