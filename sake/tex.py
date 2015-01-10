@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import os, lib.file, lib.git, lib.tex
-
 
 def build(src, out):
 

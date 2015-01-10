@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import lib.config, lib.git, lib.hg, lib.error, lib.check, json, lib.sys, lib.bitbucket, lib.input, lib.bytes
 
 DOMAIN = lib.bitbucket.DOMAIN
@@ -91,7 +88,7 @@ def list(target, name, username = None, password = None, size = False):
 
 
 def download ( target, name, username = None, password = None, prompt = True, prefix = "", suffix = "", regexp = "" ):
-	
+
 	for repo in lib.bitbucket.list(target, name, username, password):
 
 		slug = repo["full_name"]

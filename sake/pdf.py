@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import lib.sys
 
 def cut ( source, dest, start, end ) :
@@ -26,7 +23,7 @@ def burst ( source, *others ) :
 
 
 def svg ( source, *others ) :
-	
+
 	lib.sys.call( [
 		"pdftocairo",
 		"-svg",

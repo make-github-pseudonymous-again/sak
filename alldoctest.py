@@ -1,5 +1,4 @@
-#!/usr/bin/python3
-from __future__ import absolute_import, division, print_function, unicode_literals
+#!/usr/bin/env python3
 
 import os, sys, doctest
 

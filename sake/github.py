@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import lib.config, lib.git, lib.error, lib.check, lib.curl
 import lib.github, lib.input, lib.http, lib.args
 import re

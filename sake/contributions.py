@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, division, print_function, unicode_literals
-
 import lib.git, lib.args, lib.json, lib.time, collections
 
 def commit ( message, duration, authors = None ) :
