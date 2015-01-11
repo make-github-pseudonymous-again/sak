@@ -12,8 +12,8 @@ def inspectable ( fn ) :
 		return fn
 
 
-def getargspec ( fn ) :
+def getfullargspec ( fn ) :
 
 	fn = inspectable( fn )
 
-	return inspect.getargspec( fn )
+	return inspect.getfullargspec( fn )

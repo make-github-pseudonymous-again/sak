@@ -199,11 +199,14 @@ def kwargslist( spec ) :
 	if spec.args is not None and spec.defaults is not None :
 		out.extend( spec.args[-len( spec.defaults ):] )
 
+	if spec.kwonlyargs :
+		out.extend( spec.kwonlyargs )
+
 	if spec.varargs is not None :
 		out.append( spec.varargs )
 
-	if spec.keywords is not None :
-		out.append( spec.keywords )
+	if spec.varkw is not None :
+		out.append( spec.varkw )
 
 	return out
 

@@ -33,7 +33,7 @@ def info(module = None, action = None):
 
 	fmtR = functools.partial(lib.pacman.format, pred = inspect.ismodule)
 	fmtM = functools.partial(lib.pacman.format, pred = inspect.isfunction)
-	fmtA = lambda A : inspect.formatargspec(*inspect.getargspec(A))
+	fmtA = lambda A : inspect.formatargspec(*inspect.getfullargspec(A))
 
 	walk(sak, module, action, fmtR, fmtM, fmtA)
 

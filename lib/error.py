@@ -149,3 +149,7 @@ class FileDoesNotExist ( MainException ) :
 		fmt = "file '%s' does not exist"
 		args = fname
 		MainException.__init__(self, fmt % args)
+
+class GithubAPIException ( MainException ) :
+	def __init__( self , msg ) :
+		MainException.__init__( self , msg )

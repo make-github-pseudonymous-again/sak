@@ -117,183 +117,113 @@ def delete(owner, repo, username = None, password = None):
 
 
 
-def issues( owner = None , repo = None , user = False, org = None, username = None, password = None, filter = None, state = None, labels = None, sort = None, direction = None, since = None ) :
+def issues ( owner = None , repo = None , number = None , user = False , org = None , username = None , password = None , milestone = None , filter = None , state = None , creator = None , assignee = None , mentioned = None , labels = None , sort = None , direction = None , since = None ) :
 
 	for issue in lib.args.forward( lib.github.issues , locals( ) ) :
 
 		print( issue )
 
 
-
 def createissue ( owner, repo, title, body = None, assignee = None, milestone = None, labels = None, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/#create-an-issue
-	"""
+	print( lib.args.forward( lib.github.createissue , locals( ) ) )
 
-	url = lib.github.api( "repos", owner, repo, "issues" )
 
-	labels = lib.args.listify( labels )
+def editissue ( owner , repo , number , title = None , body = None , assignee = None , state = None , milestone = None , labels = None , username = None , password = None ) :
 
-	parameters = dict( title = title, body = body, assignee = assignee, milestone = milestone, labels = labels )
-
-	username, password = lib.github.credentials(username, password)
-
-	_, _, p = lib.curl.postjson(url, parameters, username, password, stddefault = None)
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+	print( lib.args.forward( lib.github.editissue , locals( ) ) )
 
 
 def closeissues ( owner , repo , *issuenos , username = None , password = None ) :
-	pass
 
-def migrateissues ( owner , origin , destination , *issuenos , username = None , password = None ) :
-	pass
+	for response in lib.args.forward( lib.github.closeissues , locals( ) ) :
+
+		print( response )
+
+
+def comments ( owner , repo , id = None , number = None , sort = None , direction = None , since = None , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.comments , locals( ) ) )
+
+
+def createcomment ( owner , repo , number , body , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.createcomment , locals( ) ) )
+
+
+def editcomment ( owner , repo , id , body , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.editcomment , locals( ) ) )
+
+
+def deletecomment ( owner , repo , id , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.deletecomment , locals( ) ) )
 
 
 def labels ( owner, repo, name = None, issue = None, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
-
-	if issue is not None :
-		url = lib.github.api( "repos", owner, repo, "issues", issue, "labels" )
-	elif name is not None :
-		url = lib.github.api( "repos", owner, repo, "labels", name )
-	else :
-		url = lib.github.api( "repos", owner, repo, "labels" )
-
-	_, _, p = lib.curl.getjson( url, None, username, password, stddefault = None )
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+	print( lib.args.forward( lib.github.labels , locals( ) ) )
 
 
 def createlabel ( owner, repo, name, color, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
-
-	url = lib.github.api( "repos", owner, repo, "labels" )
-
-	parameters = dict( name = name, color = color )
-
-	username, password = lib.github.credentials(username, password)
-
-	_, _, p = lib.curl.postjson(url, parameters, username, password, stddefault = None)
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+	print( lib.args.forward( lib.github.createlabel , locals( ) ) )
 
 
 def updatelabel ( owner, repo, oldname, newname, color, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
-
-	url = lib.github.api( "repos", owner, repo, "labels", oldname )
-
-	parameters = dict( name = newname, color = color )
-
-	username, password = lib.github.credentials( username, password )
-
-	_, _, p = lib.curl.patchjson( url, parameters, username, password, stddefault = None )
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
-
+	print( lib.args.forward( lib.github.updatelabel , locals( ) ) )
 
 
 def deletelabel ( owner, repo, name, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
-
-	url = lib.github.api( "repos", owner, repo, "labels", name )
-
-	username, password = lib.github.credentials( username, password )
-
-	_, _, p = lib.curl.deletejson( url, None, username, password, stddefault = None )
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+	print( lib.args.forward( lib.github.deletelabel , locals( ) ) )
 
 
 def addlabels ( owner, repo, issue, labels = None, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
-
-	labels = lib.args.listify( labels )
-
-	username, password = lib.github.credentials( username, password )
-
-	url = lib.github.api( "repos", owner, repo, "issues", issue, "labels" )
-
-	_, _, p = lib.curl.postjson( url, labels, username, password, stddefault = None )
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+	print( lib.args.forward( lib.github.addlabels , locals( ) ) )
 
 
 def removelabel ( owner, repo, issue, label, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
-
-	username, password = lib.github.credentials( username, password )
-
-	url = lib.github.api( "repos", owner, repo, "issues", issue, "labels", label )
-
-	_, _, p = lib.curl.deletejson( url, None, username, password, stddefault = None )
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+	print( lib.args.forward( lib.github.removelabel , locals( ) ) )
 
 
 def updatelabels ( owner, repo, issue, labels = None, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
-
-	labels = lib.args.listify( labels )
-
-	username, password = lib.github.credentials( username, password )
-
-	url = lib.github.api( "repos", owner, repo, "issues", issue, "labels" )
-
-	_, _, p = lib.curl.putjson( url, labels, username, password, stddefault = None )
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+	print( lib.args.forward( lib.github.updatelabels , locals( ) ) )
 
 
 def removealllabels ( owner, repo, issue, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
-
-	username, password = lib.github.credentials( username, password )
-
-	url = lib.github.api( "repos", owner, repo, "issues", issue, "labels" )
-
-	_, _, p = lib.curl.deletejson( url, None, username, password, stddefault = None )
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+	print( lib.args.forward( lib.github.removealllabels , locals( ) ) )
 
 
 def milestonelabels ( owner, repo, milestone, username = None, password = None ) :
 
-	"""
-		https://developer.github.com/v3/issues/labels/
-	"""
+	print( lib.args.forward( lib.github.milestonelabels , locals( ) ) )
 
-	url = lib.github.api( "repos", owner, repo, "milestones", milestone, "labels" )
 
-	_, _, p = lib.curl.getjson( url, None, username, password, stddefault = None )
-	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
+def milestones ( owner , repo , number = None , state = None , sort = None , direction = None , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.milestones , locals( ) ) )
+
+
+def createmilestone ( owner , repo , title , state = None , description = None , due_on = None , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.createmilestone , locals( ) ) )
+
+
+def updatemilestone ( owner , repo , number , title , state = None , description = None , due_on = None , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.updatemilestone , locals( ) ) )
+
+
+def deletemilestone ( owner , repo , number , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.deletemilestone , locals( ) ) )
 
 
 def listforks ( owner, repo, sort = NEWEST, username = None, password = None ) :
@@ -450,3 +380,205 @@ def archive ( username , forks = False , gist = True , metadata = True ) :
 			data = urlopen(clear_url(user[name + '_url'])).read()
 			with open(name + '.json', 'wb') as f:
 				f.write(data)
+
+
+
+def migrateissues ( owner , origin , destination , *issuenos , username = None , password = None ) :
+
+	username , password = lib.github.credentials( username , password )
+
+	print( "fetch issues to migrate" )
+
+	issuestomigrate = []
+
+	for number in issuenos :
+
+		out = lib.github.issues( owner , origin , number , username = username , password = password )
+
+		lib.github.validate( out )
+
+		issuestomigrate.append( out )
+
+
+	print( "compute labels and milestones to migrate" )
+
+	labelstomigrate = {}
+
+	milestonestomigrate = {}
+
+	for issue in issuestomigrate :
+
+		if "labels" in issue and issue["labels"] is not None :
+
+			for label in issue["labels"] :
+
+				labelstomigrate.setdefault( label["name"] , label )
+
+		if "milestone" in issue and issue["milestone"] is not None :
+
+			milestone = issue["milestone"]
+
+			milestonestomigrate.setdefault( milestone["title"] , milestone )
+
+
+	print( "remove already existing labels from the migrate list" )
+
+	labelsalreadythere = lib.github.labels( owner , destination , username = username , password = password )
+
+	lib.github.validate( labelsalreadythere )
+
+	for label in labelsalreadythere :
+
+		labelstomigrate.pop( label["name"] , None )
+
+
+	print( "remove already existing milestones from the migrate list and save them to map" )
+
+	milestonesmap = {}
+
+	milestonesalreadythere = lib.github.milestones( owner , destination , username = username , password = password )
+
+	lib.github.validate( milestonesalreadythere )
+
+	for milestone in milestonesalreadythere :
+
+		title = milestone["title"]
+
+		milestonefrom = milestonestomigrate.get( title , None )
+
+		if milestonefrom is not None :
+
+			milestonesmap[milestonefrom["number"]] = milestone["number"]
+
+			milestonestomigrate.pop( title )
+
+
+	print( "migrate labels" )
+
+	for name , label in labelstomigrate.items( ) :
+
+		color = label["color"]
+
+		lib.github.validate( lib.github.createlabel( owner , destination , name , color , username = username , password = password ) )
+
+
+	print( "migrate milestones and save map between old numbers and new ones" )
+
+	for title , milestone in milestonestomigrate.items( ) :
+
+		parameters = lib.dict.select( milestone , [ "state" , "description" , "due_on" ] )
+
+		number = milestone["number"]
+
+		out = lib.github.createmilestone( owner , destination , title , username = username , password = password , **parameters )
+
+		lib.github.validate( out )
+
+		milestonesmap[number] = out["number"]
+
+
+	print( "migrate issues and save map between old numbers and new ones" )
+
+	issuemap = {}
+
+	for issue in issuestomigrate :
+
+		parameters = {}
+
+		if "milestone" in issue and issue["milestone"] is not None :
+
+			number = issue["milestone"]["number"]
+
+			parameters["milestone"] = milestonesmap[number]
+
+		if "labels" in issue and issue["labels"] is not None :
+
+			parameters["labels"] = [ label["name"] for label in issue["labels"] ]
+
+		if "assignee" in issue and issue["assignee"] is not None :
+
+			parameters["assignee"] = issue["assignee"]["login"]
+
+		if "body" in issue and issue["body"] is not None :
+
+			parameters["body"] = issue["body"]
+
+		title = issue["title"]
+
+		out = lib.github.createissue( owner , destination , title , username = username , password = password , **parameters )
+
+		lib.github.validate( out )
+
+		issuemap[issue["number"]] = out
+
+
+	print( "fetch comments if necessary" )
+
+	commentstomigrate = {}
+
+	for issue in issuestomigrate :
+
+		if "comments" in issue and issue["comments"] > 0 :
+
+			number = issue["number"]
+
+			commentstomigrate[number] = lib.github.comments( owner , origin , number = number , username = username , password = password )
+
+			lib.github.validate( commentstomigrate[number] )
+
+
+	print( "migrate comments" )
+
+	for number , listofcomments in commentstomigrate.items( ) :
+
+		number = issuemap[number]["number"]
+
+		for comment in listofcomments :
+
+			body = comment["body"]
+
+			lib.github.validate( lib.github.createcomment( owner , destination , number , body , username = username , password = password ) )
+
+
+	print( "add comment to say that it was migrated to destination" )
+	print( "add comment to say that it was migrated from origin" )
+
+	for issuefrom in issuestomigrate :
+
+		numberfrom = issuefrom["number"]
+
+		issueto = issuemap[numberfrom]
+
+		numberto = issueto["number"]
+
+		bodyfrom = "migrated to %s" % issueto["html_url"]
+
+		bodyto = "migrated from %s" % issuefrom["html_url"]
+
+		lib.github.validate( lib.github.createcomment( owner , origin , numberfrom , bodyfrom , username = username , password = password ) )
+
+		lib.github.validate( lib.github.createcomment( owner , destination , numberto , bodyto , username = username , password = password ) )
+
+
+	print( "close issues from origin" )
+
+	for issue in issuestomigrate :
+
+		parameters = {}
+
+		parameters["title"] = issue.get( "title" , None )
+
+		parameters["body"] = issue.get( "body" , None )
+
+		parameters["state"] = "closed"
+
+		if "assignee" in issue and issue["assignee"] is not None :
+			parameters["assignee"] = issue["assignee"]["login"]
+
+		if "milestone" in issue and issue["milestone"] is not None :
+			parameters["milestone"] = issue["milestone"]["number"]
+
+		if "labels" in issue and issue["labels"] is not None :
+			parameters["labels"] = [ label["name"] for label in issue["labels"] ]
+
+		lib.github.validate( lib.github.editissue( owner , origin , issue["number"] , username = username , password = password , **parameters ) )

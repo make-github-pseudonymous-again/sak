@@ -49,7 +49,7 @@ def assignarguments ( hierarchy, action, inp ) :
 
 	args, kwargs = lib.args.parse( inp, [], {} )
 
-	spec = inspect.getargspec( action )
+	spec = inspect.getfullargspec( action )
 
 	kwargslist = lib.args.kwargslist( spec )
 
@@ -63,7 +63,7 @@ def assignarguments ( hierarchy, action, inp ) :
 
 			matching = lib.str.mostlikely( kwarg, kwargslist )
 
-			if not matching and spec.keywords :
+			if not matching and spec.varkw :
 				_kwargs[kwarg] = kwargs[kwarg]
 			else :
 				lib.check.KwargNameExists( kwarg, actionName, matching, kwargslist )
