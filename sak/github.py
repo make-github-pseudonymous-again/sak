@@ -86,9 +86,10 @@ def group ( *names ) :
 		new(name, org, team_id, username, password, auto_init, private, description, homepage, has_issues, has_wiki, has_downloads, gitignore_template, license_template)
 
 
-def list(target = YOU, name = None, t = None, username = None, password = None):
-	for repo in lib.github.list(target, name, t, username, password):
-		print(repo["full_name"])
+def list ( target = YOU , name = None , t = None , format = "{full_name}" , username = None , password = None ) :
+
+	for repo in lib.github.list( target , name , t , username , password ) :
+		print( format.format( **repo ) )
 
 
 def download ( target = YOU, name = None, t = None, username = None, password = None, prompt = True, prefix = "", suffix = "", regexp = "" ) :
