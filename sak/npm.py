@@ -1,25 +1,25 @@
 import subprocess, lib.file, lib.error, lib.check, lib.npm, lib.git
 
-def npm(*args):
-	return subprocess.call(['npm'] + list(args))
+def npm ( *args , cwd = None ) :
+	return subprocess.call(['npm'] + list(args) , cwd = cwd )
 
-def publish():
-	return npm('publish')
+def publish( cwd = None ):
+	return npm('publish', cwd = cwd)
 
-def unpublish(*args):
-	return npm('unpublish', *args)
+def unpublish(*args, cwd = None ):
+	return npm('unpublish', *args, cwd = cwd)
 
-def build():
-	return npm('run', 'build')
+def build( cwd = None ):
+	return npm('run', 'build', cwd = cwd)
 
-def doc():
-	return npm('run', 'doc')
+def doc( cwd = None ):
+	return npm('run', 'doc', cwd = cwd)
 
-def test():
-	return npm('test')
+def test( cwd = None ):
+	return npm('test', cwd = cwd)
 
-def install(*args):
-	return npm('install', *args)
+def install(*args, cwd = None ):
+	return npm('install', *args, cwd = cwd)
 
 def clean():
 	lib.file.rm('node_modules', 'coverage', 'doc', recursive = True, force = True)
