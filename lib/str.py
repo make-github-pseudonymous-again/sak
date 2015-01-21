@@ -24,8 +24,6 @@ consu = lambda s: filt( s, _C )
 def natural ( s ) :
 	return [ int( c ) if c.isdigit() else c for c in re.split( "([0-9]+)", s ) ]
 
-
-
 NAME_RESOLVER = [
 	# MATCH
 	lambda stringset, alter, string : [x for x in stringset if alter(x) == string],
@@ -37,12 +35,23 @@ NAME_RESOLVER = [
 	lambda stringset, alter, string : [x for x in stringset if string in alter(x)]
 ]
 
+def utod ( s ) :
+	"""
+		Replace underscores with dashes.
+
+		>>> from lib.str import *
+		>>> utod( "_abc_d_e_" )
+		'-abc-d-e-'
+
+	"""
+	return s.replace( '_' , '-' )
+
 
 NAME_TRANSFORMER = [
-	lambda string : string,
-	lambda string : string.lower(),
-	lambda string : cons( string ),
-	lambda string : cons( string.lower() )
+	lambda string : utod( string ) ,
+	lambda string : utod( string.lower( ) ) ,
+	lambda string : cons( string ) ,
+	lambda string : cons( string.lower( ) )
 ]
 
 

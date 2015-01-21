@@ -9,22 +9,40 @@ def ensurefmt(fmt, n):
 
 def walk(R, module, action, *fmt):
 
+
 	fmtR, fmtM, fmtA = ensurefmt(fmt, 3)
 
 	if module is None :
 		print(fmtR(R))
 
 	else :
-		M = getattr(R, module, None)
-		lib.check.ModuleDoesNotExistException(M, module, R)
+
+		parent = "sak"
+
+		M = lib.pacman.resolve( module , R )
+
+		lib.check.ModuleOrActionNameExists( parent , R , module , M )
+		lib.check.ModuleOrActionNameNotAmbiguous( parent , module , M )
+
+		module = M[0]
+
+		M = getattr( R , module )
 
 		if action is None :
 			print(fmtM(M))
 
 		else :
 
-			A = getattr(M, action, None)
-			lib.check.ActionDoesNotExistException(A, action, M, module)
+			parent += "." + module
+
+			A = lib.pacman.resolve( action , M )
+
+			lib.check.ModuleOrActionNameExists( parent , M , action , A )
+			lib.check.ModuleOrActionNameNotAmbiguous( parent , action , A )
+
+			action = A[0]
+
+			A = getattr( M , action )
 
 			print(fmtA(A))
 
