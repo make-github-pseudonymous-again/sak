@@ -1,6 +1,7 @@
 sak : Swiss Army Knife
 ======================
 
+[![PyPI release](https://img.shields.io/pypi/v/sak.svg?style=flat)](https://pypi.python.org/pypi/sak)
 [![Build Status](http://img.shields.io/travis/aureooms/sak.svg?style=flat)](https://travis-ci.org/aureooms/sak)
 [![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/aureooms/sak.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sak/?branch=master)
 [![Code Coverage](http://img.shields.io/scrutinizer/coverage/g/aureooms/sak.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sak/?branch=master)
