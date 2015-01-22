@@ -1,74 +1,11 @@
 #!/usr/bin/env python3
 
-import sys, sak, inspect, lib.pacman, lib.error, lib.check, lib.args, lib.str , lib.fn , lib.sak
-
-
-def main ( inp ) :
-
-	hierarchy, action, inp = lib.sak.findaction( sak , inp , ['sak'] )
-	args, kwargs = assignarguments( hierarchy, action, inp )
-	action( *args, **kwargs )
-
-
-def assignarguments ( hierarchy, action, inp ) :
-
-	# CHECK ACTION ARGUMENTS
-
-	moduleName = ".".join( hierarchy[:-1] )
-	actionName = hierarchy[-1]
-
-	args, kwargs = lib.args.parse( inp, [], {} )
-
-	spec = inspect.getfullargspec( action )
-
-	kwargslist = lib.args.kwargslist( spec )
-
-	if kwargs :
-
-		lib.check.KwargsNotSupportedException( actionName, kwargslist )
-
-		_kwargs = dict()
-
-		for kwarg in kwargs :
-
-			matching = lib.str.mostlikely( kwarg, kwargslist )
-
-			if not matching and spec.varkw :
-				_kwargs[kwarg] = kwargs[kwarg]
-			else :
-				lib.check.KwargNameExists( kwarg, actionName, matching, kwargslist )
-				lib.check.KwargNameNotAmbiguous( kwarg, actionName, matching )
-
-				_kwargs[matching[0]] = kwargs[kwarg]
-
-		kwargs = _kwargs
-
-	# WE INFLATE AFTER RESOLVING KWARGS THUS
-	# KWARGS IN JSON ARGS FILES MUST BE
-	# EXACTLY MATCHING SPECS OF ACTIONS
-
-	lib.args.inflate( args, kwargs )
-
-	m = ( 0 if spec[0] is None else len( spec[0] ) ) -\
-	    ( 0 if spec[3] is None else len( spec[3] ) )
-	n = len( args )
-
-	lib.check.NotTooFewArgumentsForAction( moduleName, actionName, n, m, spec )
-	lib.check.NotTooManyArgumentsForAction( moduleName, actionName, n, m, spec )
-
-
-	# DONE
-	return args, kwargs
-
+import sys , sak.sak , lib.error
 
 def wrapped ( argv ) :
 
-	try :
-		main( argv )
+	try : sak.sak.main( argv )
 
-	except lib.error.MainException as e :
-		print( e )
+	except lib.error.MainException as e : print( e )
 
-
-if __name__ == '__main__' :
-	wrapped( sys.argv[1:] )
+if __name__ == '__main__' : wrapped( sys.argv[1:] )

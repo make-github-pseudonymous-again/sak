@@ -1,5 +1,5 @@
 
-import os.path , lib.check , lib.pacman
+import os.path , inspect , lib.check , lib.pacman , lib.args , lib.fn , lib.str
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), ".."))
 BIN = os.path.join(ROOT, "bin")
@@ -59,3 +59,56 @@ def resolve ( module , inp , hierarchy ) :
 		hierarchy.append( part )
 
 	return hierarchy , module
+
+
+def assignarguments ( hierarchy, action, inp ) :
+
+	# CHECK ACTION ARGUMENTS
+
+	moduleName = ".".join( hierarchy[:-1] )
+	actionName = hierarchy[-1]
+
+	args, kwargs = lib.args.parse( inp, [], {} )
+
+	spec = inspect.getfullargspec( action )
+
+	kwargslist = lib.args.kwargslist( spec )
+
+	if kwargs :
+
+		lib.check.KwargsNotSupportedException( actionName, kwargslist )
+
+		_kwargs = dict()
+
+		for kwarg in kwargs :
+
+			matching = lib.str.mostlikely( kwarg, kwargslist )
+
+			if not matching and spec.varkw :
+				_kwargs[kwarg] = kwargs[kwarg]
+			else :
+				lib.check.KwargNameExists( kwarg, actionName, matching, kwargslist )
+				lib.check.KwargNameNotAmbiguous( kwarg, actionName, matching )
+
+				_kwargs[matching[0]] = kwargs[kwarg]
+
+		kwargs = _kwargs
+
+	# WE INFLATE AFTER RESOLVING KWARGS THUS
+	# KWARGS IN JSON ARGS FILES MUST BE
+	# EXACTLY MATCHING SPECS OF ACTIONS
+
+	lib.args.inflate( args, kwargs )
+
+	m = ( 0 if spec[0] is None else len( spec[0] ) ) -\
+	    ( 0 if spec[3] is None else len( spec[3] ) )
+	n = len( args )
+
+	lib.check.NotTooFewArgumentsForAction( moduleName, actionName, n, m, spec )
+	lib.check.NotTooManyArgumentsForAction( moduleName, actionName, n, m, spec )
+
+
+	# DONE
+	return args, kwargs
+
+

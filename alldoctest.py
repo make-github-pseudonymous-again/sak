@@ -32,6 +32,6 @@ def doctestrecurse ( *sources ) :
 	return failurecount , testcount
 
 
-failurecount , testcount = doctestrecurse( "$" , "lib" )
+failurecount , testcount = doctestrecurse( "lib" , "sak" )
 
 sys.exit( failurecount )

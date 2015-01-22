@@ -1,4 +1,4 @@
-import os, lib.git
+import os , sak , lib.git , lib.sak
 
 def git(action, *args):
 	path = os.path.join(__file__, '..', '..')
@@ -22,3 +22,17 @@ def status(*args):
 
 def diff(*args):
 	git('diff', *args)
+
+
+def main ( inp ) :
+
+	"""
+		>>> from sak.sak import *
+		>>> main( [ 'ts' , 'd' , 'a' , '2' ] )
+		2 10
+
+	"""
+
+	hierarchy , action , inp = lib.sak.findaction( sak , inp , ['sak'] )
+	args , kwargs = lib.sak.assignarguments( hierarchy , action , inp )
+	action( *args , **kwargs )
