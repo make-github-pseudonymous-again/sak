@@ -1,33 +1,37 @@
 #!/usr/bin/env python3
 
-import os, sys, doctest
+import os , sys , doctest , functools
 
-def doctestrecurse ( source ) :
+def doctestrecurse ( *sources ) :
 
-	if os.path.isfile( source ) :
+	failurecount , testcount = 0 , 0
 
-		if source[-3:] == ".py" :
+	for source in sources :
 
-			print( source )
+		if os.path.isfile( source ) :
 
-			return doctest.testfile( source )
+			if source[-3:] == ".py" or source == "$" :
 
-	elif os.path.isdir( source ) :
+				print( source )
 
-		failurecount, testcount = 0, 0
+				fc , tc = doctest.testfile( source )
 
-		for child in os.listdir( source ) :
+				failurecount += fc
+				testcount += tc
 
-			fc, tc = doctestrecurse( os.path.join( source, child ) )
+		elif os.path.isdir( source ) :
+
+			children = os.listdir( source )
+			children = map( functools.partial( os.path.join , source ) , children )
+
+			fc, tc = doctestrecurse( *children )
 
 			failurecount += fc
 			testcount += tc
 
-		return failurecount, testcount
-
-	return 0, 0
+	return failurecount , testcount
 
 
-failurecount, testcount = doctestrecurse( "lib" )
+failurecount , testcount = doctestrecurse( "$" , "lib" )
 
 sys.exit( failurecount )
