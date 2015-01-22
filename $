@@ -1,43 +1,13 @@
 #!/usr/bin/env python3
 
-import sys, sak, inspect, lib.pacman, lib.error, lib.check, lib.args, lib.str , lib.fn
+import sys, sak, inspect, lib.pacman, lib.error, lib.check, lib.args, lib.str , lib.fn , lib.sak
 
 
 def main ( inp ) :
 
-	hierarchy, action, inp = findaction( sak , inp , ['sak'] )
+	hierarchy, action, inp = lib.sak.findaction( sak , inp , ['sak'] )
 	args, kwargs = assignarguments( hierarchy, action, inp )
 	action( *args, **kwargs )
-
-
-def findaction ( module , inp , hierarchy ) :
-
-	# DETERMINE MODULE
-
-	i = 0
-
-	while True :
-
-		parent = '.'.join(hierarchy)
-
-		lib.check.ModuleOrActionNameSpecified( parent , module , inp , i )
-		moduleName = inp[i]
-
-		modules = lib.pacman.resolve( moduleName , module )
-
-		lib.check.ModuleOrActionNameExists( parent, module , moduleName , modules )
-		lib.check.ModuleOrActionNameNotAmbiguous( parent, moduleName, modules )
-
-		moduleName = modules[0]
-		module = getattr( module , moduleName )
-
-		hierarchy.append( moduleName )
-
-		i += 1
-
-		if lib.fn.callable( module ) : break
-
-	return hierarchy , module , inp[i:]
 
 
 def assignarguments ( hierarchy, action, inp ) :

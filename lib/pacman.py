@@ -141,5 +141,5 @@ def __init__(t, root, ancestors = None):
 
 	t.__all__ = _all
 
-def format(M, pred):
-	return ', '.join(o for o, _ in inspect.getmembers(M, pred))
+def format ( M , pred ) :
+	return ', '.join( o for o , _ in inspect.getmembers( M , pred ) )

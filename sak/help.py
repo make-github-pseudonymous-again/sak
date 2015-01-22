@@ -1,74 +1,47 @@
-import inspect, sak, lib.pacman, lib.check, functools, lib.source
+import inspect, sak, lib.pacman, lib.check, functools, lib.source , lib.predicate
 
-def ensurefmt(fmt, n):
-	fmt = list(fmt)
-	if not fmt : fmt = [print,]
-	while len(fmt) < n : fmt.append(fmt[-1])
-	return tuple(fmt)
+def ensurefmt ( fmt , n ) :
+	fmt = list( fmt )
+	if not fmt : fmt = [ print ]
+	while len( fmt ) < n : fmt.append( fmt[-1] )
+	return tuple( fmt )
 
 
-def walk(R, module, action, *fmt):
-
+def walk ( R , fmt , *path ) :
 
 	fmtR, fmtM, fmtA = ensurefmt(fmt, 3)
 
-	if module is None :
-		print(fmtR(R))
+	_ , module = lib.sak.resolve( R , path , ['sak'] )
 
-	else :
+	if module == R : print( fmtR( module ) )
 
-		parent = "sak"
+	elif inspect.ismodule( module ) : print( fmtM( module ) )
 
-		M = lib.pacman.resolve( module , R )
-
-		lib.check.ModuleOrActionNameExists( parent , R , module , M )
-		lib.check.ModuleOrActionNameNotAmbiguous( parent , module , M )
-
-		module = M[0]
-
-		M = getattr( R , module )
-
-		if action is None :
-			print(fmtM(M))
-
-		else :
-
-			parent += "." + module
-
-			A = lib.pacman.resolve( action , M )
-
-			lib.check.ModuleOrActionNameExists( parent , M , action , A )
-			lib.check.ModuleOrActionNameNotAmbiguous( parent , action , A )
-
-			action = A[0]
-
-			A = getattr( M , action )
-
-			print(fmtA(A))
+	else : print( fmtA( module ) )
 
 
-def info(module = None, action = None):
+def info ( *path ) :
 
-	fmtR = functools.partial(lib.pacman.format, pred = inspect.ismodule)
-	fmtM = functools.partial(lib.pacman.format, pred = inspect.isfunction)
-	fmtA = lambda A : inspect.formatargspec(*inspect.getfullargspec(A))
+	fmtR = functools.partial( lib.pacman.format , pred = inspect.ismodule )
+	fmtM = functools.partial( lib.pacman.format , pred = lib.predicate.disjunction( [ inspect.isfunction , inspect.ismodule ] ) )
+	fmtA = lambda A : inspect.formatargspec( *inspect.getfullargspec( A ) )
 
-	walk(sak, module, action, fmtR, fmtM, fmtA)
+	walk( sak , [ fmtR , fmtM , fmtA ] , *path )
 
 
-def doc(module = None, action = None):
+def doc ( *path ) :
 	"""
 		Print the doc of the specified element (default = sak root module)
 	"""
 
-	walk(sak, module, action, inspect.getdoc)
+	walk( sak , [ inspect.getdoc ] , *path )
 
 
-def source(module = None, action = None, linenos = False, filename = False):
+def source ( *path , linenos = False , filename = False ) :
 	"""
 		Print the source of the specified element (default = sak root module)
 	"""
 
 	fmt = functools.partial(lib.source.pretty, linenos = linenos, filename = filename)
 
-	walk(sak, module, action, fmt)
+	walk( sak , [ fmt ] , *path )
