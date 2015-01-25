@@ -1,14 +1,14 @@
 
-import lib.sys, json
+import lib.sys, json , functools
 
 CMD_CURL = ["curl"]
 FLAG_VERBOSE = ["-v"]
-METHOD_PUT = "PUT"
-METHOD_GET = "GET"
-METHOD_POST = "POST"
-METHOD_PATCH = "PATCH"
-METHOD_UPDATE = "UPDATE"
-METHOD_DELETE = "DELETE"
+PUT = "PUT"
+GET = "GET"
+POST = "POST"
+PATCH = "PATCH"
+UPDATE = "UPDATE"
+DELETE = "DELETE"
 
 
 def body(data):
@@ -56,20 +56,9 @@ def sendjson(method, url, data = None, username = None, password = None, **kwarg
 	if data is not None : data = json.dumps(data)
 	return call(method, url, "application/json", data, username, password, **kwargs)
 
-def putjson(url, data = None, username = None, password = None, **kwargs):
-	return sendjson(METHOD_PUT, url, data, username, password, **kwargs)
-
-def getjson(url, data = None, username = None, password = None, **kwargs):
-	return sendjson(METHOD_GET, url, data, username, password, **kwargs)
-
-def postjson(url, data = None, username = None, password = None, **kwargs):
-	return sendjson(METHOD_POST, url, data, username, password, **kwargs)
-
-def updatejson(url, data = None, username = None, password = None, **kwargs):
-	return sendjson(METHOD_UPDATE, url, data, username, password, **kwargs)
-
-def patchjson(url, data = None, username = None, password = None, **kwargs):
-	return sendjson(METHOD_PATCH, url, data, username, password, **kwargs)
-
-def deletejson(url, data = None, username = None, password = None, **kwargs):
-	return sendjson(METHOD_DELETE, url, data, username, password, **kwargs)
+put = functools.partial( sendjson , PUT )
+get = functools.partial( sendjson , GET )
+post = functools.partial( sendjson , POST )
+update = functools.partial( sendjson , UPDATE )
+patch = functools.partial( sendjson , PATCH )
+delete = functools.partial( sendjson , DELETE )
