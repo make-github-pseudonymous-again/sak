@@ -80,7 +80,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			npm["description"] = description
 			npm["main"] = "js/dist/%(name)s.js" % fmtargs
 			npm["dependencies"] = {}
-			npm["devDependencies"] = {"aureooms-node-package": "^1.2.0"}
+			npm["devDependencies"] = {"aureooms-node-package": "^2.0.2"}
 			npm["scripts"] = {}
 			npm["scripts"]["build"] = "./node_modules/.bin/aureooms-node-package-build"
 			npm["scripts"]["test"] = "./node_modules/.bin/aureooms-node-package-test"
