@@ -51,8 +51,13 @@ TYPES_DEFAULT = {
 def api ( *args ) :
 	return "https://api.github.com/" + '/'.join( map( str , args ) )
 
-@lib.fn.throttle( 20 , 60 )
+@lib.fn.throttle( 20 , 70 )
 def send ( method , url , data = None , **kwargs ) :
+
+	"""
+		Throttling because
+		https://github.com/octokit/octokit.net/issues/638#issuecomment-67795998
+	"""
 
 	contenttype = "application/json"
 
