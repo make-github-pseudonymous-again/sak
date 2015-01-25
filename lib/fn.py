@@ -25,7 +25,7 @@ def throttle ( times , interval ) :
 
 				count += 1
 
-				fn( *args , **kwargs )
+				return fn( *args , **kwargs )
 
 			else :
 
@@ -39,13 +39,13 @@ def throttle ( times , interval ) :
 
 					first = now
 
-					fn( *args , **kwargs )
+					return fn( *args , **kwargs )
 
 				else :
 
 					time.sleep( wait )
 
-					wrapper( *args , **kwargs )
+					return wrapper( *args , **kwargs )
 
 		return wrapper
 
