@@ -1,5 +1,11 @@
+"""
+	Exposes Github API v3.
+"""
 
-import lib.config, lib.git, lib.error, lib.check, json, lib.curl, lib.url , lib.dict , lib.args
+
+import json , functools
+import lib.fn , lib.args
+import lib.config, lib.git, lib.error, lib.check, lib.curl, lib.url , lib.dict
 
 # CONSTANTS
 
@@ -43,8 +49,24 @@ TYPES_DEFAULT = {
 # TOOLS
 
 def api ( *args ) :
-
 	return "https://api.github.com/" + '/'.join( map( str , args ) )
+
+@lib.fn.throttle( 20 , 60 )
+def send ( method , url , data = None , **kwargs ) :
+
+	contenttype = "application/json"
+
+	if data is not None :
+		data = json.dumps(data)
+
+	return lib.curl.call( method , api( *url ) , contenttype , data = data , **kwargs )
+
+put = functools.partial( send , lib.curl.PUT )
+get = functools.partial( send , lib.curl.GET )
+post = functools.partial( send , lib.curl.POST )
+update = functools.partial( send , lib.curl.UPDATE )
+patch = functools.partial( send , lib.curl.PATCH )
+delete = functools.partial( send , lib.curl.DELETE )
 
 
 def credentials ( username = None , password = None ) :
@@ -62,7 +84,7 @@ def paginate ( url , username = None , password = None ) :
 
 		pageurl = url + lib.url.get( page = str( pageid ) )
 
-		out , err , p = lib.curl.getjson( pageurl , username = username , password = password )
+		out , err , p = get( pageurl , username = username , password = password )
 
 		lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
@@ -110,9 +132,9 @@ def list ( target = YOU, name = None, t = None, username = None, password = None
 	if target == YOU or t == PRIVATE or username is not None :
 		username , password = credentials( username , password )
 
-	if   target ==  YOU : url = api( "user" , "repos" )
-	elif target == USER : url = api( "users" , name , "repos" )
-	elif target ==  ORG : url = api( "orgs" , name , "repos" )
+	if   target ==  YOU : url = ( "user" , "repos" )
+	elif target == USER : url = ( "users" , name , "repos" )
+	elif target ==  ORG : url = ( "orgs" , name , "repos" )
 
 	return itemize( url , username = username , password = password )
 
@@ -130,21 +152,21 @@ def issues ( owner = None , repo = None , number = None , user = False , org = N
 
 	if owner is not None and repo is not None :
 		if number is None :
-			url = api( "repos" , owner , repo , "issues" )
+			url = ( "repos" , owner , repo , "issues" )
 		else :
-			url = api( "repos" , owner , repo , "issues" , number )
+			url = ( "repos" , owner , repo , "issues" , number )
 	elif user :
-		url = api( "user" , "issues" )
+		url = ( "user" , "issues" )
 	elif org is not None :
-		url = api( "orgs" , org , "issues" )
+		url = ( "orgs" , org , "issues" )
 	else :
-		url = api( "issues" )
+		url = ( "issues" , )
 
 	keys = [ "milestone" , "filter" , "state" , "assignee" , "creator" , "mentioned" , "labels" , "sort" , "direction" , "since" ]
 
 	parameters = lib.dict.select( locals( ) , keys )
 
-	out , err , p = lib.curl.getjson(url, parameters, username, password, accept = "application/vnd.github.v3.raw+json" )
+	out , err , p = get( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
 	return json.loads( out.decode( ) )
@@ -173,7 +195,7 @@ def createissue ( owner , repo , title , body = None , assignee = None , milesto
 		https://developer.github.com/v3/issues/#create-an-issue
 	"""
 
-	url = api( "repos" , owner , repo , "issues" )
+	url = ( "repos" , owner , repo , "issues" )
 
 	labels = lib.args.listify( labels )
 
@@ -183,7 +205,7 @@ def createissue ( owner , repo , title , body = None , assignee = None , milesto
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.postjson( url , parameters , username , password )
+	out , err , p = post( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
 	return json.loads( out.decode( ) )
@@ -195,7 +217,7 @@ def editissue ( owner , repo , number , title = None , body = None , assignee = 
 		https://developer.github.com/v3/issues/#edit-an-issue
 	"""
 
-	url = api( "repos" , owner , repo , "issues" , number )
+	url = ( "repos" , owner , repo , "issues" , number )
 
 	labels = lib.args.listify( labels )
 
@@ -205,7 +227,7 @@ def editissue ( owner , repo , number , title = None , body = None , assignee = 
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.patchjson( url , parameters , username , password )
+	out , err , p = patch( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -220,13 +242,13 @@ def labels ( owner, repo, name = None, issue = None, username = None, password =
 	"""
 
 	if issue is not None :
-		url = api( "repos", owner, repo, "issues", issue, "labels" )
+		url = ( "repos", owner, repo, "issues", issue, "labels" )
 	elif name is not None :
-		url = api( "repos", owner, repo, "labels", name )
+		url = ( "repos", owner, repo, "labels", name )
 	else :
-		url = api( "repos", owner, repo, "labels" )
+		url = ( "repos", owner, repo, "labels" )
 
-	out , err , p = lib.curl.getjson( url, None, username, password )
+	out , err , p = get( url, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -237,13 +259,13 @@ def createlabel ( owner, repo, name, color, username = None, password = None ) :
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	url = api( "repos", owner, repo, "labels" )
+	url = ( "repos", owner, repo, "labels" )
 
 	parameters = lib.dict.select( locals( ) , [ "name" , "color" ] )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.postjson(url, parameters, username, password)
+	out , err , p = post(url, data = parameters, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -254,13 +276,13 @@ def updatelabel ( owner, repo, oldname, newname, color, username = None, passwor
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	url = api( "repos", owner, repo, "labels", oldname )
+	url = ( "repos", owner, repo, "labels", oldname )
 
 	parameters = dict( name = newname, color = color )
 
 	username, password = credentials( username, password )
 
-	out , err , p = lib.curl.patchjson( url, parameters, username, password )
+	out , err , p = patch( url, data = parameters, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -272,11 +294,11 @@ def deletelabel ( owner, repo, name, username = None, password = None ) :
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	url = api( "repos", owner, repo, "labels", name )
+	url = ( "repos", owner, repo, "labels", name )
 
 	username, password = credentials( username, password )
 
-	out , err , p = lib.curl.deletejson( url, None, username, password )
+	out , err , p = delete( url, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -291,9 +313,9 @@ def addlabels ( owner, repo, issue, labels = None, username = None, password = N
 
 	username, password = credentials( username, password )
 
-	url = api( "repos", owner, repo, "issues", issue, "labels" )
+	url = ( "repos", owner, repo, "issues", issue, "labels" )
 
-	out , err , p = lib.curl.postjson( url, labels, username, password )
+	out , err , p = post( url, data = labels, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -306,9 +328,9 @@ def removelabel ( owner, repo, issue, label, username = None, password = None ) 
 
 	username, password = credentials( username, password )
 
-	url = api( "repos", owner, repo, "issues", issue, "labels", label )
+	url = ( "repos", owner, repo, "issues", issue, "labels", label )
 
-	out , err , p = lib.curl.deletejson( url, None, username, password )
+	out , err , p = delete( url, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -323,9 +345,9 @@ def updatelabels ( owner, repo, issue, labels = None, username = None, password 
 
 	username, password = credentials( username, password )
 
-	url = api( "repos", owner, repo, "issues", issue, "labels" )
+	url = ( "repos", owner, repo, "issues", issue, "labels" )
 
-	out , err , p = lib.curl.putjson( url, labels, username, password )
+	out , err , p = put( url, data = labels, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -338,9 +360,9 @@ def removealllabels ( owner, repo, issue, username = None, password = None ) :
 
 	username, password = credentials( username, password )
 
-	url = api( "repos", owner, repo, "issues", issue, "labels" )
+	url = ( "repos", owner, repo, "issues", issue, "labels" )
 
-	out , err , p = lib.curl.deletejson( url, None, username, password )
+	out , err , p = delete( url, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -351,9 +373,9 @@ def milestonelabels ( owner, repo, milestone, username = None, password = None )
 		https://developer.github.com/v3/issues/labels/
 	"""
 
-	url = api( "repos", owner, repo, "milestones", milestone, "labels" )
+	url = ( "repos", owner, repo, "milestones", milestone, "labels" )
 
-	out , err , p = lib.curl.getjson( url, None, username, password )
+	out , err , p = get( url, username = username, password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -364,52 +386,52 @@ def milestonelabels ( owner, repo, milestone, username = None, password = None )
 def milestones ( owner , repo , number = None , state = None , sort = None , direction = None , username = None , password = None ) :
 
 	if number is None :
-		url = api( "repos" , owner , repo , "milestones" )
+		url = ( "repos" , owner , repo , "milestones" )
 	else :
-		url = api( "repos" , owner , repo , "milestones" , number )
+		url = ( "repos" , owner , repo , "milestones" , number )
 
 	parameters = lib.dict.select( locals( ) , [ "state" , "sort" , "direction" ] )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.getjson( url , parameters , username , password )
+	out , err , p = get( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args , p.returncode )
 	return json.loads( out.decode( ) )
 
 
 def createmilestone ( owner , repo , title , state = None , description = None , due_on = None , username = None , password = None ) :
 
-	url = api( "repos" , owner , repo , "milestones" )
+	url = ( "repos" , owner , repo , "milestones" )
 
 	parameters = lib.dict.select( locals( ) , [ "title" , "state" , "description" , "due_on" ] )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.postjson( url , parameters , username , password )
+	out , err , p = post( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args , p.returncode )
 	return json.loads( out.decode( ) )
 
 
 def updatemilestone ( owner , repo , number , title , state = None , description = None , due_on = None , username = None , password = None ) :
 
-	url = api( "repos" , owner , repo , "milestones" , number )
+	url = ( "repos" , owner , repo , "milestones" , number )
 
 	parameters = lib.dict.select( locals( ) , [ "title" , "state" , "description" , "due_on" ] )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.patchjson( url , parameters , username , password )
+	out , err , p = patch( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args , p.returncode )
 	return json.loads( out.decode( ) )
 
 
 def deletemilestone ( owner , repo , number , username = None , password = None ) :
 
-	url = api( "repos" , owner , repo , "milestones" , number )
+	url = ( "repos" , owner , repo , "milestones" , number )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.deletejson( url , None , username , password )
+	out , err , p = delete( url , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args , p.returncode )
 	return json.loads( out.decode( ) )
 
@@ -420,54 +442,54 @@ def deletemilestone ( owner , repo , number , username = None , password = None 
 def comments ( owner , repo , id = None , number = None , sort = None , direction = None , since = None , username = None , password = None ) :
 
 	if id is not None :
-		url = api( "repos" , owner , repo , "issues" , "comments" , id )
+		url = ( "repos" , owner , repo , "issues" , "comments" , id )
 	elif number is None :
-		url = api( "repos" , owner , repo , "issues" , "comments" )
+		url = ( "repos" , owner , repo , "issues" , "comments" )
 	else :
-		url = api( "repos" , owner , repo , "issues" , number , "comments" )
+		url = ( "repos" , owner , repo , "issues" , number , "comments" )
 
 	parameters = lib.dict.select( locals( ) , [ "sort" , "direction" , "since" ] )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.getjson( url , parameters , username , password )
+	out , err , p = get( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args , p.returncode )
 	return json.loads( out.decode( ) )
 
 
 def createcomment ( owner , repo , number , body , username = None , password = None ) :
 
-	url = api( "repos" , owner , repo , "issues" , number , "comments" )
+	url = ( "repos" , owner , repo , "issues" , number , "comments" )
 
 	parameters = lib.dict.select( locals( ) , [ "body" ] )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.postjson( url , parameters , username , password )
+	out , err , p = post( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args , p.returncode )
 	return json.loads( out.decode( ) )
 
 
 def editcomment ( owner , repo , id , body , username = None , password = None ) :
 
-	url = api( "repos" , owner , repo , "issues" , "comments" , id )
+	url = ( "repos" , owner , repo , "issues" , "comments" , id )
 
 	parameters = lib.dict.select( locals( ) , [ "body" ] )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.patchjson( url , parameters , username , password )
+	out , err , p = patch( url , data = parameters , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args , p.returncode )
 	return json.loads( out.decode( ) )
 
 
 def deletecomment ( owner , repo , id , username = None , password = None ) :
 
-	url = api( "repos" , owner , repo , "issues" , "comments" , id )
+	url = ( "repos" , owner , repo , "issues" , "comments" , id )
 
 	username , password = credentials( username , password )
 
-	out , err , p = lib.curl.deletejson( url , None , username , password )
+	out , err , p = delete( url , username = username , password = password )
 	lib.check.SubprocessReturnedFalsyValueException( p.args , p.returncode )
 	return json.loads( out.decode( ) )
 

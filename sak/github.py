@@ -1,4 +1,4 @@
-import lib.config, lib.git, lib.error, lib.check, lib.curl
+import lib.config, lib.git, lib.error, lib.check
 import lib.github, lib.input, lib.http, lib.args
 import re
 
@@ -56,11 +56,11 @@ def new(name, org = None, team_id = None, username = None, password = None, auto
 
 
 	if org is None :
-		url = lib.github.api( "user" , "repos" )
+		url = ( "user" , "repos" )
 	else :
-		url = lib.github.api( "orgs" , org , "repos" )
+		url = ( "orgs" , org , "repos" )
 
-	_, _, p = lib.curl.postjson(url, parameters, username, password, stddefault = None)
+	_, _, p = lib.github.post( url , data = parameters , username = username , password = password , stddefault = None )
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
@@ -111,8 +111,8 @@ def download ( target = YOU, name = None, t = None, username = None, password = 
 def delete(owner, repo, username = None, password = None):
 	username, password = lib.github.credentials(username, password)
 
-	url = lib.github.api( "repos" , owner , repo )
-	_, _, p = lib.curl.deletejson(url, username = username, password = password, stddefault = None)
+	url = ( "repos" , owner , repo )
+	_, _, p = lib.github.delete( url, username = username, password = password, stddefault = None)
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
@@ -236,11 +236,11 @@ def listforks ( owner, repo, sort = NEWEST, username = None, password = None ) :
 	if username is not None :
 		username, password = lib.github.credentials( username, password )
 
-	url = lib.github.api( "repos", owner, repo, "forks" )
+	url = ( "repos", owner, repo, "forks" )
 
 	parameters = dict( sort = sort )
 
-	_, _, p = lib.curl.getjson( url, parameters, username, password, stddefault = None )
+	_, _, p = lib.github.get( url, data = parameters, username = username, password = password, stddefault = None )
 	print()
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
@@ -253,11 +253,11 @@ def fork ( owner, repo, organization = None, username = None, password = None ) 
 
 	username, password = lib.github.credentials( username, password )
 
-	url = lib.github.api( "repos", owner, repo, "forks" )
+	url = ( "repos", owner, repo, "forks" )
 
 	parameters = dict( organization = organization )
 
-	_, _, p = lib.curl.postjson( url, parameters, username, password, stddefault = None )
+	_, _, p = lib.github.post( url, data = parameters, username = username, password = password, stddefault = None )
 	print()
 	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
@@ -284,9 +284,9 @@ def patch ( owner, repo, name, username = None, password = None, private = FALSE
 	}
 
 
-	url = lib.github.api( "repos", owner, repo )
+	url = ( "repos", owner, repo )
 
-	_, _, p = lib.curl.patchjson(url, parameters, username, password, stddefault = None)
+	_, _, p = lib.github.patch( url , data = parameters, username = username, password = password, stddefault = None)
 	print()
 	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
