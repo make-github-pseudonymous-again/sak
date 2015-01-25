@@ -116,7 +116,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			bower["homepage"] = homepage
 
 		with lib.json.proxy("pkg.json", "w", object_pairs_hook = jsonhook) as pkg :
-			pkg["ns"] = name
+			pkg["name"] = name
 			pkg["src"] = "js/src/"
 			pkg["out"] = "js/dist/"
 			pkg["code"] = {}
@@ -214,7 +214,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 			bower["homepage"] = homepage
 
 		with lib.json.proxy( "pkg.json", "w", object_pairs_hook = jsonhook ) as pkg :
-			pkg["ns"] = name
+			pkg["name"] = name
 			pkg["code"]["main"] = ["js", "dist", "%s.js" % name]
 
 

@@ -7,7 +7,7 @@ data = fs.readFileSync( pkg.config, "utf8" ) ;
 opt  = JSON.parse( data ) ;
 
 opt = {
-	ns      : opt.ns ,
+	name    : opt.name ,
 	src     : __dirname + "/src/" ,
 	exports : module.exports ,
 	base    : 0 ,
