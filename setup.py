@@ -4,7 +4,7 @@ except ImportError : from distutils.core import setup
 
 setup (
 
-	name = 'sak' , version = '0.0.7' ,
+	name = 'sak' , version = '0.1.0' ,
 
 	description = 'Swiss Army Knife',
 	long_description = 'sak is a module, submodule and action based tool' ,
