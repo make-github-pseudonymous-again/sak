@@ -87,7 +87,7 @@ def paginate ( url , username = None , password = None ) :
 
 	while True :
 
-		pageurl = url + lib.url.get( page = str( pageid ) )
+		pageurl = url[:-1] + ( url[-1] + lib.url.get( page = str( pageid ) ) , )
 
 		out , err , p = get( pageurl , username = username , password = password )
 
