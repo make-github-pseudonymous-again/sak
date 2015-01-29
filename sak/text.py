@@ -79,3 +79,10 @@ def truncate ( *args , n = None ) :
 	for line in fileinput.input( args ) :
 
 		print( line[:n] , end = "" )
+
+def split ( *args ) :
+
+	for line in fileinput.input( args ) :
+
+		print( *line.split( ) , sep = "\n" , end = "\n" )
+
