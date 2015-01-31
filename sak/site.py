@@ -1,4 +1,13 @@
-import os, lib
+import os , lib , lib.sys , os.path
+
+def mount ( directory = '.' , dest = '~/www' ) :
+
+	directory = os.path.abspath( os.path.expanduser( directory ) )
+	dest = os.path.abspath( os.path.expanduser( dest ) )
+
+	lib.sys.call( [ 'rm' , dest ] )
+	lib.sys.call( [ 'ln' , '-s' , directory , dest ] )
+
 
 def toggle(which, directory = '.', config_file = 'json/config.json', dry_run = False):
 	local = {'root' : os.path.abspath(directory)}
