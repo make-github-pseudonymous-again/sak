@@ -1,6 +1,6 @@
 import shutil, sak.github, lib.github, lib.sak, sak.npm
 import lib.bower, lib.check, collections, lib.dir, lib.file
-import lib.codebricks, fileinput, lib.args
+import lib.codebricks, fileinput, lib.args, lib.http
 
 TRAVISCI = lib.codebricks.TRAVISCI
 DRONEIO = lib.codebricks.DRONEIO
@@ -181,7 +181,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 		has_downloads = lib.github.TRUE
 	)
 
-	sak.github.clone( oldrepo, slug, username )
+	sak.github.clone( oldrepo , dest = slug , username = username )
 
 	with lib.dir.cd( slug ) :
 
@@ -220,9 +220,9 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 
 		lib.file.rm( "js/dist" )
 
+		url = lib.http.url( "github.com" , path = "%s/%s" % ( username , slug ) , username = username , secure = True )
 
-
-		lib.git.remote( "set-url", "origin", "https://github.com/%s/%s" % ( username, slug ) )
+		lib.git.remote( "set-url", "origin", url )
 		lib.git.add( "--all", "." )
 		lib.git.commit( "-am", "$ codebricks fork %s" % oldrepo )
 		lib.git.push( "-u", "origin", "master" )
