@@ -115,6 +115,15 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			bower["license"] = license["name"]
 			bower["homepage"] = homepage
 
+		with lib.json.proxy("component.json", "w", object_pairs_hook = jsonhook) as component :
+			component["name"] = qualifiedname
+			component["repo"] = "%(username)s/%(repo)s" % fmtargs
+			component["version"] = "0.0.0"
+			component["license"] = license["name"]
+			component["description"] = description
+			component["main"] = "js/dist/%(name)s.js" % fmtargs
+			component["scripts"] = ["js/dist/%(name)s.js" % fmtargs]
+
 		with lib.json.proxy("pkg.json", "w", object_pairs_hook = jsonhook) as pkg :
 			pkg["name"] = name
 			pkg["src"] = "js/src/"
@@ -212,6 +221,13 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 			bower["description"] = description
 			bower["main"] = "js/dist/%s.js" % name
 			bower["homepage"] = homepage
+
+		with lib.json.proxy("component.json", "w", object_pairs_hook = jsonhook) as component :
+			component["name"] = qualifiedname
+			component["repo"] = "%s/%s" % ( username, slug )
+			component["description"] = description
+			component["main"] = "js/dist/%s.js" % name
+			component["scripts"] = ["js/dist/%s.js" % name]
 
 		with lib.json.proxy( "pkg.json", "w", object_pairs_hook = jsonhook ) as pkg :
 			pkg["name"] = name

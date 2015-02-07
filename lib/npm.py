@@ -3,10 +3,11 @@
 
 import os.path, lib.json, lib.list, lib.ver, lib.git, collections
 
-NPM   = 'package.json'
-BOWER = 'bower.json'
+NPM       = 'package.json'
+BOWER     = 'bower.json'
+COMPONENT = 'component.json'
 
-PM = [NPM, BOWER]
+PM = [NPM, BOWER, COMPONENT]
 
 VERSION_HASH   = 'version'
 
