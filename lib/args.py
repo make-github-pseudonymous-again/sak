@@ -166,6 +166,35 @@ def format ( key, val ) :
 
 	return fmt % (key, val)
 
+def escape ( val , quotes = "\"" ) :
+
+	"""
+
+		>>> from lib.args import *
+
+		>>> escape( 'abcd' )
+		'"abcd"'
+
+		>>> escape( 'abcd"' )
+		'"abcd\\""'
+
+		>>> escape( 'abcd\'' , quotes = "'" )
+		"'abcd\\''"
+
+		>>> escape( 'ab\\cd\'' , quotes = "'" )
+		"'ab\\\\cd\\''"
+
+	"""
+
+	out = ""
+
+	for c in val :
+
+		if c == "\\" or c == quotes : out += "\\"
+
+		out += c
+
+	return quotes + out + quotes
 
 def listify ( arg ) :
 

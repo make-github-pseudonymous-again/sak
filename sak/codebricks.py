@@ -245,3 +245,16 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 		sak.npm.install()
 		sak.npm.release( "major" )
 		lib.bower.register( qualifiedname, "github.com/%s/%s" % ( username, slug ), force = True )
+
+
+def component ( qualifiedname , repo , name , version , license , description ) :
+
+	with lib.json.proxy( "component.json" , "w" , object_pairs_hook = collections.OrderedDict ) as component :
+		component["name"] = qualifiedname
+		component["repo"] = repo
+		component["version"] = version
+		component["license"] = license
+		component["description"] = description
+		component["main"] = "js/dist/%s.js" % name
+		component["scripts"] = ["js/dist/%s.js" % name]
+
