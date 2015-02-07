@@ -1,5 +1,6 @@
-import lib.sys
+import lib.sys , lib.args
 
+@lib.args.convert( start = int , end = int )
 def cut ( source, dest, start, end ) :
 	lib.sys.call([
 		"pdftk",
