@@ -9,6 +9,21 @@ else :
 	_zip = zip
 
 
+def directories ( callable = None , iterable = None ) :
+
+	iterable = lib.args.listify( iterable )
+	callable = lib.args.listify( callable )
+
+	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
+
+	if not iterable :
+		iterable = ( s[:-1] for s in fileinput.input( [] ) )
+
+	for item in iterable :
+
+		lib.sys.call( callable , stddefault = None , cwd = item )
+
+
 def imap ( callable = None , iterable = None ) :
 
 	iterable = lib.args.listify( iterable )
