@@ -38,6 +38,8 @@ def do(action, *args):
 def update(*args):
 	return do('update', *args)
 
+def up(*args):
+	return do('up', *args)
 
 def pull(*args):
 	return do('pull', *args)
@@ -144,6 +146,9 @@ class helper(object):
 
 	def update(d):
 		subprocess.call(['git', 'remote', 'update'], cwd = d)
+
+	def up(d):
+		subprocess.call(['git', 'up'], cwd = d)
 
 	def commit(d, *args):
 		subprocess.call(['git', 'commit'] + list(args), cwd = d)
