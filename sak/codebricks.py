@@ -1,6 +1,7 @@
 import shutil, sak.github, lib.github, lib.sak, sak.npm
 import lib.bower, lib.check, collections, lib.dir, lib.file
 import lib.codebricks, fileinput, lib.args, lib.http
+import os
 
 TRAVISCI = lib.codebricks.TRAVISCI
 DRONEIO = lib.codebricks.DRONEIO
@@ -257,4 +258,37 @@ def component ( qualifiedname , repo , name , version , license , description ) 
 		component["description"] = description
 		component["main"] = "js/dist/%s.js" % name
 		component["scripts"] = ["js/dist/%s.js" % name]
+
+def usecomponent ( *dirs ) :
+
+	for d in dirs :
+
+		if "component.json" in os.listdir( d ) : continue
+
+		with lib.dir.cd( d ) :
+
+			with lib.json.proxy( "pkg.json" ) as pkg : pass
+
+			with lib.json.proxy( "bower.json" ) as bower : pass
+
+			name = pkg["ns"] if "ns" in pkg else pkg["name"]
+
+			qualifiedname = bower["name"]
+
+			author , *_ = qualifiedname.split("-")
+
+			repo = author + "/js-" + name
+
+			version = bower["version"]
+
+			license = bower["license"]
+
+			description = bower["description"]
+
+			component ( qualifiedname , repo , name , version , license , description )
+
+			lib.git.add( "--all" , "." )
+			lib.git.commit( "-am", "add component.json" )
+			lib.git.push( )
+			sak.npm.release( "patch" )
 
