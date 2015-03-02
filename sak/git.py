@@ -126,11 +126,18 @@ class helper(object):
 	def recursive(args, callback):
 		if len(args) == 0 : args = ['.']
 
-		for d in args:
-			l = [x for x in os.listdir(d) if os.path.isdir(os.path.join(d, x))]
-			if len(l) == 0 : continue
-			if '.git' in l : callback(d)
-			else           : helper.recursive([os.path.join(d, x) for x in l], callback)
+		for d in args :
+
+			try :
+
+				l = [x for x in os.listdir(d) if os.path.isdir(os.path.join(d, x))]
+				if len(l) == 0 : continue
+				if '.git' in l : callback(d)
+				else           : helper.recursive([os.path.join(d, x) for x in l], callback)
+
+			except Exception as e :
+
+				print( "skipping" , d , "because" , e )
 
 
 	BRANCH = re.compile(r'^\* (.*)')
