@@ -13,19 +13,47 @@ STATE_COMPLETED = "C"
 STATE_QUEUED = "Q"
 STATE_RUNNING = "R"
 
-def submit ( node , cpu , name , out , err , *cmd ) :
+def submit ( name , cmd , nodes = None , cpu = None , output = None , error = None , walltime = None , memory = None , redirect = False ) :
 
 	"""
 		qsub python wrapper
 	"""
 
-	resources = {"nodes" : node + ":ppn=" + str(cpu)}
+	cp = ""
 
-	resource_list = ",".join(["=".join([key, val]) for key, val in resources.iteritems()])
+	if isinstance( nodes , ( list , tuple ) ) :
 
-	submission = [CMD_QSUB, "-l", resource_list, "-N",  name, "-o",  out, "-e",  err]
+		cp += ",".join( nodes )
 
-	cmd = [ [ "echo" ] + [ " ".join( cmd ) ] , submission ]
+	elif nodes is not None :
+
+		cp += str( nodes )
+
+	if cpu is not None :
+
+		if cp : cp += ":"
+
+		cp += "ppn=" + str( cpu )
+
+	resources = {}
+
+	if cp : resources["nodes"] = cp
+	if walltime : resources["walltime"] = walltime
+	if memory : resources["mem"] = memory
+
+	resource_list = ",".join(["=".join([key, val]) for key, val in resources.items()])
+
+	submission = [ CMD_QSUB ]
+
+	if resource_list : submission += [ "-l" , resource_list ]
+
+	submission += [ "-N" ,  name ]
+
+	if redirect : submission += [ "-j" , "oe" ]
+	if output : submission += [ "-o" ,  output ]
+	if error : submission += [ "-e" ,  error ]
+
+	cmd = [ [ "echo" ] + [ cmd ] , submission ]
 
 	return lib.sys.pipeline(*cmd, stdin = subprocess.PIPE, stdout = subprocess.PIPE)
 
