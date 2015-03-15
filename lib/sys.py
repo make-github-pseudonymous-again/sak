@@ -30,10 +30,14 @@ def call ( cmd , *args , **kwargs ) :
 
 	p = popen( cmd , *args , **kwargs )
 
+	return join( p )
+
+def join(p):
+	"""
+		Wait for a child's completion.
+	"""
 	out, err = p.communicate()
-
 	return out, err, p
-
 
 def extensions():
 	if platform.system() == "Windows" :
@@ -69,6 +73,32 @@ def which(program):
 
 	return None
 
+def getlines(cmd, *args, **kwargs):
+	"""
+		Same as call but only return the output string as a list of lines.
+	"""
+	out, err, p = lib.sys.call(cmd, *args, **kwargs)
+	return out.decode().splitlines()
+
+
+def whoami():
+	"""
+		Determines who is the current user.
+	"""
+	return lib.sys.getlines(["whoami"])[0]
+
+
+def success(p):
+	"""
+		Determine if child was successful.
+	"""
+	return p.returncode == 0
+
+def failure(p):
+	"""
+		Determine if child failed.
+	"""
+	return not success(p)
 
 
 STDIN = "stdin"
@@ -77,13 +107,13 @@ STDOUT = "stdout"
 
 def pipeline ( *cmds, **kwargs ) :
 
-	if not cmds : return
+	if not cmds : return None, None, 0
 
 	stdin = kwargs.get( STDIN, None )
 	stdout = kwargs.get( STDOUT, None )
 
 	inp = stdin
-	it = lib.iterator.sentinel( subprocess.PIPE, stdout )
+	it = lib.iterator.sentinel( len( cmds ) , subprocess.PIPE , stdout )
 
 	for cmd, out in zip( cmds, it ):
 		p = subprocess.Popen( cmd, stdin = inp, stdout = out )
