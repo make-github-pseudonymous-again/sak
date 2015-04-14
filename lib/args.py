@@ -146,6 +146,13 @@ def parse ( argv, args, kwargs ) :
 	return args, kwargs
 
 
+def read ( string , args , kwargs ) :
+
+	argv = split( string )
+
+	return parse( argv , args , kwargs )
+
+
 def format ( key, val ) :
 
 	"""
