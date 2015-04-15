@@ -7,7 +7,7 @@ setup (
 	name = 'sak' , version = '0.3.1' ,
 
 	description = 'Swiss Army Knife',
-	long_description = 'sak is a module, submodule and action based tool' ,
+	long_description = 'sak is a module, submodule and function based tool' ,
 
 	author = 'aureooms' ,
 	author_email = 'aurelien.ooms@gmail.com' ,

@@ -5,13 +5,16 @@ python:
   - "3.3"
   - "3.4"
 
-# command to install dependencies
 install:
   - pip install lxml
   - pip install semantic_version
   - pip install coverage
+  - pip install coveralls
   - pip install scrutinizer-ocular
 
-# command to run tests
 script:
-  - "{ coverage run alldoctest.py && ocular ; } || false"
+  - coverage run alldoctest.py
+
+after_success:
+  - coveralls
+  - ocular
