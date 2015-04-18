@@ -292,3 +292,6 @@ def usecomponent ( *dirs ) :
 			lib.git.push( )
 			sak.npm.release( "patch" )
 
+def installationinstructions ( name ) :
+
+	print( lib.codebricks.installationinstructions( name ) )
