@@ -41,7 +41,8 @@ def badges ( username, repo, ci, cb, style = FLAT, fmt = SVG ) :
 		ghb.daviddevdependencies,
 		ghb.codeclimategpa,
 		ghb.npmdownloads,
-		ghb.githubissues
+		ghb.githubissues,
+		ghb.inchci
 	]
 
 	for vendor in vendors :

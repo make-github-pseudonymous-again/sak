@@ -111,3 +111,19 @@ def githubissues ( username = None, repo = None, packagename = None, style = FLA
 	href = "https://github.com/%s/%s/issues" % ( username, repo )
 
 	return iwl( title, img, href )
+
+def inchci ( username = None, repo = None, packagename = None, style = FLAT, fmt = SVG ) :
+
+	"""
+
+		>>> from lib.ghbadges import inchci
+		>>> print( inchci( "aureooms" , "js-algebra" ) )
+		[![Inline docs](http://inch-ci.org/github/aureooms/js-algebra.svg?branch=master&style=shields)](http://inch-ci.org/github/aureooms/js-algebra)
+
+	"""
+
+	title = "Inline docs"
+	img = "http://inch-ci.org/github/%s/%s.svg?branch=master&style=shields" % ( username , repo )
+	href = "http://inch-ci.org/github/%s/%s" % ( username , repo )
+
+	return iwl( title , img , href )
