@@ -60,9 +60,8 @@ def new(name, org = None, team_id = None, username = None, password = None, auto
 	else :
 		url = ( "orgs" , org , "repos" )
 
-	_, _, p = lib.github.post( url , data = parameters , username = username , password = password , stddefault = None )
+	lib.github.post( url , data = parameters , username = username , password = password , stddefault = None )
 	print()
-	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
 
 def group ( *names ) :
@@ -112,9 +111,8 @@ def delete(owner, repo, username = None, password = None):
 	username, password = lib.github.credentials(username, password)
 
 	url = ( "repos" , owner , repo )
-	_, _, p = lib.github.delete( url, username = username, password = password, stddefault = None)
+	lib.github.delete( url, username = username, password = password, stddefault = None)
 	print()
-	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
 
 
@@ -240,9 +238,8 @@ def listforks ( owner, repo, sort = NEWEST, username = None, password = None ) :
 
 	parameters = dict( sort = sort )
 
-	_, _, p = lib.github.get( url, data = parameters, username = username, password = password, stddefault = None )
+	lib.github.get( url, data = parameters, username = username, password = password, stddefault = None )
 	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
 
 def fork ( owner, repo, organization = None, username = None, password = None ) :
@@ -257,9 +254,8 @@ def fork ( owner, repo, organization = None, username = None, password = None ) 
 
 	parameters = dict( organization = organization )
 
-	_, _, p = lib.github.post( url, data = parameters, username = username, password = password, stddefault = None )
+	lib.github.post( url, data = parameters, username = username, password = password, stddefault = None )
 	print()
-	lib.check.SubprocessReturnedFalsyValueException( p.args, p.returncode )
 
 
 def patch ( owner, repo, name, username = None, password = None, private = FALSE, description = None, homepage = None, has_issues = TRUE, has_wiki = TRUE, has_downloads = TRUE, default_branch = None ) :
@@ -286,11 +282,26 @@ def patch ( owner, repo, name, username = None, password = None, private = FALSE
 
 	url = ( "repos", owner, repo )
 
-	_, _, p = lib.github.patch( url , data = parameters, username = username, password = password, stddefault = None)
+	lib.github.patch( url , data = parameters, username = username, password = password, stddefault = None)
 	print()
-	lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
+# WEBHOOKS
 
+def listhooks ( owner , repo , username = None , password = None ) :
+
+	for hook in lib.args.forward( lib.github.listhooks , locals( ) ) :
+
+		print( hook )
+
+def getsinglehook ( owner , repo , id , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.getsinglehook , locals( ) ) )
+
+def createhook ( owner , repo , url , name = "web" , content_type = "json" , secret = None , insecure_ssl = "0" , events = "push" , active = True , username = None , password = None ) :
+
+	print( lib.args.forward( lib.github.createhook , locals( ) ) )
+
+# LONG PROCEDURES
 
 def archive ( username , forks = False , gist = True , metadata = True ) :
 	"""
