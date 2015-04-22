@@ -47,7 +47,22 @@ def badges ( username, repo, ci, cb, style = FLAT, fmt = SVG ) :
 	for vendor in vendors :
 		cb( vendor( style = style, fmt = fmt, **fmtargs ) )
 
-def installationinstructions ( name ) :
+def installationinstructions ( username , name ) :
+
+	"""
+
+		>>> import lib.codebricks
+		>>> print( lib.codebricks.installationinstructions( "abcd" , "efgh" ) )
+		Can be managed through [duo](https://github.com/duojs/duo),
+		[component](https://github.com/componentjs/component),
+		[bower](https://github.com/bower/bower), or
+		[npm](https://github.com/npm/npm).
+		<BLANKLINE>
+		```js
+		let efgh = require( "abcd-js-efgh" ) ;
+		```
+
+	"""
 
 	return r"""Can be managed through [duo](https://github.com/duojs/duo),
 [component](https://github.com/componentjs/component),
@@ -55,5 +70,5 @@ def installationinstructions ( name ) :
 [npm](https://github.com/npm/npm).
 
 ```js
-let {0} = require( "aureooms-js-{0}" ) ;
-```""".format( name )
+let {1} = require( "{0}-js-{1}" ) ;
+```""".format( username , name )

@@ -74,6 +74,8 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			readme.write("%(description)s\n" % fmtargs)
 			readme.write("\n")
 			lib.codebricks.badges( username, repo, ci, lambda s : readme.write(s + "\n") )
+			readme.write("\n")
+			readme.write( lib.codebricks.installationinstructions( username , name ) )
 
 		with lib.json.proxy("package.json", "w", object_pairs_hook = jsonhook) as npm :
 			npm["name"] = qualifiedname
@@ -81,7 +83,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			npm["description"] = description
 			npm["main"] = "js/dist/%(name)s.js" % fmtargs
 			npm["dependencies"] = {}
-			npm["devDependencies"] = {"aureooms-node-package": "^4.0.1"}
+			npm["devDependencies"] = {"aureooms-node-package": "^4.1.0"}
 			npm["scripts"] = {}
 			npm["scripts"]["build"] = "./node_modules/.bin/aureooms-node-package-build"
 			npm["scripts"]["test"] = "./node_modules/.bin/aureooms-node-package-test"
@@ -292,6 +294,21 @@ def usecomponent ( *dirs ) :
 			lib.git.push( )
 			sak.npm.release( "patch" )
 
-def installationinstructions ( name ) :
+def installationinstructions ( username , name ) :
 
-	print( lib.codebricks.installationinstructions( name ) )
+	"""
+
+		>>> import sak.codebricks
+		>>> sak.codebricks.installationinstructions( "abcd" , "efgh" )
+		Can be managed through [duo](https://github.com/duojs/duo),
+		[component](https://github.com/componentjs/component),
+		[bower](https://github.com/bower/bower), or
+		[npm](https://github.com/npm/npm).
+		<BLANKLINE>
+		```js
+		let efgh = require( "abcd-js-efgh" ) ;
+		```
+
+	"""
+
+	print( lib.codebricks.installationinstructions( username , name ) )
