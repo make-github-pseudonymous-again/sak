@@ -110,6 +110,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 				"test",
 				"pkg.json",
 				"package.json",
+				"inch.json",
 				".groc.json",
 				".travis.yml",
 				".gitignore",
@@ -140,6 +141,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 		lib.dir.makedirs("js/src", "test/js/src")
 		lib.file.touch("js/src/dummy.js")
 
+		shutil.copy(lib.sak.data("codebricks", "inch.json"), "inch.json")
 		shutil.copy(lib.sak.data("codebricks", "js-index.js"), "js/index.js")
 		shutil.copy(lib.sak.data("codebricks", "test-js-index.js"), "test/js/index.js")
 		shutil.copy(lib.sak.data("codebricks", "test-js-src-dummy.js"), "test/js/src/dummy.js")
