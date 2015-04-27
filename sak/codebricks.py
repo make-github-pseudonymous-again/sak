@@ -28,7 +28,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 
 	keywords = lib.args.listify( keywords )
 
-	keywords = sorted(list(set(["js", "javascript", "bricks"] + keywords)))
+	keywords = sorted(list(set(["ender", "js", "javascript", "bricks"] + keywords)))
 
 	license = dict(name = "AGPL-3.0", template = "agpl-3.0")
 
@@ -83,7 +83,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			npm["description"] = description
 			npm["main"] = "js/dist/%(name)s.js" % fmtargs
 			npm["dependencies"] = {}
-			npm["devDependencies"] = {"aureooms-node-package": "^4.1.0"}
+			npm["devDependencies"] = {"aureooms-node-package": "^4.2.3"}
 			npm["scripts"] = {}
 			npm["scripts"]["build"] = "./node_modules/.bin/aureooms-node-package-build"
 			npm["scripts"]["test"] = "./node_modules/.bin/aureooms-node-package-test"
@@ -97,6 +97,8 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			npm["bugs"] = {}
 			npm["bugs"]["url"] = issuespage
 			npm["homepage"] = homepage
+			npm["spm"] = {}
+			npm["spm"]["main"] = npm["main"]
 
 
 		with lib.json.proxy("bower.json", "w", object_pairs_hook = jsonhook) as bower :
@@ -180,7 +182,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 
 	keywords = lib.args.listify( keywords )
 
-	keywords = sorted(list(set(["js", "javascript", "bricks"] + keywords)))
+	keywords = sorted(list(set(["ender" , "js", "javascript", "bricks"] + keywords)))
 
 	sak.github.new(
 		slug,
@@ -220,6 +222,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 			npm["author"] = username
 			npm["bugs"]["url"] = issuespage
 			npm["homepage"] = homepage
+			npm["spm"]["main"] = npm["main"]
 
 		with lib.json.proxy( "bower.json", "w", object_pairs_hook = jsonhook ) as bower :
 			bower["name"] = qualifiedname
@@ -301,16 +304,93 @@ def installationinstructions ( username , name ) :
 	"""
 
 		>>> import sak.codebricks
-		>>> sak.codebricks.installationinstructions( "abcd" , "efgh" )
-		Can be managed through [duo](https://github.com/duojs/duo),
+		>>> sak.codebricks.installationinstructions( "abcd" , "ef-gh" )
+		Can be managed through [jspm](https://github.com/jspm/jspm-cli),
+		[duo](https://github.com/duojs/duo),
 		[component](https://github.com/componentjs/component),
-		[bower](https://github.com/bower/bower), or
-		[npm](https://github.com/npm/npm).
+		[bower](https://github.com/bower/bower),
+		[ender](https://github.com/ender-js/Ender),
+		[jam](https://github.com/caolan/jam),
+		[spm](https://github.com/spmjs/spm),
+		and [npm](https://github.com/npm/npm).
 		<BLANKLINE>
+		## Install
+		<BLANKLINE>
+		### jspm
+		```terminal
+		jspm install github:abcd/js-ef-gh
+		# or
+		jspm install npm:abcd-js-ef-gh
+		```
+		### duo
+		No install step needed for duo!
+		<BLANKLINE>
+		### component
+		```terminal
+		component install abcd/js-ef-gh
+		```
+		<BLANKLINE>
+		### bower
+		```terminal
+		bower install abcd-js-ef-gh
+		```
+		<BLANKLINE>
+		### ender
+		```terminal
+		ender add abcd-js-ef-gh
+		```
+		<BLANKLINE>
+		### jam
+		```terminal
+		jam install abcd-js-ef-gh
+		```
+		<BLANKLINE>
+		### spm
+		```terminal
+		spm install abcd-js-ef-gh --save
+		```
+		<BLANKLINE>
+		### npm
+		```terminal
+		npm install abcd-js-ef-gh --save
+		```
+		<BLANKLINE>
+		## Require
+		### jspm
 		```js
-		let efgh = require( "abcd-js-efgh" ) ;
+		let efgh = require( "github:abcd/js-ef-gh" ) ;
+		// or
+		import efgh from 'abcd-js-ef-gh' ;
+		```
+		### duo
+		```js
+		let efgh = require( "abcd/js-ef-gh" ) ;
+		```
+		<BLANKLINE>
+		### component, ender, spm, npm
+		```js
+		let efgh = require( "abcd-js-ef-gh" ) ;
+		```
+		<BLANKLINE>
+		### bower
+		The script tag exposes the global variable `efgh`.
+		```html
+		<script src="bower_components/abcd-js-ef-gh/js/dist/ef-gh.min.js"></script>
+		```
+		Alternatively, you can use any tool mentioned [here](http://bower.io/docs/tools/).
+		<BLANKLINE>
+		### jam
+		```js
+		require( [ "abcd-js-ef-gh" ] , function ( efgh ) { ... } ) ;
 		```
 
 	"""
 
 	print( lib.codebricks.installationinstructions( username , name ) )
+
+def addspmmain ( ) :
+
+	with lib.json.proxy( "package.json", "w", object_pairs_hook = jsonhook ) as npm :
+		if not npm["spm"] :
+			npm["spm"] = {}
+			npm["spm"]["main"] = npm["main"]
