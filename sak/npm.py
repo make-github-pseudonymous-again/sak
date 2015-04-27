@@ -39,6 +39,7 @@ try:
 			version = lib.npm.setversion(version)
 			lib.npm.upload(version, message)
 			publish()
+			subprocess.call( [ 'spm' , 'publish' ] )
 
 		finally :
 			lib.git.checkout( "master" )
