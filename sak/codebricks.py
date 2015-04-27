@@ -28,7 +28,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 
 	keywords = lib.args.listify( keywords )
 
-	keywords = sorted(list(set(["ender", "js", "javascript", "bricks"] + keywords)))
+	keywords = sorted(set(["ender", "js", "javascript", "bricks"] + keywords))
 
 	license = dict(name = "AGPL-3.0", template = "agpl-3.0")
 
@@ -182,7 +182,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 
 	keywords = lib.args.listify( keywords )
 
-	keywords = sorted(list(set(["ender" , "js", "javascript", "bricks"] + keywords)))
+	keywords = sorted(set(["ender" , "js", "javascript", "bricks"] + keywords))
 
 	sak.github.new(
 		slug,
@@ -394,3 +394,9 @@ def addspmmain ( ) :
 		if not npm["spm"] :
 			npm["spm"] = {}
 			npm["spm"]["main"] = npm["main"]
+
+def addenderkeyword ( ) :
+
+	with lib.json.proxy( "package.json", "w", object_pairs_hook = jsonhook ) as npm :
+
+		npm["keywords"] = sorted( set( npm["keywords"] + [ "ender" ] ) )
