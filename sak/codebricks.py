@@ -390,6 +390,7 @@ def installationinstructions ( username , name ) :
 
 def addspmmain ( ) :
 
+	jsonhook = collections.OrderedDict
 	with lib.json.proxy( "package.json", "w", object_pairs_hook = jsonhook ) as npm :
 		if not npm["spm"] :
 			npm["spm"] = {}
@@ -397,6 +398,7 @@ def addspmmain ( ) :
 
 def addenderkeyword ( ) :
 
+	jsonhook = collections.OrderedDict
 	with lib.json.proxy( "package.json", "w", object_pairs_hook = jsonhook ) as npm :
 
 		npm["keywords"] = sorted( set( npm["keywords"] + [ "ender" ] ) )
