@@ -392,7 +392,7 @@ def addspmmain ( ) :
 
 	jsonhook = collections.OrderedDict
 	with lib.json.proxy( "package.json", "w", object_pairs_hook = jsonhook ) as npm :
-		if not npm["spm"] :
+		if "spm" not in npm :
 			npm["spm"] = {}
 			npm["spm"]["main"] = npm["main"]
 
