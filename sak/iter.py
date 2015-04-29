@@ -59,11 +59,16 @@ def starmap ( callable = None , iterable = None ) :
 
 
 @lib.args.convert( n = int )
-def repeat ( item , n = -1 ) :
+def repeat ( iterable = None , n = -1 ) :
 
 	"""
-		Repeat given string n times. If n is negative then repeat given string an infinite number of times.
+		Repeat given lines n times. If n is negative then repeat given string an infinite number of times.
 	"""
+
+	iterable = lib.args.listify( iterable )
+
+	if not iterable :
+		iterable = [ s[:-1] for s in fileinput.input( [] ) ]
 
 	if n < 0 :
 		args = [ None ]
@@ -71,7 +76,7 @@ def repeat ( item , n = -1 ) :
 		args = [ None , n ]
 
 	for _ in itertools.repeat( *args ) :
-		print( item )
+		for item in iterable : print( item )
 
 
 @lib.args.convert( n = int )
