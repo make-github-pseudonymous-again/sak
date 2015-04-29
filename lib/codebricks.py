@@ -147,9 +147,9 @@ def installationinstructions ( username , name ) :
 [jam](https://github.com/caolan/jam),
 [spm](https://github.com/spmjs/spm),
 and [npm](https://github.com/npm/npm).
-<BLANKLINE>
+
 ## Install
-<BLANKLINE>
+
 ### jspm
 ```terminal
 jspm install github:{1}
@@ -158,37 +158,37 @@ jspm install npm:{2}
 ```
 ### duo
 No install step needed for duo!
-<BLANKLINE>
+
 ### component
 ```terminal
 component install {1}
 ```
-<BLANKLINE>
+
 ### bower
 ```terminal
 bower install {2}
 ```
-<BLANKLINE>
+
 ### ender
 ```terminal
 ender add {2}
 ```
-<BLANKLINE>
+
 ### jam
 ```terminal
 jam install {2}
 ```
-<BLANKLINE>
+
 ### spm
 ```terminal
 spm install {2} --save
 ```
-<BLANKLINE>
+
 ### npm
 ```terminal
 npm install {2} --save
 ```
-<BLANKLINE>
+
 ## Require
 ### jspm
 ```js
@@ -200,19 +200,19 @@ import {0} from '{2}' ;
 ```js
 let {0} = require( "{1}" ) ;
 ```
-<BLANKLINE>
+
 ### component, ender, spm, npm
 ```js
 let {0} = require( "{2}" ) ;
 ```
-<BLANKLINE>
+
 ### bower
 The script tag exposes the global variable `{0}`.
 ```html
 <script src="bower_components/{2}/js/dist/{3}.min.js"></script>
 ```
 Alternatively, you can use any tool mentioned [here](http://bower.io/docs/tools/).
-<BLANKLINE>
+
 ### jam
 ```js
 require( [ "{2}" ] , function ( {0} ) {{ ... }} ) ;
