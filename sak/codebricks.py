@@ -222,7 +222,7 @@ def fork ( oldrepo, name, subject, keywords = None, ci = TRAVISCI, username = No
 			npm["author"] = username
 			npm["bugs"]["url"] = issuespage
 			npm["homepage"] = homepage
-			npm["spm"]["main"] = npm["main"]
+			if "spm" in npm : npm["spm"]["main"] = npm["main"]
 
 		with lib.json.proxy( "bower.json", "w", object_pairs_hook = jsonhook ) as bower :
 			bower["name"] = qualifiedname
