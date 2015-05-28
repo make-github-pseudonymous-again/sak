@@ -115,6 +115,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 				"inch.json",
 				".groc.json",
 				".travis.yml",
+				".codeclimate.yml",
 				".gitignore",
 				README
 			]
@@ -150,6 +151,8 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 
 		if ci == TRAVISCI :
 			shutil.copy(lib.sak.data("codebricks", ".travis.yml"), ".travis.yml")
+
+		shutil.copy(lib.sak.data("codebricks", ".codeclimate.yml"), ".codeclimate.yml")
 
 		lib.git.add("--all", ".")
 		lib.git.commit("-am", "$ codebricks new")
