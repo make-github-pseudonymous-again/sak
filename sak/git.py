@@ -44,6 +44,9 @@ def up(*args):
 def pull(*args):
 	return do('pull', *args)
 
+def status(*args):
+	return do('status', *args)
+
 def diff(*args):
 	return do('diff', *args)
 
@@ -170,6 +173,9 @@ class helper(object):
 
 	def pull(d):
 		subprocess.call(['git', 'pull'], cwd = d)
+
+	def status(d):
+		subprocess.call(['git', 'status'], cwd = d)
 
 	def diff(d):
 		subprocess.call(['git', 'diff'], cwd = d)
