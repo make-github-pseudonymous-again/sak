@@ -97,3 +97,23 @@ def izip ( callables = None , sep = " " ) :
 	for t in _zip( *iterables ) :
 
 		print ( *t , sep = sep )
+
+
+@lib.args.convert( start = int )
+def count ( start = 0 ) :
+
+	while True :
+
+		print( start )
+
+		start += 1
+
+
+@lib.args.convert( start = int , stop = int )
+def range ( start , stop ) :
+
+	while start < stop :
+
+		print( start )
+
+		start += 1
