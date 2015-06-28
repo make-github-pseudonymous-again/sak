@@ -20,3 +20,7 @@ def bytes ( n ) :
 def hexadecimal ( password ) :
 
     print( " ".join(list(map(lambda x : hex( ord( x ) )[2:], password ) ) ) )
+
+def ascii ( *bytes ) :
+
+    print( "".join( list( map( lambda x : chr( int( x , 16 ) ) , bytes ) ) ) )
