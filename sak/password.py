@@ -3,13 +3,14 @@ from os import urandom
 from random import seed , choice
 import lib.args
 
-def new ( ) :
+@lib.args.convert( n = int )
+def new ( n ) :
 
-    seed( urandom( 8 ) )
+    seed( urandom( n ) )
 
     print( "".join( [ choice(
         "azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN`!$%%^&*()_+-=;,./<>?1234567890"
-        ) for i in range( 8 ) ] ) )
+        ) for i in range( n ) ] ) )
 
 @lib.args.convert( n = int )
 def bytes ( n ) :
