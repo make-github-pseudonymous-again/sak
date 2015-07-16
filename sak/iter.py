@@ -1,4 +1,4 @@
-import lib.args, lib.sys, fileinput, itertools, getpass, lib.file
+import lib.args, lib.sys, fileinput, itertools, getpass, lib.file , lib.iterator
 
 # polyfill for generator zip function
 
@@ -16,8 +16,7 @@ def directories ( callable = None , iterable = None ) :
 
 	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
 
-	if not iterable :
-		iterable = ( s[:-1] for s in fileinput.input( [] ) )
+	iterable = lib.iterator.input( iterable )
 
 	for item in iterable :
 
@@ -31,8 +30,7 @@ def imap ( callable = None , iterable = None ) :
 
 	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
 
-	if not iterable :
-		iterable = ( s[:-1] for s in fileinput.input( [] ) )
+	iterable = lib.iterator.input( iterable )
 
 	for item in iterable :
 
@@ -46,8 +44,7 @@ def starmap ( callable = None , iterable = None ) :
 
 	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
 
-	if not iterable :
-		iterable = ( s[:-1] for s in fileinput.input( [] ) )
+	iterable = lib.iterator.input( iterable )
 
 	for item in iterable :
 
@@ -67,13 +64,9 @@ def repeat ( iterable = None , n = -1 ) :
 
 	iterable = lib.args.listify( iterable )
 
-	if not iterable :
-		iterable = [ s[:-1] for s in fileinput.input( [] ) ]
+	iterable = lib.iterator.input( iterable )
 
-	if n < 0 :
-		args = [ None ]
-	else :
-		args = [ None , n ]
+	args = [ None ] if n < 0 else [ None , n ]
 
 	for _ in itertools.repeat( *args ) :
 		for item in iterable : print( item )

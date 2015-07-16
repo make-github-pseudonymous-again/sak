@@ -1,4 +1,11 @@
 
+import fileinput
+
+def input ( iterable ) :
+
+	if iterable : return iterable
+
+	return ( s[:-1] for s in fileinput.input( [] ) )
 
 
 def sentinel(n, a, b = None):
