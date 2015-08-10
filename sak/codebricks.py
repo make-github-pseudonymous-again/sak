@@ -83,7 +83,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			npm["description"] = description
 			npm["main"] = "js/dist/%(name)s.js" % fmtargs
 			npm["dependencies"] = {}
-			npm["devDependencies"] = {"aureooms-node-package": "^5.0.0"}
+			npm["devDependencies"] = {"aureooms-node-package": "^5.0.2"}
 			npm["scripts"] = {}
 			npm["scripts"]["build"] = "./node_modules/.bin/aureooms-node-package-build"
 			npm["scripts"]["test"] = "./node_modules/.bin/aureooms-node-package-test"
@@ -116,6 +116,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 				".groc.json",
 				".travis.yml",
 				".codeclimate.yml",
+				".jshintrc",
 				".gitignore",
 				README
 			]
@@ -153,6 +154,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			shutil.copy(lib.sak.data("codebricks", ".travis.yml"), ".travis.yml")
 
 		shutil.copy(lib.sak.data("codebricks", ".codeclimate.yml"), ".codeclimate.yml")
+		shutil.copy(lib.sak.data("codebricks", ".jshintrc"), ".jshintrc")
 
 		lib.git.add("--all", ".")
 		lib.git.commit("-am", "$ codebricks new")
