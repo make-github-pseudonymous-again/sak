@@ -140,6 +140,7 @@ def new ( name, subject, keywords = None, ci = TRAVISCI, username = None, passwo
 			pkg["code"]["main"] = ["js", "dist", "%(name)s.js" % fmtargs]
 			pkg["code"]["test"] = ["test", "js"]
 			pkg["debug"] = False
+			pkg["babel"] = True
 
 
 		lib.dir.makedirs("js/src", "test/js/src")
