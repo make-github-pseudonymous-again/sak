@@ -40,6 +40,7 @@ try:
 			lib.npm.upload(version, message)
 			publish()
 			subprocess.call( [ 'spm' , 'publish' ] )
+			subprocess.call( [ 'jam' , 'publish' ] )
 
 		finally :
 			lib.git.checkout( "master" )
