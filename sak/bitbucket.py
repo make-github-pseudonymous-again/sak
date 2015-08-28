@@ -1,4 +1,5 @@
 import lib.config, lib.git, lib.hg, lib.error, lib.check, json, lib.sys, lib.bitbucket, lib.input, lib.bytes
+import re
 
 DOMAIN = lib.bitbucket.DOMAIN
 CONFIG_KEY = lib.bitbucket.CONFIG_KEY
