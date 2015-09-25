@@ -5,7 +5,7 @@ def hardmount ( directory = '.' , dest = '/srv/http' ) :
 	directory = os.path.abspath( os.path.expanduser( directory ) )
 	dest = os.path.abspath( os.path.expanduser( dest ) )
 
-	lib.sys.call( [ 'rm' , dest ] )
+	lib.sys.call( [ 'rm' , '-r' , dest ] )
 	lib.sys.call( [ 'cp' , '-r' , directory , dest ] )
 
 def mount ( directory = '.' , dest = '~/www' ) :
