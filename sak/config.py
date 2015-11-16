@@ -23,3 +23,9 @@ def user(user):
 
 def module(module):
 	print(lib.config.module(module))
+
+def get_user(module):
+	print(lib.config.module(module)[0])
+
+def get_password(_user):
+	user(_user)
