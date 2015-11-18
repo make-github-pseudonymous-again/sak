@@ -4,13 +4,15 @@ from random import seed , choice
 import lib.args
 
 @lib.args.convert( n = int )
-def new ( n ) :
+def new ( n , forbidden = '' ) :
 
     seed( urandom( n ) )
 
-    print( "".join( [ choice(
-        "azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN`!$%%^&*()_+-=;,./<>?1234567890"
-        ) for i in range( n ) ] ) )
+    allowed = "azertyuiopqsdfghjklmwxcvbnAZERTYUIOPQSDFGHJKLMWXCVBN`!$%^&*()_+-=;,./<>?1234567890'\"§èçé#@|{}àùµ"
+
+    symbols = list( frozenset( allowed ) - frozenset( forbidden ) )
+
+    print( "".join( [ choice( symbols ) for i in range( n ) ] ) )
 
 @lib.args.convert( n = int )
 def bytes ( n ) :
