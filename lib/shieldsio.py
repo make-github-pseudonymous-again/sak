@@ -7,82 +7,82 @@ DEFAULT = "default"
 FLAT = "flat"
 FLATSQUARED = "flat-square"
 
-STYLE = [ DEFAULT, FLAT, FLATSQUARED ]
+STYLE = [DEFAULT, FLAT, FLATSQUARED]
 
 JPG = "jpg"
 PNG = "png"
 SVG = "svg"
 
-FORMAT = [ JPG, PNG, SVG ]
+FORMAT = [JPG, PNG, SVG]
 
 
-def imgurl ( path, style = FLAT, fmt = SVG ) :
+def imgurl(path, style=FLAT, fmt=SVG):
 
-	if style == DEFAULT :
-		return "http://img.shields.io/%s.%s" % ( path, fmt )
-	else :
-		return "http://img.shields.io/%s.%s?style=%s" % ( path, fmt, style )
-
-
-def escape ( string ) :
-
-	string = string.replace( "-", "--" )
-	string = string.replace( "_", "__" )
-	string = string.replace( " ", "_" )
-
-	return string
+    if style == DEFAULT:
+        return "http://img.shields.io/%s.%s" % (path, fmt)
+    else:
+        return "http://img.shields.io/%s.%s?style=%s" % (path, fmt, style)
 
 
-def custom ( subject, status, color, style = FLAT, fmt = SVG ) :
+def escape(string):
 
-	subject = escape( subject )
-	status = escape( status )
-	color = escape( color )
+    string = string.replace("-", "--")
+    string = string.replace("_", "__")
+    string = string.replace(" ", "_")
 
-	path = "badge/%s-%s-%s" % ( subject, status, color )
-
-	return imgurl( path, style, fmt )
+    return string
 
 
-def service ( *args, **kwargs ) :
+def custom(subject, status, color, style=FLAT, fmt=SVG):
 
-	style = kwargs.get( "style", FLAT )
-	fmt = kwargs.get( "fmt", SVG )
+    subject = escape(subject)
+    status = escape(status)
+    color = escape(color)
 
-	args = map( str, args )
+    path = "badge/%s-%s-%s" % (subject, status, color)
 
-	path = '/'.join( args )
-
-	return imgurl( path, style, fmt )
+    return imgurl(path, style, fmt)
 
 
-npm = functools.partial( service, "npm" )
+def service(*args, **kwargs):
 
-npmlicense = functools.partial( npm, "l" )
-npmversion = functools.partial( npm, "v" )
-npmdownloadsmonth = functools.partial( npm, "dm" )
+    style = kwargs.get("style", FLAT)
+    fmt = kwargs.get("fmt", SVG)
 
-bower = functools.partial( service, "bower" )
-bowerversion = functools.partial( bower, "v" )
+    args = map(str, args)
 
-github = functools.partial( service, "github" )
-githubissues = functools.partial( github, "issues" )
-githubtag = functools.partial( github, "tag" )
-githubrelease = functools.partial( github, "release" )
+    path = '/'.join(args)
 
-scrutinizer = functools.partial( service, "scrutinizer" )
-scrutinizerquality = functools.partial( scrutinizer, "g" )
-scrutinizercoverage = functools.partial( scrutinizer, "coverage/g" )
+    return imgurl(path, style, fmt)
 
-travis = functools.partial( service, "travis" )
 
-coveralls = functools.partial( service, "coveralls" )
+npm = functools.partial(service, "npm")
 
-codeclimate = functools.partial( service, "codeclimate" )
-codeclimategithub = functools.partial( codeclimate, "github" )
-codeclimatecoverage = functools.partial( codeclimate, "coverage" )
-codeclimatecoveragegithub = functools.partial( codeclimatecoverage, "github" )
+npmlicense = functools.partial(npm, "l")
+npmversion = functools.partial(npm, "v")
+npmdownloadsmonth = functools.partial(npm, "dm")
 
-david = functools.partial( service, "david" )
-daviddev = functools.partial( david, "dev" )
-davidpeer = functools.partial( david, "peer" )
+bower = functools.partial(service, "bower")
+bowerversion = functools.partial(bower, "v")
+
+github = functools.partial(service, "github")
+githubissues = functools.partial(github, "issues")
+githubtag = functools.partial(github, "tag")
+githubrelease = functools.partial(github, "release")
+
+scrutinizer = functools.partial(service, "scrutinizer")
+scrutinizerquality = functools.partial(scrutinizer, "g")
+scrutinizercoverage = functools.partial(scrutinizer, "coverage/g")
+
+travis = functools.partial(service, "travis")
+
+coveralls = functools.partial(service, "coveralls")
+
+codeclimate = functools.partial(service, "codeclimate")
+codeclimategithub = functools.partial(codeclimate, "github")
+codeclimatecoverage = functools.partial(codeclimate, "coverage")
+codeclimatecoveragegithub = functools.partial(codeclimatecoverage, "github")
+
+david = functools.partial(service, "david")
+daviddev = functools.partial(david, "dev")
+davidpeer = functools.partial(david, "peer")

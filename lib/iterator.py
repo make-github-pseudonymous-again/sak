@@ -1,18 +1,22 @@
 
 import fileinput
 
-def input ( iterable ) :
 
-	if iterable : return iterable
+def input(iterable):
 
-	return ( s[:-1] for s in fileinput.input( [] ) )
+    if iterable:
+        return iterable
 
-
-def sentinel(n, a, b = None):
-	for i in range(n - 1) : yield a
-	yield b
+    return (s[:-1] for s in fileinput.input([]))
 
 
-def attribute ( iterable , attrname ) :
+def sentinel(n, a, b=None):
+    for i in range(n - 1):
+        yield a
+    yield b
 
-	for item in iterable : yield item[attrname]
+
+def attribute(iterable, attrname):
+
+    for item in iterable:
+        yield item[attrname]

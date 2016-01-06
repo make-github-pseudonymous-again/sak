@@ -1,49 +1,48 @@
-import os, lib.cson, sak.cat, itertools, lib.atom
+import os
+import lib.cson
+import sak.cat
+import itertools
+import lib.atom
 
-PROJECTSFILE = os.path.expanduser( "~/.atom/projects.cson" )
-
-
-def project ( directory ) :
-
-	print( lib.atom.project( directory ) )
-
-
-def projects () :
-
-	sak.cat.text( PROJECTSFILE )
+PROJECTSFILE = os.path.expanduser("~/.atom/projects.cson")
 
 
-def add ( directory = ".", *others ) :
+def project(directory):
 
-	with open( PROJECTSFILE ) as f :
-		projects = lib.cson.load( f )
-
-
-	for target in itertools.chain( [directory], others ) :
-
-		path, name = lib.atom.project( target )
-
-		projects[name] = dict( title = name, paths = [path] )
+    print(lib.atom.project(directory))
 
 
-	with open( PROJECTSFILE, "w" ) as f :
-		lib.cson.dump( projects, f )
+def projects():
+
+    sak.cat.text(PROJECTSFILE)
 
 
+def add(directory=".", *others):
 
-def remove ( directory = ".", *others ) :
+    with open(PROJECTSFILE) as f:
+        projects = lib.cson.load(f)
 
-	with open( PROJECTSFILE ) as f :
-		projects = lib.cson.load( f )
+    for target in itertools.chain([directory], others):
+
+        path, name = lib.atom.project(target)
+
+        projects[name] = dict(title=name, paths=[path])
+
+    with open(PROJECTSFILE, "w") as f:
+        lib.cson.dump(projects, f)
 
 
-	for target in itertools.chain( [directory], others ) :
+def remove(directory=".", *others):
 
-		path, name = lib.atom.project( target )
+    with open(PROJECTSFILE) as f:
+        projects = lib.cson.load(f)
 
-		if name in projects :
-			del projects[name]
+    for target in itertools.chain([directory], others):
 
+        path, name = lib.atom.project(target)
 
-	with open( PROJECTSFILE, "w" ) as f :
-		lib.cson.dump( projects, f )
+        if name in projects:
+            del projects[name]
+
+    with open(PROJECTSFILE, "w") as f:
+        lib.cson.dump(projects, f)

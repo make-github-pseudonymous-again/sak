@@ -1,63 +1,76 @@
-import os, lib.file, subprocess
+import os
+import lib.file
+import subprocess
 
 __JSEXT__ = '%s.js'
 __INTRO__ = __JSEXT__ % 'intro'
 __OUTRO__ = __JSEXT__ % 'outro'
 __INDEX__ = __JSEXT__ % 'index'
 
-def build(root, ugly = '-uno', src = 'src', out = 'min'):
 
-	result = os.path.join(root, out);
+def build(root, ugly='-uno', src='src', out='min'):
 
-	if not os.path.exists(result) : os.makedirs(result)
+    result = os.path.join(root, out)
 
-	data = os.path.join(root, src)
-	for l in os.listdir(data):
+    if not os.path.exists(result):
+        os.makedirs(result)
 
-		curr = os.path.join(data, l)
-		if not os.path.isdir(curr) : continue
+    data = os.path.join(root, src)
+    for l in os.listdir(data):
 
-		path = os.path.join(result, __JSEXT__ % l)
+        curr = os.path.join(data, l)
+        if not os.path.isdir(curr):
+            continue
 
-		with open(path, 'w') as f:
+        path = os.path.join(result, __JSEXT__ % l)
 
-			def fhandle(path):
-				with open(path, 'r') as g:
-					f.write(os.linesep)
-					f.write('/* ' + g.name + ' */')
-					f.write(os.linesep)
-					f.write(os.linesep)
-					lib.file.read(g, f.write)
-					f.write(os.linesep)
+        with open(path, 'w') as f:
 
-			def dhandle(d):
+            def fhandle(path):
+                with open(path, 'r') as g:
+                    f.write(os.linesep)
+                    f.write('/* ' + g.name + ' */')
+                    f.write(os.linesep)
+                    f.write(os.linesep)
+                    lib.file.read(g, f.write)
+                    f.write(os.linesep)
 
-				el = set(os.listdir(d))
+            def dhandle(d):
 
-				intro = __INTRO__ in el
-				outro = __OUTRO__ in el
-				index = __INDEX__ in el
+                el = set(os.listdir(d))
 
-				if intro : el.remove(__INTRO__)
-				if outro : el.remove(__OUTRO__)
-				if index : el.remove(__INDEX__)
+                intro = __INTRO__ in el
+                outro = __OUTRO__ in el
+                index = __INDEX__ in el
 
-				if intro : fhandle(__INTRO__)
+                if intro:
+                    el.remove(__INTRO__)
+                if outro:
+                    el.remove(__OUTRO__)
+                if index:
+                    el.remove(__INDEX__)
 
-				for e in sorted(el):
-					path = os.path.join(d, e)
+                if intro:
+                    fhandle(__INTRO__)
 
-					if   os.path.isdir(path)        : dhandle(path)
-					elif f and os.path.isfile(path) : fhandle(path)
+                for e in sorted(el):
+                    path = os.path.join(d, e)
 
-				if outro : fhandle(__OUTRO__)
+                    if os.path.isdir(path):
+                        dhandle(path)
+                    elif f and os.path.isfile(path):
+                        fhandle(path)
+
+                if outro:
+                    fhandle(__OUTRO__)
+
+            dhandle(curr)
+
+        if ugly != '-uno':
+            uglify(path)
 
 
-			dhandle(curr)
-
-		if ugly != '-uno' : uglify(path)
-
-
-def uglify(path,  dest = None):
-	if dest is None : dest = path
-	subprocess.call(['uglifyjs', path, '-o', dest, '-m', '-c'])
+def uglify(path,  dest=None):
+    if dest is None:
+        dest = path
+    subprocess.call(['uglifyjs', path, '-o', dest, '-m', '-c'])

@@ -1,54 +1,55 @@
 
 import time
 
+
 def callable(fn):
-	return hasattr(fn, '__call__')
+    return hasattr(fn, '__call__')
 
 
 def val(o, *args, **kwargs):
-	if callable(o) : return o(*args, **kwargs)
-	else           : return o
+    if callable(o):
+        return o(*args, **kwargs)
+    else:
+        return o
 
 
-def throttle ( times , interval ) :
+def throttle(times, interval):
 
-	def wrap ( fn ) :
+    def wrap(fn):
 
-		count = 0
-		first = time.perf_counter( )
+        count = 0
+        first = time.perf_counter()
 
-		def wrapper ( *args , **kwargs ) :
+        def wrapper(*args, **kwargs):
 
-			nonlocal count , first
+            nonlocal count, first
 
-			if count < times :
+            if count < times:
 
-				count += 1
+                count += 1
 
-				return fn( *args , **kwargs )
+                return fn(*args, **kwargs)
 
-			else :
+            else:
 
-				now = time.perf_counter( )
+                now = time.perf_counter()
 
-				wait = interval - ( now - first )
+                wait = interval - (now - first)
 
-				if wait <= 0 :
+                if wait <= 0:
 
-					count = 1
+                    count = 1
 
-					first = now
+                    first = now
 
-					return fn( *args , **kwargs )
+                    return fn(*args, **kwargs)
 
-				else :
+                else:
 
-					time.sleep( wait )
+                    time.sleep(wait)
 
-					return wrapper( *args , **kwargs )
+                    return wrapper(*args, **kwargs)
 
-		return wrapper
+        return wrapper
 
-	return wrap
-
-
+    return wrap

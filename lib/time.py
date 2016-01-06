@@ -1,18 +1,22 @@
 
-import time , datetime
+import time
+import datetime
 
-def nanoseconds ( ) :
-	return int( round( time.time( ) * 1e9 ) )
 
-def parsedmy ( dmy ) :
+def nanoseconds():
+    return int(round(time.time() * 1e9))
 
-	datefmt = "%d/%m/%Y"
 
-	parsed = datetime.datetime.strptime( dmy , datefmt )
+def parsedmy(dmy):
 
-	timetuple = parsed.timetuple( )
+    datefmt = "%d/%m/%Y"
 
-	return time.mktime( timetuple ) * 1e9
+    parsed = datetime.datetime.strptime(dmy, datefmt)
 
-def pretty ( timestamp ) :
-	return datetime.datetime.utcfromtimestamp( timestamp / 1e9 ).strftime( "%Y-%m-%d %H:%M:%S" )
+    timetuple = parsed.timetuple()
+
+    return time.mktime(timetuple) * 1e9
+
+
+def pretty(timestamp):
+    return datetime.datetime.utcfromtimestamp(timestamp / 1e9).strftime("%Y-%m-%d %H:%M:%S")

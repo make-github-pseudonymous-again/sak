@@ -1,4 +1,7 @@
 
-import functools, lib.args, lib.error
+import functools
+import lib.args
+import lib.error
 
-accepts = functools.partial( lib.args.accepts, lib.error.OptionOfWrongTypeException )
+accepts = functools.partial(
+    lib.args.accepts, lib.error.OptionOfWrongTypeException)

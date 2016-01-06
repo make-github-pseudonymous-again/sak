@@ -1,39 +1,42 @@
 # requires https://github.com/bevry/cson
 
-import os, tempfile, json, lib.sys
+import os
+import tempfile
+import json
+import lib.sys
 
 
-def load ( fp ) :
+def load(fp):
 
-	return loads( fp.read() )
-
-
-def loads ( string ) :
-
-	with tempfile.NamedTemporaryFile( "w", delete = False, suffix = ".cson" ) as tmp :
-
-		tmp.write( string )
-
-	out, err, p = lib.sys.call( ["cson2json", tmp.name] )
-
-	os.remove( tmp.name )
-
-	return json.loads( out.decode() )
+    return loads(fp.read())
 
 
-def dump ( obj, fp ) :
+def loads(string):
 
-	fp.write( dumps( obj ) )
+    with tempfile.NamedTemporaryFile("w", delete=False, suffix=".cson") as tmp:
+
+        tmp.write(string)
+
+    out, err, p = lib.sys.call(["cson2json", tmp.name])
+
+    os.remove(tmp.name)
+
+    return json.loads(out.decode())
 
 
-def dumps ( obj ) :
+def dump(obj, fp):
 
-	with tempfile.NamedTemporaryFile( "w", delete = False, suffix = ".json" ) as tmp :
+    fp.write(dumps(obj))
 
-		json.dump( obj, tmp )
 
-	out, err, p = lib.sys.call( ["json2cson", tmp.name] )
+def dumps(obj):
 
-	os.remove( tmp.name )
+    with tempfile.NamedTemporaryFile("w", delete=False, suffix=".json") as tmp:
 
-	return out.decode()
+        json.dump(obj, tmp)
+
+    out, err, p = lib.sys.call(["json2cson", tmp.name])
+
+    os.remove(tmp.name)
+
+    return out.decode()

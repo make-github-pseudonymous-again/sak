@@ -1,19 +1,21 @@
 
-import inspect, sys
-
-def inspectable ( fn ) :
-
-	if inspect.isclass( fn ) :
-
-		return fn.__init__
-
-	else :
-
-		return fn
+import inspect
+import sys
 
 
-def getfullargspec ( fn ) :
+def inspectable(fn):
 
-	fn = inspectable( fn )
+    if inspect.isclass(fn):
 
-	return inspect.getfullargspec( fn )
+        return fn.__init__
+
+    else:
+
+        return fn
+
+
+def getfullargspec(fn):
+
+    fn = inspectable(fn)
+
+    return inspect.getfullargspec(fn)

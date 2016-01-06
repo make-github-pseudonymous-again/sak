@@ -1,30 +1,32 @@
 
-try : from setuptools import setup
-except ImportError : from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
-setup (
+setup(
 
-	name = 'sak' , version = '0.5.0' ,
+    name='sak', version='0.5.0',
 
-	description = 'Swiss Army Knife',
-	long_description = 'sak is a module, submodule and function based tool' ,
+    description='Swiss Army Knife',
+    long_description='sak is a module, submodule and function based tool',
 
-	author = 'aureooms' ,
-	author_email = 'aurelien.ooms@gmail.com' ,
-	url = 'https://github.com/aureooms/sak' ,
-	license = 'LICENSE' ,
+    author='aureooms',
+    author_email='aurelien.ooms@gmail.com',
+    url='https://github.com/aureooms/sak',
+    license='LICENSE',
 
-	install_requires = [
-		'lxml' ,
-		'semantic_version'
-	] ,
+    install_requires=[
+        'lxml',
+        'semantic_version'
+    ],
 
-	packages = [
-		'sak' ,
-		'sak.test' ,
-		'lib' ,
-		'lib.nice'
-	] ,
+    packages=[
+        'sak',
+        'sak.test',
+        'lib',
+        'lib.nice'
+    ],
 
-	scripts = [ '$' ]
+    scripts=['$']
 )

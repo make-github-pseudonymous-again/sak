@@ -1,5 +1,5 @@
 
 
-def get ( **kwargs ) :
+def get(**kwargs):
 
-	return "?" + "&".join( map( "=".join, kwargs.items() ) )
+    return "?" + "&".join(map("=".join, kwargs.items()))

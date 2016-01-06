@@ -1,9 +1,10 @@
-import functools, lib.file
+import functools
+import lib.file
 
 
-def text ( filename, blocksize = 2 ** 15 ) :
+def text(filename, blocksize=2 ** 15):
 
-	callback = functools.partial( print, end = "" )
+    callback = functools.partial(print, end="")
 
-	with open( filename ) as f :
-		lib.file.read( f, callback, blocksize )
+    with open(filename) as f:
+        lib.file.read(f, callback, blocksize)

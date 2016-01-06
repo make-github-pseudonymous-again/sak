@@ -1,76 +1,82 @@
-import lib.git, lib.args, lib.json, lib.time, collections
-
-def commit ( message, duration, authors = None ) :
-
-	authors = lib.args.listify( authors )
-
-	hook = collections.OrderedDict
-
-	with lib.json.proxy( "contributions.json", mode = "w", default = [], object_pairs_hook = hook ) as contribs :
-
-		contribs.append( hook( [
-
-			( "authors", authors ),
-			( "message", message ),
-			( "duration", duration ),
-			( "timestamp", str( lib.time.nanoseconds( ) ) )
-
-		] ) )
-
-	lib.git.add( "contributions.json" )
-	lib.git.commit( "-m", message )
+import lib.git
+import lib.args
+import lib.json
+import lib.time
+import collections
 
 
-def manhours ( begin = None , end = None ) :
+def commit(message, duration, authors=None):
 
-	if begin is None :
-		begin = 0
-	else :
-		begin = lib.time.parsedmy( begin )
+    authors = lib.args.listify(authors)
 
-	if end is None :
-		end = lib.time.nanoseconds( )
-	else :
-		end = lib.time.parsedmy( end )
+    hook = collections.OrderedDict
 
-	total = 0
+    with lib.json.proxy("contributions.json", mode="w", default=[], object_pairs_hook=hook) as contribs:
 
-	with lib.json.proxy( "contributions.json", mode = "r", default = [] ) as contribs :
+        contribs.append(hook([
 
-		for contrib in contribs :
+            ("authors", authors),
+            ("message", message),
+            ("duration", duration),
+            ("timestamp", str(lib.time.nanoseconds()))
 
-			t = int( contrib["timestamp"] )
+        ]))
 
-			if t >= begin and t <= end :
-
-				total += int( contrib["duration"] ) * len( contrib["authors"] )
-
-	print( total )
+    lib.git.add("contributions.json")
+    lib.git.commit("-m", message)
 
 
-def log ( begin = None , end = None ) :
+def manhours(begin=None, end=None):
 
-	if begin is None :
-		begin = 0
-	else :
-		begin = lib.time.parsedmy( begin )
+    if begin is None:
+        begin = 0
+    else:
+        begin = lib.time.parsedmy(begin)
 
-	if end is None :
-		end = lib.time.nanoseconds( )
-	else :
-		end = lib.time.parsedmy( end )
+    if end is None:
+        end = lib.time.nanoseconds()
+    else:
+        end = lib.time.parsedmy(end)
 
-	with lib.json.proxy( "contributions.json", mode = "r", default = [] ) as contribs :
+    total = 0
 
-		for contrib in contribs :
+    with lib.json.proxy("contributions.json", mode="r", default=[]) as contribs:
 
-			t = int( contrib["timestamp"] )
+        for contrib in contribs:
 
-			if t >= begin and t <= end :
+            t = int(contrib["timestamp"])
 
-				authors = contrib["authors"]
-				duration = contrib["duration"]
+            if t >= begin and t <= end:
 
-				print( lib.time.pretty( t ) , "~" , " , ".join( authors ) , "(" , duration , ")" )
-				print( " ->" , contrib["message"] )
-				print( "===" )
+                total += int(contrib["duration"]) * len(contrib["authors"])
+
+    print(total)
+
+
+def log(begin=None, end=None):
+
+    if begin is None:
+        begin = 0
+    else:
+        begin = lib.time.parsedmy(begin)
+
+    if end is None:
+        end = lib.time.nanoseconds()
+    else:
+        end = lib.time.parsedmy(end)
+
+    with lib.json.proxy("contributions.json", mode="r", default=[]) as contribs:
+
+        for contrib in contribs:
+
+            t = int(contrib["timestamp"])
+
+            if t >= begin and t <= end:
+
+                authors = contrib["authors"]
+                duration = contrib["duration"]
+
+                print(lib.time.pretty(t), "~", " , ".join(
+                    authors), "(", duration, ")")
+                print(" ->", contrib["message"])
+                print("===")

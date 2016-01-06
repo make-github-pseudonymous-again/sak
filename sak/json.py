@@ -1,24 +1,30 @@
 
-import sys , lib.json , lib.args
+import sys
+import lib.json
+import lib.args
 
-def format ( *args , **kwargs ) :
 
-	if args : lib.json.pretty( args , sys.stdout )
-	if kwargs : lib.json.pretty( kwargs , sys.stdout )
+def format(*args, **kwargs):
 
-def args ( files = None ) :
+    if args:
+        lib.json.pretty(args, sys.stdout)
+    if kwargs:
+        lib.json.pretty(kwargs, sys.stdout)
 
-	files = lib.args.listify( files )
 
-	for f in files :
+def args(files=None):
 
-		with lib.json.proxy( f ) as data :
+    files = lib.args.listify(files)
 
-			for key , val in data.items( ) :
+    for f in files:
 
-				val = [ lib.args.escape( x ) for x in lib.args.listify( val ) ]
-				val = " ".join( val )
+        with lib.json.proxy(f) as data:
 
-				print( "--%s %s" % ( key , val ) , end = " " )
+            for key, val in data.items():
 
-	print( )
+                val = [lib.args.escape(x) for x in lib.args.listify(val)]
+                val = " ".join(val)
+
+                print("--%s %s" % (key, val), end=" ")
+
+    print()

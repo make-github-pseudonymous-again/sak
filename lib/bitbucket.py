@@ -1,4 +1,6 @@
-import lib.check, lib.curl, json
+import lib.check
+import lib.curl
+import json
 
 DOMAIN = 'bitbucket.org'
 CONFIG_KEY = 'bitbucket'
@@ -23,171 +25,174 @@ TARGET = "target"
 TARGETS = [USER, TEAM]
 
 
-def list(target, name, username = None, password = None):
+def list(target, name, username=None, password=None):
 
-	lib.check.OptionNotInListException(TARGET, target, TARGETS)
+    lib.check.OptionNotInListException(TARGET, target, TARGETS)
 
-	if username is not None :
-		username, password = lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
+    if username is not None:
+        username, password = lib.config.prompt_cred(
+            DOMAIN, CONFIG_KEY, username, password)
 
-	urls = {
-		USER : "https://bitbucket.org/api/2.0/repositories/%s" % name,
-		TEAM : "https://bitbucket.org/api/2.0/teams/%s/repositories" % name
-	}
+    urls = {
+        USER: "https://bitbucket.org/api/2.0/repositories/%s" % name,
+        TEAM: "https://bitbucket.org/api/2.0/teams/%s/repositories" % name
+    }
 
-	url = urls[target]
+    url = urls[target]
 
-	repositories = []
+    repositories = []
 
-	while True :
+    while True:
 
-		out, err, p = lib.curl.getjson(url, username = username, password = password, location = True)
+        out, err, p = lib.curl.getjson(
+            url, username=username, password=password, location=True)
 
-		lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
+        lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
-		lib.check.SubprocessOutputEmptyException(p.args, out)
+        lib.check.SubprocessOutputEmptyException(p.args, out)
 
-		data = json.loads(out.decode())
+        data = json.loads(out.decode())
 
-		repositories.extend(data["values"])
+        repositories.extend(data["values"])
 
-		if not "next" in data : break
+        if not "next" in data:
+            break
 
-		url = data["next"]
+        url = data["next"]
 
-	return repositories
+    return repositories
 
 
 LANGUAGES = [
-	None,
-	"c",
-	"c#",
-	"c++",
-	"html/css",
-	"java",
-	"javascript",
-	"objective-c",
-	"perl",
-	"php",
-	"python",
-	"ruby",
-	"shell",
-	"sql",
-	"other",
-	"abap",
-	"actionscript",
-	"ada",
-	"arc",
-	"apex",
-	"asciidoc",
-	"android",
-	"asp",
-	"arduino",
-	"assembly",
-	"autoit",
-	"blitzmax",
-	"boo",
-	"ceylon",
-	"clojure",
-	"coco",
-	"coffeescript",
-	"coldfusion",
-	"common lisp",
-	"component pascal",
-	"css",
-	"cuda",
-	"d",
-	"dart",
-	"delphi",
-	"duby",
-	"dylan",
-	"eiffel",
-	"elixir",
-	"emacs lisp",
-	"erlang",
-	"euphoria",
-	"f#",
-	"fantom",
-	"forth",
-	"fortran",
-	"foxpro",
-	"gambas",
-	"go",
-	"groovy",
-	"hack",
-	"haskell",
-	"haxe",
-	"igor pro",
-	"inform",
-	"io",
-	"julia",
-	"labview",
-	"lasso",
-	"latex",
-	"limbo",
-	"livescript",
-	"lua",
-	"lilypond",
-	"m",
-	"markdown",
-	"mathematica",
-	"matlab",
-	"max/msp",
-	"mercury",
-	"nemerle",
-	"nimrod",
-	"node.js",
-	"nu",
-	"object pascal",
-	"objective-j",
-	"ocaml",
-	"occam",
-	"occam-π",
-	"octave",
-	"ooc",
-	"other",
-	"oxygene",
-	"pl/sql",
-	"powerbasic",
-	"powershell",
-	"processing",
-	"prolog",
-	"puppet",
-	"pure basic",
-	"pure data",
-	"qml",
-	"quorum",
-	"r",
-	"racket",
-	"realbasic",
-	"restructuredtext",
-	"rust",
-	"sass/scss",
-	"scala",
-	"scheme",
-	"scilab",
-	"sclang",
-	"self",
-	"smalltalk",
-	"sourcepawn",
-	"standard ml",
-	"supercollider",
-	"swift",
-	"tcl",
-	"tex",
-	"typescript",
-	"unityscript",
-	"unrealscript",
-	"vala",
-	"verilog",
-	"vhdl",
-	"viml",
-	"visual basic",
-	"vb.net",
-	"xml",
-	"xojo",
-	"xpages",
-	"xquery",
-	"xtend",
-	"z shell"
+    None,
+    "c",
+    "c#",
+    "c++",
+    "html/css",
+    "java",
+    "javascript",
+    "objective-c",
+    "perl",
+    "php",
+    "python",
+    "ruby",
+    "shell",
+    "sql",
+    "other",
+    "abap",
+    "actionscript",
+    "ada",
+    "arc",
+    "apex",
+    "asciidoc",
+    "android",
+    "asp",
+    "arduino",
+    "assembly",
+    "autoit",
+    "blitzmax",
+    "boo",
+    "ceylon",
+    "clojure",
+    "coco",
+    "coffeescript",
+    "coldfusion",
+    "common lisp",
+    "component pascal",
+    "css",
+    "cuda",
+    "d",
+    "dart",
+    "delphi",
+    "duby",
+    "dylan",
+    "eiffel",
+    "elixir",
+    "emacs lisp",
+    "erlang",
+    "euphoria",
+    "f#",
+    "fantom",
+    "forth",
+    "fortran",
+    "foxpro",
+    "gambas",
+    "go",
+    "groovy",
+    "hack",
+    "haskell",
+    "haxe",
+    "igor pro",
+    "inform",
+    "io",
+    "julia",
+    "labview",
+    "lasso",
+    "latex",
+    "limbo",
+    "livescript",
+    "lua",
+    "lilypond",
+    "m",
+    "markdown",
+    "mathematica",
+    "matlab",
+    "max/msp",
+    "mercury",
+    "nemerle",
+    "nimrod",
+    "node.js",
+    "nu",
+    "object pascal",
+    "objective-j",
+    "ocaml",
+    "occam",
+    "occam-π",
+    "octave",
+    "ooc",
+    "other",
+    "oxygene",
+    "pl/sql",
+    "powerbasic",
+    "powershell",
+    "processing",
+    "prolog",
+    "puppet",
+    "pure basic",
+    "pure data",
+    "qml",
+    "quorum",
+    "r",
+    "racket",
+    "realbasic",
+    "restructuredtext",
+    "rust",
+    "sass/scss",
+    "scala",
+    "scheme",
+    "scilab",
+    "sclang",
+    "self",
+    "smalltalk",
+    "sourcepawn",
+    "standard ml",
+    "supercollider",
+    "swift",
+    "tcl",
+    "tex",
+    "typescript",
+    "unityscript",
+    "unrealscript",
+    "vala",
+    "verilog",
+    "vhdl",
+    "viml",
+    "visual basic",
+    "vb.net",
+    "xml",
+    "xojo",
+    "xpages",
+    "xquery",
+    "xtend",
+    "z shell"
 ]

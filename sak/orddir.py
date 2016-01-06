@@ -1,32 +1,34 @@
-import lib.orddir, lib.file
-
-def read(cwd = '.'):
-	d, w = lib.orddir.read(cwd)
-	print(d, w)
+import lib.orddir
+import lib.file
 
 
-def move(item, where, cwd = '.'):
-	beg = int(item)
-	end = beg + 1
-	shift(where, beg, end, cwd)
+def read(cwd='.'):
+    d, w = lib.orddir.read(cwd)
+    print(d, w)
 
 
-def zfill(z, cwd = '.'):
-	d, _ = lib.orddir.read(cwd)
-	mv = []
-	for k, l in d.items():
-		_k = lib.orddir.format(k, z)
-		mv += [(f, _k + v) for f, v in l]
-
-	lib.file.move(mv, cwd)
+def move(item, where, cwd='.'):
+    beg = int(item)
+    end = beg + 1
+    shift(where, beg, end, cwd)
 
 
-def shift(where, beg = '0', end = None, cwd = '.'):
+def zfill(z, cwd='.'):
+    d, _ = lib.orddir.read(cwd)
+    mv = []
+    for k, l in d.items():
+        _k = lib.orddir.format(k, z)
+        mv += [(f, _k + v) for f, v in l]
 
-	where, beg, end = lib.orddir.drange(where, beg, end)
-	d, w = lib.orddir.read(cwd)
-	n = where - beg
-	mv, y = lib.orddir.shift(d, n, beg, end)
+    lib.file.move(mv, cwd)
 
-	lib.file.move(mv, cwd)
-	zfill(str(max(w, y)), cwd)
+
+def shift(where, beg='0', end=None, cwd='.'):
+
+    where, beg, end = lib.orddir.drange(where, beg, end)
+    d, w = lib.orddir.read(cwd)
+    n = where - beg
+    mv, y = lib.orddir.shift(d, n, beg, end)
+
+    lib.file.move(mv, cwd)
+    zfill(str(max(w, y)), cwd)

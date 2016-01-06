@@ -1,127 +1,129 @@
-import hashlib, base64, tempfile, lib.json, os
+import hashlib
+import base64
+import tempfile
+import lib.json
+import os
 
 
 class FTP(object):
 
+    def __init__(self, ftp, do):
+        self.ftp = ftp
+        self.do = do
 
-	def __init__(self, ftp, do):
-		self.ftp = ftp
-		self.do = do
+    def action(self, method, msg, args):
+        print(msg % args)
+        if self.do:
+            method(*args)
 
-	def action(self, method, msg, args):
-		print(msg % args)
-		if self.do : method(*args)
+    def chmod(self, mode, path):
+        self.action(self.ftp.chmod, "ftp.chmod('%s', '%s')", (mode, path))
 
-	def chmod(self, mode, path):
-		self.action(self.ftp.chmod, "ftp.chmod('%s', '%s')", (mode, path))
+    def storbinary(self, path, fd):
+        self.action(self.ftp.storbinary,
+                    "ftp.storbinary('STOR %s', %s)", (path, fd))
 
-	def storbinary(self, path, fd):
-		self.action(self.ftp.storbinary, "ftp.storbinary('STOR %s', %s)", (path, fd))
+    def mkd(self, path):
+        self.action(self.ftp.mkd, "ftp.mkd('%s')", (path,))
 
-	def mkd(self, path):
-		self.action(self.ftp.mkd, "ftp.mkd('%s')", (path,))
+    def rmd(self, path):
+        self.action(self.ftp.rmd, "ftp.rmd('%s')", (path,))
 
-	def rmd(self, path):
-		self.action(self.ftp.rmd, "ftp.rmd('%s')", (path,))
+    def delete(self, path):
+        self.action(self.ftp.delete, "ftp.delete('%s')", (path,))
 
-	def delete(self, path):
-		self.action(self.ftp.delete, "ftp.delete('%s')", (path,))
+    def rename(self, fr, to):
+        self.action(self.ftp.rename, "ftp.rename('%s', '%s')", (fr, to))
 
-	def rename(self, fr, to):
-		self.action(self.ftp.rename, "ftp.rename('%s', '%s')", (fr, to))
+    def hascii(self, path):
+        hasher = hashlib.sha256()
+        self.ftp.retrbinary('RETR %s' % path, hasher.update)
+        h = hasher.digest()
+        return base64.b64encode(h).decode('ascii')
 
-	def hascii(self, path):
-		hasher = hashlib.sha256()
-		self.ftp.retrbinary('RETR %s' % path, hasher.update)
-		h = hasher.digest()
-		return base64.b64encode(h).decode('ascii')
+    def ls(self, path):
 
+        for itemtype, item in self.ftp.ls(path):
 
-	def ls( self , path ) :
+            if item != '.' and item != '..':
 
-		for itemtype , item in self.ftp.ls( path ) :
+                yield itemtype, item
 
-			if item != '.' and item != '..' :
+    def hash(self, root, htree, tree, skip, current=''):
 
-				yield itemtype , item
+        for t, item in self.ls(current):
 
+            if skip(current, item):
 
-	def hash(self, root, htree, tree, skip, current = ''):
+                continue
 
-		for t , item in self.ls( current ) :
+            minipath = current + item
 
-			if skip( current , item ) :
+            if t == self.ftp.FILE:
+                digest = self.hascii('/%s/%s' % (root, minipath))
+                print('%s > %s' % (minipath, digest))
 
-				continue
+                htree.setdefault(digest, [])
+                htree[digest].append(minipath)
+                tree[item] = digest
 
-			minipath = current + item
+            elif t == self.ftp.DIR:
+                tree[item] = {}
+                self.hash(root, htree, tree[item], skip, current + item + '/')
 
-			if t == self.ftp.FILE:
-				digest = self.hascii('/%s/%s' % (root, minipath))
-				print('%s > %s' % (minipath, digest))
+    def recursivermd(self, path):
 
-				htree.setdefault(digest, [])
-				htree[digest].append(minipath)
-				tree[item] = digest
+        for itemtype, item in self.ls(path):
 
-			elif t == self.ftp.DIR:
-				tree[item] = {}
-				self.hash(root, htree, tree[item], skip, current + item + '/')
+            itempath = path + '/' + item
 
+            if itemtype == self.ftp.FILE:
+                self.delete(itempath)
 
-	def recursivermd( self , path ) :
+            elif itemtype == self.ftp.DIR:
+                self.recursivermd(itempath)
 
-		for itemtype , item in self.ls( path ):
+        self.rmd(path)
 
-			itempath = path + '/' + item
+    def _makedirs(self, root, model, current):
+        for item, data in model.items():
+            if type(data) == dict:
+                self.mkd('/%s/%s%s' % (root, current, item))
+                self._makedirs(root, model[item], current + item + '/')
 
-			if itemtype == self.ftp.FILE:
-				self.delete( itempath )
+    def makedirs(self, root, model, actual, current=''):
 
-			elif itemtype == self.ftp.DIR:
-				self.recursivermd( itempath )
+        for item, data in model.items():
+            if type(data) == dict:
+                if item not in actual:
+                    self.mkd('/%s/%s%s' % (root, current, item))
+                    self._makedirs(root, model[item], current + item + '/')
+                else:
+                    self.makedirs(root, model[item], actual[
+                                  item], current + item + '/')
 
-		self.rmd( path )
+    def _removedirs(self, root, subtree, current):
+        for item, data in subtree.items():
+            if type(data) == dict:
+                self._removedirs(root, data, current + '/' + item)
 
+        self.rmd('/%s/%s' % (root, current))
 
-	def _makedirs(self, root, model, current):
-		for item, data in model.items():
-			if type(data) == dict:
-				self.mkd('/%s/%s%s' % (root, current, item))
-				self._makedirs(root, model[item], current + item + '/')
+    def removedirs(self, root, model, actual, current=''):
 
-	def makedirs(self, root, model, actual, current = ''):
+        for item, entry in actual.items():
+            if type(entry) == dict:
+                if item not in model:
+                    self._removedirs(root, entry, current + item)
+                else:
+                    self.removedirs(
+                        root, model[item], entry, current + item + '/')
 
-		for item, data in model.items():
-			if type(data) == dict:
-				if item not in actual:
-					self.mkd('/%s/%s%s' % (root, current, item))
-					self._makedirs(root, model[item], current + item + '/')
-				else:
-					self.makedirs(root, model[item], actual[item], current + item + '/')
+    def sendJSON(self, path, data):
+        with tempfile.NamedTemporaryFile('w', delete=False) as tmp:
+            lib.json.pretty(data, tmp)
 
+        with open(tmp.name, 'rb') as fd:
+            self.storbinary(path, fd)
 
-	def _removedirs(self, root, subtree, current):
-		for item, data in subtree.items():
-			if type(data) == dict : self._removedirs(root, data, current + '/' + item)
-
-		self.rmd('/%s/%s' % (root, current))
-
-
-	def removedirs(self, root, model, actual, current = ''):
-
-		for item, entry in actual.items():
-			if type(entry) == dict:
-				if item not in model:
-					self._removedirs(root, entry, current + item)
-				else:
-					self.removedirs(root, model[item], entry, current + item + '/')
-
-
-	def sendJSON(self, path, data):
-		with tempfile.NamedTemporaryFile('w', delete = False) as tmp:
-			lib.json.pretty(data, tmp)
-
-		with open(tmp.name, 'rb') as fd : self.storbinary(path, fd)
-
-		os.remove(tmp.name)
+        os.remove(tmp.name)

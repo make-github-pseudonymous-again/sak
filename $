@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 
-import sys , sak.sak , lib.error
+import sys
+import sak.sak
+import lib.error
 
-def wrapped ( argv ) :
 
-	try : sak.sak.main( argv )
+def wrapped(argv):
 
-	except lib.error.MainException as e : print( e )
+    try:
+        sak.sak.main(argv)
 
-if __name__ == '__main__' : wrapped( sys.argv[1:] )
+    except lib.error.MainException as e:
+        print(e)
+
+if __name__ == '__main__':
+    wrapped(sys.argv[1:])

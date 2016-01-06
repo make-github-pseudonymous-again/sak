@@ -1,4 +1,5 @@
 import subprocess
 
+
 def timestamp():
-	subprocess.call(['date', '+%s%N'])
+    subprocess.call(['date', '+%s%N'])

@@ -1,10 +1,12 @@
 
-import lib.args , os.path
+import lib.args
+import os.path
 
-@lib.args.convert( directory = os.path.abspath , port = int )
-def lighttpd ( directory , port ) :
 
-	config = """
+@lib.args.convert(directory=os.path.abspath, port=int)
+def lighttpd(directory, port):
+
+    config = """
 server.modules = (
 		"mod_access",
 		"mod_alias",
@@ -25,4 +27,4 @@ index-file.names                = ( "index.cgi", "index.html")
 include_shell "/usr/share/lighttpd/create-mime.assign.pl"
 """
 
-	print( config % ( port , directory ) )
+    print(config % (port, directory))

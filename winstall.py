@@ -1,4 +1,5 @@
-import os, subprocess
+import os
+import subprocess
 
 PATH = "PATH"
 PATH_SEP = os.pathsep
@@ -10,5 +11,5 @@ froot = os.path.dirname(__file__)
 
 fbin = os.path.join(froot, BIN)
 
-if fbin not in pathlist :
-	subprocess.call(["setx", PATH, fbin])
+if fbin not in pathlist:
+    subprocess.call(["setx", PATH, fbin])

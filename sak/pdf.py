@@ -1,34 +1,38 @@
-import lib.sys , lib.args
-
-@lib.args.convert( start = int , end = int )
-def cut ( source, dest, start, end ) :
-	lib.sys.call([
-		"pdftk",
-		"A=%s" % source,
-		"cat",
-		"A%d-%d" % (start, end),
-		"output",
-		dest
-	], stddefault = None)
+import lib.sys
+import lib.args
 
 
-def burst ( source, *others ) :
+@lib.args.convert(start=int, end=int)
+def cut(source, dest, start, end):
+    lib.sys.call([
+        "pdftk",
+        "A=%s" % source,
+        "cat",
+        "A%d-%d" % (start, end),
+        "output",
+        dest
+    ], stddefault=None)
 
-	lib.sys.call( [
-		"pdftk",
-		source,
-		"burst"
-	], stddefault = None )
 
-	if others : burst( *others )
+def burst(source, *others):
+
+    lib.sys.call([
+        "pdftk",
+        source,
+        "burst"
+    ], stddefault=None)
+
+    if others:
+        burst(*others)
 
 
-def svg ( source, *others ) :
+def svg(source, *others):
 
-	lib.sys.call( [
-		"pdftocairo",
-		"-svg",
-		source
-	], stddefault = None )
+    lib.sys.call([
+        "pdftocairo",
+        "-svg",
+        source
+    ], stddefault=None)
 
-	if others : svg( *others )
+    if others:
+        svg(*others)

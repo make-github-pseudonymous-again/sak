@@ -1,112 +1,120 @@
-import lib.args, lib.sys, fileinput, itertools, getpass, lib.file , lib.iterator
+import lib.args
+import lib.sys
+import fileinput
+import itertools
+import getpass
+import lib.file
+import lib.iterator
 
 # polyfill for generator zip function
 
-if hasattr( itertools , "izip" ) :
-	_zip = itertools.izip
+if hasattr(itertools, "izip"):
+    _zip = itertools.izip
 
-else :
-	_zip = zip
-
-
-def directories ( callable = None , iterable = None ) :
-
-	iterable = lib.args.listify( iterable )
-	callable = lib.args.listify( callable )
-
-	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
-
-	iterable = lib.iterator.input( iterable )
-
-	for item in iterable :
-
-		lib.sys.call( callable , stddefault = None , cwd = item )
+else:
+    _zip = zip
 
 
-def imap ( callable = None , iterable = None ) :
+def directories(callable=None, iterable=None):
 
-	iterable = lib.args.listify( iterable )
-	callable = lib.args.listify( callable )
+    iterable = lib.args.listify(iterable)
+    callable = lib.args.listify(callable)
 
-	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
+    callable = list(itertools.chain(*map(lib.args.split, callable)))
 
-	iterable = lib.iterator.input( iterable )
+    iterable = lib.iterator.input(iterable)
 
-	for item in iterable :
+    for item in iterable:
 
-		lib.sys.call( [ arg.format( item ) for arg in callable ] , stddefault = None )
-
-
-def starmap ( callable = None , iterable = None ) :
-
-	iterable = lib.args.listify( iterable )
-	callable = lib.args.listify( callable )
-
-	callable = list( itertools.chain( *map( lib.args.split , callable ) ) )
-
-	iterable = lib.iterator.input( iterable )
-
-	for item in iterable :
-
-		argv = lib.args.split( item )
-
-		args , kwargs = lib.args.parse( argv , [] , {} )
-
-		lib.sys.call( [ arg.format( *args , **kwargs ) for arg in callable ] , stddefault = None )
+        lib.sys.call(callable, stddefault=None, cwd=item)
 
 
-@lib.args.convert( n = int )
-def repeat ( iterable = None , n = -1 ) :
+def imap(callable=None, iterable=None):
 
-	"""
-		Repeat given lines n times. If n is negative then repeat given string an infinite number of times.
-	"""
+    iterable = lib.args.listify(iterable)
+    callable = lib.args.listify(callable)
 
-	iterable = lib.args.listify( iterable )
+    callable = list(itertools.chain(*map(lib.args.split, callable)))
 
-	iterable = lib.iterator.input( iterable )
+    iterable = lib.iterator.input(iterable)
 
-	args = [ None ] if n < 0 else [ None , n ]
+    for item in iterable:
 
-	for _ in itertools.repeat( *args ) :
-		for item in iterable : print( item )
+        lib.sys.call([arg.format(item) for arg in callable], stddefault=None)
 
 
-@lib.args.convert( n = int )
-def password ( n = -1 ) :
+def starmap(callable=None, iterable=None):
 
-	item = getpass.getpass('Password to repeat : ')
-	repeat( item , n )
+    iterable = lib.args.listify(iterable)
+    callable = lib.args.listify(callable)
 
+    callable = list(itertools.chain(*map(lib.args.split, callable)))
 
-def izip ( callables = None , sep = " " ) :
+    iterable = lib.iterator.input(iterable)
 
-	callables = lib.args.listify( callables )
+    for item in iterable:
 
-	callables = map( lib.args.split , callables )
+        argv = lib.args.split(item)
 
-	iterables = [ lib.file.lineiterator( lib.sys.popen( callable ).stdout ) for callable in callables ]
+        args, kwargs = lib.args.parse(argv, [], {})
 
-	for t in _zip( *iterables ) :
-
-		print ( *t , sep = sep )
-
-
-@lib.args.convert( start = int )
-def count ( start = 0 ) :
-
-	while True :
-
-		print( start )
-
-		start += 1
+        lib.sys.call([arg.format(*args, **kwargs)
+                      for arg in callable], stddefault=None)
 
 
-@lib.args.convert( start = int , stop = int )
-def range ( start , stop ) :
+@lib.args.convert(n=int)
+def repeat(iterable=None, n=-1):
+    """
+            Repeat given lines n times. If n is negative then repeat given string an infinite number of times.
+    """
 
-	while start < stop :
+    iterable = lib.args.listify(iterable)
 
-		print( start )
+    iterable = lib.iterator.input(iterable)
 
-		start += 1
+    args = [None] if n < 0 else [None, n]
+
+    for _ in itertools.repeat(*args):
+        for item in iterable:
+            print(item)
+
+
+@lib.args.convert(n=int)
+def password(n=-1):
+
+    item = getpass.getpass('Password to repeat : ')
+    repeat(item, n)
+
+
+def izip(callables=None, sep=" "):
+
+    callables = lib.args.listify(callables)
+
+    callables = map(lib.args.split, callables)
+
+    iterables = [lib.file.lineiterator(lib.sys.popen(
+        callable).stdout) for callable in callables]
+
+    for t in _zip(*iterables):
+
+        print(*t, sep=sep)
+
+
+@lib.args.convert(start=int)
+def count(start=0):
+
+    while True:
+
+        print(start)
+
+        start += 1
+
+
+@lib.args.convert(start=int, stop=int)
+def range(start, stop):
+
+    while start < stop:
+
+        print(start)
+
+        start += 1
