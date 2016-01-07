@@ -8,7 +8,7 @@ try:
 except:
     import urllib
 
-fname = os.path.expanduser('~/.sak')
+fname = os.path.expanduser('~/.config/sak/config')
 
 
 def new():
