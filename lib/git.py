@@ -1,11 +1,11 @@
 
-import lib.sys
+import subprocess
 
 IGNORE = '.gitignore'
 
 
 def do(action, *args, **kwargs):
-    return lib.sys.call(['git', action] + list(args), stddefault=None, **kwargs)
+    return subprocess.run(['git', action] + list(args), check=True, **kwargs)
 
 
 def clone(*args, **kwargs):
@@ -51,6 +51,8 @@ def log(*args, **kwargs):
 def checkout(*args, **kwargs):
     return do('checkout', *args, **kwargs)
 
+def branch(*args, **kwargs):
+    return do('branch', *args, **kwargs)
 
 def submodule(*args, **kwargs):
     return do('submodule', *args, **kwargs)

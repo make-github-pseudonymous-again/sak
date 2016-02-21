@@ -12,4 +12,4 @@
 [![Code Climate](http://img.shields.io/codeclimate/github/{repository}.svg?style=flat)](https://codeclimate.com/github/{repository})
 [![NPM downloads per month](http://img.shields.io/npm/dm/{fullname}.svg?style=flat)](https://www.npmjs.org/package/{fullname})
 [![GitHub issues](http://img.shields.io/github/issues/{repository}.svg?style=flat)](https://github.com/{repository}/issues)
-[![Documentation](https://raw.githubusercontent.com/{repository}/gh-pages/badge.svg)]({homepage}/source.html)
+[![Documentation]({homepage}/badge.svg)]({homepage}/source.html)

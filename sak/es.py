@@ -1,4 +1,6 @@
 import shutil
+import tempfile
+import subprocess
 import sak.github
 import lib.github
 import lib.sak
@@ -202,3 +204,54 @@ def fromjs(oldrepo, name, subject, keywords=None, username=None, password=None):
             except:
                 pass
 
+def doc ( ) :
+
+    jsonhook = collections.OrderedDict
+
+    with lib.json.proxy("esdoc.json", "r", object_pairs_hook=jsonhook) as esdoc:
+        config = esdoc
+
+    with tempfile.TemporaryDirectory() as tmp:
+
+        tmpconfig = tmp + '/esdoc.json'
+        build = tmp + '/build'
+
+        config['destination'] = build
+
+        os.makedirs(build)
+
+        with lib.json.proxy(tmpconfig, "w", object_pairs_hook=jsonhook) as esdoc:
+            esdoc.update(config)
+
+        subprocess.run(['esdoc', '-c', tmpconfig],check=True)
+
+        try:
+
+            try:
+                lib.git.branch('gh-pages')
+            except:
+                pass
+
+            lib.git.checkout('gh-pages')
+
+            for basename in os.listdir('.') :
+                if basename == '.git' :
+                    pass
+                elif os.path.isdir(basename):
+                    shutil.rmtree(basename)
+                else:
+                    os.remove(basename)
+
+            for basename in os.listdir(build) :
+                if os.path.isdir(build+'/'+basename):
+                    shutil.copytree(build+'/'+basename, basename)
+                else:
+                    shutil.copy(build+'/'+basename, basename)
+
+            lib.git.add('--all','.')
+            lib.git.commit('-a', '-m', 'esdoc update')
+            lib.git.push('-u', 'origin', 'gh-pages')
+
+
+        finally:
+            lib.git.checkout('master')
