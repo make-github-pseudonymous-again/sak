@@ -28,6 +28,17 @@ def walk(src, f):
 
     lib.dir.walk(src, f=callback)
 
+def iterall(*src,root='',exclude=frozenset()):
+
+    for s in src :
+        path = root + s
+        if path in exclude :
+            continue
+        elif os.path.isdir(path):
+            yield from iterall(*os.listdir(path),root=path+'/',exclude=exclude)
+        elif os.path.isfile(path):
+            yield path
+
 
 def move(a, cwd):
 

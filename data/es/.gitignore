@@ -1,0 +1,6 @@
+# Dependency directory
+node_modules
+
+# Coverage directory used by nyc
+coverage
+.nyc_output

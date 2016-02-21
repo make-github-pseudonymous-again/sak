@@ -1,5 +1,4 @@
 
-
 import os.path
 import lib.json
 import lib.list
@@ -81,3 +80,4 @@ def upload(version, message=None):
     lib.git.push()
     lib.git.tag('-a', version, '-m', message)
     lib.git.push('--tags')
+

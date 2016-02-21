@@ -130,3 +130,20 @@ def inchci(username=None, repo=None, packagename=None, style=FLAT, fmt=SVG):
     href = "http://inch-ci.org/github/%s/%s" % (username, repo)
 
     return iwl(title, img, href)
+
+def ghpageesdoc(username=None,repo=None,packagename=None,style=FLAT,fmt=SVG):
+
+    """
+
+            >>> from lib.ghbadges import ghpageesdoc
+            >>> print( ghpageesdoc( "aureooms" , "js-algebra" ) )
+            [![Documentation](https://raw.githubusercontent.com/aureooms/js-algebra/gh-pages/badge.svg)](https://aureooms.github.io/js-algebra/source.html)
+
+    """
+
+    title = "Documentation"
+    img = "https://raw.githubusercontent.com/%s/%s/gh-pages/badge.svg" % (username, repo)
+    href = "https://%s.github.io/%s/source.html" % (username, repo)
+
+    return iwl(title, img, href)
+
