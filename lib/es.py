@@ -4,6 +4,7 @@ import lib.json
 import lib.list
 import lib.ver
 import lib.git
+import lib.args
 import collections
 
 NPM = 'package.json'
@@ -80,4 +81,34 @@ def upload(version, message=None):
     lib.git.push()
     lib.git.tag('-a', version, '-m', message)
     lib.git.push('--tags')
+
+def args(name,subject,keywords,username):
+
+    license = dict(name="AGPL-3.0", template="agpl-3.0")
+
+    slug = "es-" + name
+
+    description = "{subject} library for JavaScript".format(subject=subject)
+
+    fullname = "{username}-{slug}".format(username=username,slug=slug)
+    repository = "{username}/{slug}".format(username=username,slug=slug)
+    homepage = "https://{username}.github.io/{slug}".format(username=username,slug=slug)
+
+    keywords = sorted(lib.args.listify(keywords))
+
+    fmtargs = dict(
+        name=name,
+        description=description,
+        slug=slug,
+        username=username,
+        author=username,
+        license=license['name'],
+        fullname=fullname,
+        repository=repository,
+        homepage=homepage,
+        keywords=keywords,
+        var=name.replace('-','')
+    )
+
+    return license, slug, description, fullname, repository, homepage, keywords, fmtargs
 
