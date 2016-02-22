@@ -152,8 +152,6 @@ def fork(oldrepo, name, subject, keywords=None, username=None, password=None):
         url = lib.http.url("github.com", path=repository, username=username, secure=True)
 
         lib.git.remote("set-url", "origin", url)
-        lib.git.add("--all", ".")
-        lib.git.commit("-am", "$ es fork {}".format( oldrepo ) )
         lib.git.push("-u", "origin", "master")
 
 
