@@ -202,6 +202,10 @@ def fromjs(oldrepo, name, subject, keywords=None, username=None, password=None):
             except:
                 pass
 
+        lib.git.add('--all','.')
+        lib.git.commit('-a', '-m', '$ es fromjs')
+        lib.git.push()
+
 def doc ( ) :
 
     jsonhook = collections.OrderedDict
@@ -233,7 +237,7 @@ def doc ( ) :
             lib.git.checkout('gh-pages')
 
             for basename in os.listdir('.') :
-                if basename == '.git' :
+                if basename in ['.git','.gitignore','node_modules'] :
                     pass
                 elif os.path.isdir(basename):
                     shutil.rmtree(basename)
@@ -250,6 +254,8 @@ def doc ( ) :
             lib.git.commit('-a', '-m', 'esdoc update')
             lib.git.push('-u', 'origin', 'gh-pages')
 
+        except:
+            raise
 
         finally:
             lib.git.checkout('master')
