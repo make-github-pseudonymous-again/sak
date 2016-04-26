@@ -3,7 +3,7 @@
 # ~/bin must be on the PATH
 
 MAIN = $$
-WHICH = ~/bin/$$
+WHICH = ~/.bin/$$
 
 install:
 	ln -s $(CURDIR)/$(MAIN) $(WHICH)
