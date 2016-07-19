@@ -39,7 +39,7 @@ def new(name, subject, keywords=None, username=None, password=None):
         license_template=license["template"]
     )
 
-    _, _, p = sak.github.clone(repository, username=username)
+    sak.github.clone(repository, username=username)
 
     with lib.dir.cd(slug):
 
