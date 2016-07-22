@@ -259,3 +259,22 @@ def doc ( ) :
 
         finally:
             lib.git.checkout('master')
+
+def exportall ( cwd = '.' , recursive = False ) :
+
+    with open( '{}/index.js'.format(cwd) , 'w' ) as fd :
+
+        for id , _ in map( os.path.splitext , sorted( os.listdir(cwd) ) ) :
+
+            if id == 'index' : continue
+
+            fd.write( "export * from './{}' ;\n".format( id ) )
+
+    if recursive :
+
+        for directory in filter( os.path.isdir , map( lambda x : '{}/{}'.format( cwd , x ) , os.listdir(cwd) ) ) :
+
+            exportall( cwd = directory , recursive = True)
+
+
+
