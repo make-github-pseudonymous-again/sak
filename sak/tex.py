@@ -1,8 +1,10 @@
 import os
+import os.path
+import shutil
 import lib.file
 import lib.git
 import lib.tex
-
+import lib.sak
 
 def build(src, out):
 
@@ -41,3 +43,15 @@ def ignore(name):
 def clean(name):
     files = lib.tex.out(name)
     lib.file.rm(files)
+
+def report ( lang = 'en' , cwd = '.' ) :
+
+    src = 'tex' , 'report' , lang
+
+    with lib.dir.cd(cwd):
+        for basename in os.listdir(lib.sak.data(*src)) :
+            if os.path.isdir(lib.sak.data(*src,basename)):
+                shutil.copytree(lib.sak.data(*src,basename), basename)
+            else:
+                shutil.copy(lib.sak.data(*src,basename), basename)
+
