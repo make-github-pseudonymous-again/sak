@@ -278,3 +278,34 @@ def exportall ( cwd = '.' , recursive = False ) :
 
 
 
+def exportdefault( cwd = '.' , recursive = False ) :
+
+    with open( '{}/index.js'.format(cwd) , 'w' ) as fd :
+
+        files = map( os.path.splitext , sorted( os.listdir(cwd) ) )
+
+        ids = [ id for id , _ in files if id != 'index' ]
+
+        for id in ids :
+            fd.write( "import {0} from './{0}' ;\n".format( id ) )
+
+        fd.write('\n')
+
+        fd.write('export default {\n')
+        for id in ids :
+            fd.write( "\t{} ,\n".format( id ) )
+        fd.write('}\n')
+
+        fd.write('export {\n')
+        for id in ids :
+            fd.write( "\t{} ,\n".format( id ) )
+        fd.write('}\n')
+
+    if recursive :
+
+        for directory in filter( os.path.isdir , map( lambda x : '{}/{}'.format( cwd , x ) , os.listdir(cwd) ) ) :
+
+            exportdefault( cwd = directory , recursive = True)
+
+
+
