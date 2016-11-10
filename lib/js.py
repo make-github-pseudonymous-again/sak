@@ -86,7 +86,7 @@ def args(name,subject,keywords,username):
 
     license = dict(name="AGPL-3.0", template="agpl-3.0")
 
-    slug = "es-" + name
+    slug = "js-" + name
 
     description = "{subject} library for JavaScript".format(subject=subject)
 
