@@ -294,12 +294,14 @@ def exportdefault( cwd = '.' , recursive = False ) :
         fd.write('export default {\n')
         for id in ids :
             fd.write( "\t{} ,\n".format( id ) )
-        fd.write('}\n')
+        fd.write('} ;\n')
+
+        fd.write('\n')
 
         fd.write('export {\n')
         for id in ids :
             fd.write( "\t{} ,\n".format( id ) )
-        fd.write('}\n')
+        fd.write('} ;\n')
 
     if recursive :
 
