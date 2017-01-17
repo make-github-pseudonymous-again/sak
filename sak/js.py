@@ -22,7 +22,7 @@ def new(name, subject, keywords=None, username=None, password=None):
 
     username, password = lib.github.credentials(username, password)
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.es.args(name,subject,keywords,username)
+    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username)
 
     sak.github.new(
         slug,
@@ -80,7 +80,7 @@ def fork(oldrepo, name, subject, keywords=None, username=None, password=None):
 
     oldowner, oldslug = oldrepo.split('/')
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.es.args(name,subject,keywords,username)
+    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username)
 
     sak.github.new(
         slug,
@@ -159,7 +159,7 @@ def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, pass
 
     fork(oldrepo, name, subject, keywords=keywords, username=username, password=password)
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.es.args(name,subject,keywords,username)
+    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username)
 
     es = lib.sak.data('js')
 

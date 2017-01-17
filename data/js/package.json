@@ -3,22 +3,22 @@
   "description": "{description}",
   "version": "0.0.0",
   "author": "{author}",
-  "ava": {
+  "ava": {{
     "require": [
       "babel-polyfill",
       "babel-register"
     ]
-  },
-  "babel": {
+  }},
+  "babel": {{
     "presets": [
       "latest"
     ],
-    "env": {
-      "development": {
+    "env": {{
+      "development": {{
         "sourceMaps": "inline"
-      }
-    }
-  },
+      }}
+    }}
+  }},
   "bugs": {{
     "url": "https://github.com/{repository}/issues"
   }},
