@@ -90,7 +90,7 @@ def args(name,subject,keywords,username):
 
     description = "{subject} library for JavaScript".format(subject=subject)
 
-    fullname = "{username}-{slug}".format(username=username,slug=slug)
+    fullname = "@{username}/{slug}".format(username=username,slug=slug)
     repository = "{username}/{slug}".format(username=username,slug=slug)
     homepage = "https://{username}.github.io/{slug}".format(username=username,slug=slug)
 
