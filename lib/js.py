@@ -88,7 +88,7 @@ def args(name,subject,keywords,username):
 
     slug = "js-" + name
 
-    description = "{subject} library for JavaScript".format(subject=subject)
+    description = "{subject} for JavaScript".format(subject=subject)
 
     fullname = "@{username}/{slug}".format(username=username,slug=slug)
     repository = "{username}/{slug}".format(username=username,slug=slug)

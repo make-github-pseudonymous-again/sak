@@ -1,9 +1,10 @@
-[{repository}]({homepage})
+[{fullname}]({homepage})
 ==
 
-{description}. See [documentation]({homepage}/index.html).
+{description}.
+See [docs]({homepage}/index.html).
 
-[![NPM license](https://img.shields.io/npm/l/{fullname}.svg?style=flat)](https://raw.githubusercontent.com/{repository}/master/LICENSE)
+[![License](https://img.shields.io/github/license/{repository}.svg?style=flat)](https://raw.githubusercontent.com/{repository}/master/LICENSE)
 [![NPM version](https://img.shields.io/npm/v/{fullname}.svg?style=flat)](https://www.npmjs.org/package/{fullname})
 [![Build status](https://img.shields.io/travis/{repository}.svg?style=flat)](https://travis-ci.org/{repository})
 [![Coverage status](https://img.shields.io/coveralls/{repository}.svg?style=flat)](https://coveralls.io/r/{repository})
