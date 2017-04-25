@@ -10,6 +10,7 @@ import subprocess
 import re
 import functools
 import lib.sys
+from shlex import quote
 
 
 def info(*args):
@@ -87,7 +88,11 @@ def push(*args):
 
 
 def ls(*args):
-    return do('ls', *args)
+
+    def callback(d):
+        print(quote(d))
+
+    return helper.wrap(args, callback)
 
 
 def count(*args):
