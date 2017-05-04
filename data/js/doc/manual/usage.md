@@ -12,5 +12,5 @@ Then
 ```js
 const {var} = require( '{fullname}' ) ;
 // or
-import {var} from '{fullname}' ;
+import * as {var} from '{fullname}' ;
 ```
