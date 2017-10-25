@@ -225,7 +225,7 @@ def doc ( ) :
         with lib.json.proxy(tmpconfig, "w", object_pairs_hook=jsonhook) as esdoc:
             esdoc.update(config)
 
-        subprocess.run(['esdoc', '-c', tmpconfig],check=True)
+        subprocess.run(['npm', 'run', 'esdoc', '--', '-c', tmpconfig],check=True)
 
         try:
 
