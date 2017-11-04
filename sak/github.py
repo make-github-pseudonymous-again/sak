@@ -24,7 +24,10 @@ SORT = lib.github.SORT
 
 def clone(repo, dest=None, username=None):
 
-    url = lib.http.url(DOMAIN, repo, username, secure=True)
+    if username is not None:
+        url = lib.http.url(DOMAIN, repo, username, secure=True)
+    else:
+        url = 'gh:{}'.format(repo)
 
     if dest is not None:
         return lib.git.clone(url, dest)
