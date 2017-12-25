@@ -34,6 +34,7 @@
     "esdoc-inject-script-plugin": "^1.0.0",
     "esdoc-inject-style-plugin": "^1.0.0",
     "esdoc-standard-plugin": "^1.0.0",
+    "np": "^2.18.3",
     "nyc": "^11.2.1"
   }},
   "homepage": "{homepage}",
@@ -49,6 +50,7 @@
     "cover": "nyc --reporter=lcov npm test",
     "esdoc": "esdoc",
     "prepublish": "npm run build",
+    "release": "np",
     "test": "ava ./test/src"
   }}
 }}
