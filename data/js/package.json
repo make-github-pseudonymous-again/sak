@@ -37,6 +37,9 @@
     "np": "^2.18.3",
     "nyc": "^11.2.1"
   }},
+  "files": [
+    "lib"
+  ],
   "homepage": "{homepage}",
   "keywords": [{keywords}],
   "license": "{license}",
