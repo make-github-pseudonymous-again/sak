@@ -69,8 +69,8 @@ def new(name, subject, keywords=None, username=None, password=None):
             with open(filename, 'w') as fd:
                 fd.write(data)
 
-        lib.git.add('--all', '.')
-        lib.git.commit('-am', '$ js new')
+        lib.git.add('--all')
+        lib.git.commit('--message', '$ js new')
         lib.git.push()
 
 
@@ -152,7 +152,7 @@ def fork(oldrepo, name, subject, keywords=None, username=None, password=None):
         url = lib.http.url("github.com", path=repository, username=username, secure=True)
 
         lib.git.remote("set-url", "origin", url)
-        lib.git.push("-u", "origin", "master")
+        lib.git.push("--set-upstream", "origin", "master")
 
 
 def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, password=None):
@@ -202,8 +202,8 @@ def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, pass
             except:
                 pass
 
-        lib.git.add('--all','.')
-        lib.git.commit('-a', '-m', '$ js fromjs')
+        lib.git.add('--all')
+        lib.git.commit('--message', '$ js fromjs')
         lib.git.push()
 
 def doc ( ) :
