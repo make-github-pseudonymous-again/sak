@@ -4,7 +4,7 @@
 {description}.
 See [docs]({homepage}/index.html).
 
-> :warning: The code needs a ES2015+ polyfill to work (`regeneratorRuntime`),
+> :warning: The code needs a ES2015+ polyfill to run (`regeneratorRuntime`),
 > for instance [@babel/polyfill](https://babeljs.io/docs/usage/polyfill).
 
 [![License](https://img.shields.io/github/license/{repository}.svg)](https://raw.githubusercontent.com/{repository}/master/LICENSE)

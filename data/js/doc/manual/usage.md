@@ -1,6 +1,6 @@
 # Usage
 
-> :warning: The code needs a ES2015+ polyfill to work (`regeneratorRuntime`),
+> :warning: The code needs a ES2015+ polyfill to run (`regeneratorRuntime`),
 > for instance [@babel/polyfill](https://babeljs.io/docs/usage/polyfill).
 
 First, require the polyfill at the entry point of your application
