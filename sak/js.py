@@ -235,6 +235,7 @@ def doc ( ) :
                 pass
 
             lib.git.checkout('gh-pages')
+            lib.git.pull()
 
             for basename in os.listdir('.') :
                 if basename in ['.git','.gitignore','node_modules'] :
@@ -250,9 +251,9 @@ def doc ( ) :
                 else:
                     shutil.copy(build+'/'+basename, basename)
 
-            lib.git.add('--all','.')
-            lib.git.commit('-a', '-m', 'esdoc update')
-            lib.git.push('-u', 'origin', 'gh-pages')
+            lib.git.add('--all')
+            lib.git.commit('--message', 'esdoc update')
+            lib.git.push('--set-upstream', 'origin', 'gh-pages')
 
         except:
             raise

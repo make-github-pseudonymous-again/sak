@@ -1,14 +1,16 @@
 # Usage
 
-The code needs a ES2015+ polyfill to work, for example
-[babel-polyfill](https://babeljs.io/docs/usage/polyfill).
+> :warning: The code needs a ES2015+ polyfill to work (`regeneratorRuntime`),
+> for instance [@babel/polyfill](https://babeljs.io/docs/usage/polyfill).
+
+First, require the polyfill at the entry point of your application
 ```js
-require( 'babel-polyfill' ) ;
+require( '@babel/polyfill' ) ;
 // or
-import 'babel-polyfill' ;
+import '@babel/polyfill' ;
 ```
 
-Then
+Then, import the library where needed
 ```js
 const {var} = require( '{fullname}' ) ;
 // or
