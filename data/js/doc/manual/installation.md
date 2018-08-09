@@ -1,9 +1,9 @@
 # Installation
 
 Can be managed using
-[yarn](https://yarnpkg.com),
-[npm](https://github.com/npm/npm),
-or [jspm](https://jspm.io).
+[yarn](https://yarnpkg.com/en/docs),
+[npm](https://docs.npmjs.com),
+or [jspm](https://jspm.org/docs).
 
 
 ### yarn
