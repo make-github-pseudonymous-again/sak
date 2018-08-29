@@ -9,7 +9,7 @@ See [docs]({homepage}/index.html).
 
 [![License](https://img.shields.io/github/license/{repository}.svg)](https://raw.githubusercontent.com/{repository}/master/LICENSE)
 [![Version](https://img.shields.io/npm/v/{fullname}.svg)](https://www.npmjs.org/package/{fullname})
-[![Build](https://img.shields.io/travis/{repository}.svg)](https://travis-ci.org/{repository})
+[![Build](https://img.shields.io/travis/{repository}/master.svg)](https://travis-ci.org/{repository}/branches)
 [![Dependencies](https://img.shields.io/david/{repository}.svg)](https://david-dm.org/{repository})
 [![Dev dependencies](https://img.shields.io/david/dev/{repository}.svg)](https://david-dm.org/{repository}?type=dev)
 [![GitHub issues](https://img.shields.io/github/issues/{repository}.svg)](https://github.com/{repository}/issues)
