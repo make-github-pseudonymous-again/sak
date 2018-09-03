@@ -1,11 +1,20 @@
+import json
+import re
+from datetime import datetime
 import urllib.request
+from string import Template
 
-TEXT = "http://oeis.org/search?q=id:%s&fmt=text"
-OEIS = "https://oeis.org/%s"
+TEXT = "http://oeis.org/search?q=id:{}&fmt=json"
+OEIS = "https://oeis.org/{}"
 
-MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-
+TEMPLATE = Template(r"""@MISC{OEIS:$id,
+    AUTHOR       = {$author},
+    TITLE        = {The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences},
+    HOWPUBLISHED = {\href{$url}{$id}},
+    MONTH        = {$month},
+    YEAR         = {$year},
+    NOTE         = {$note}
+}""")
 
 def validate(id):
 
@@ -57,9 +66,18 @@ def bibtex(id):
                 AUTHOR       = {N. J. A. Sloane},
                 TITLE        = {The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences},
                 HOWPUBLISHED = {\href{https://oeis.org/A000108}{A000108}},
-                MONTH        = {},
-                YEAR         = {},
+                MONTH        = {Apr},
+                YEAR         = {1991},
                 NOTE         = {Catalan numbers: C(n) = binomial(2n,n)/(n+1) = (2n)!/(n!(n+1)!). Also called Segner numbers.}
+            }
+            >>> bibtex( "A001010" ) # doctest: +NORMALIZE_WHITESPACE
+            @MISC{OEIS:A001010,
+                    AUTHOR       = {N. J. A. Sloane, Stéphane Legendre},
+                    TITLE        = {The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences},
+                    HOWPUBLISHED = {\href{https://oeis.org/A001010}{A001010}},
+                    MONTH        = {Apr},
+                    YEAR         = {1991},
+                    NOTE         = {Number of symmetric foldings of a strip of n stamps.}
             }
 
     """
@@ -67,7 +85,7 @@ def bibtex(id):
     if not validate(id):
         return
 
-    url = TEXT % id
+    url = TEXT.format(id)
 
     try:
 
@@ -78,38 +96,16 @@ def bibtex(id):
         print(e, ": could not open url %s" % url)
         return
 
-    data = response.read()
-    lines = data.decode("utf-8").splitlines()
+    doc = json.load(response)["results"][0]
 
-    month, day, year = "", "", ""
+    date = datetime.strptime(doc["created"][:10], '%Y-%m-%d')
+    year = date.strftime('%Y')
+    month = date.strftime('%b')
 
-    for line in lines:
+    author = ', '.join(re.findall('_([^,]*)_', doc["author"]))
 
-        if line.startswith("%A"):
+    description = doc["name"]
 
-            author = line[11:]
+    entry = TEMPLATE.substitute( id=id , author=author , url=OEIS.format(id) , month=month , year=year , note=description )
 
-            for m in MONTHS:
-
-                x = author.rfind(m)
-
-                if x >= 0:
-
-                    month, day, year = author[x:].split()
-                    author = author[:x]
-                    break
-
-            author = ", ".join(x.strip(" _")
-                               for x in author.strip().split(",") if x)
-
-        if line.startswith("%N"):
-            description = line[11:]
-
-    print( r"""@MISC{OEIS:%s,
-	AUTHOR       = {%s},
-	TITLE        = {The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences},
-	HOWPUBLISHED = {\href{%s}{%s}},
-	MONTH        = {%s},
-	YEAR         = {%s},
-	NOTE         = {%s}
-}""" % ( id , author , OEIS % id , id , month , year , description ) )
+    print(entry)
