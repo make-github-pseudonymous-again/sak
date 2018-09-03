@@ -230,11 +230,10 @@ def doc ( ) :
         try:
 
             try:
-                lib.git.branch('gh-pages')
+                lib.git.checkout('gh-pages')
             except:
-                pass
+                lib.git.branch('gh-pages')
 
-            lib.git.checkout('gh-pages')
             lib.git.pull()
 
             for basename in os.listdir('.') :
