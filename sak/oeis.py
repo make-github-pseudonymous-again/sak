@@ -45,21 +45,21 @@ def bibtex(id):
             ERROR-2: Wrong characters on input string!
             >>> bibtex( "A000045" ) # doctest: +NORMALIZE_WHITESPACE
             @MISC{OEIS:A000045,
-                    AUTHOR       = {N. J. A. Sloane},
-                    TITLE        = {The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences},
-                    HOWPUBLISHED = {\href{https://oeis.org/A000045}{A000045}},
-                    MONTH        = {Apr},
-                    YEAR         = {1991},
-                    NOTE         = {Fibonacci numbers: F(n) = F(n-1) + F(n-2) with F(0) = 0 and F(1) = 1.}
+                AUTHOR       = {N. J. A. Sloane},
+                TITLE        = {The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences},
+                HOWPUBLISHED = {\href{https://oeis.org/A000045}{A000045}},
+                MONTH        = {Apr},
+                YEAR         = {1991},
+                NOTE         = {Fibonacci numbers: F(n) = F(n-1) + F(n-2) with F(0) = 0 and F(1) = 1.}
             }
             >>> bibtex( "A000108" ) # doctest: +NORMALIZE_WHITESPACE
             @MISC{OEIS:A000108,
-                    AUTHOR       = {N. J. A. Sloane},
-                    TITLE        = {The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences},
-                    HOWPUBLISHED = {\href{https://oeis.org/A000108}{A000108}},
-                    MONTH        = {},
-                    YEAR         = {},
-                    NOTE         = {Catalan numbers: C(n) = binomial(2n,n)/(n+1) = (2n)!/(n!(n+1)!). Also called Segner numbers.}
+                AUTHOR       = {N. J. A. Sloane},
+                TITLE        = {The {O}n-{L}ine {E}ncyclopedia of {I}nteger {S}equences},
+                HOWPUBLISHED = {\href{https://oeis.org/A000108}{A000108}},
+                MONTH        = {},
+                YEAR         = {},
+                NOTE         = {Catalan numbers: C(n) = binomial(2n,n)/(n+1) = (2n)!/(n!(n+1)!). Also called Segner numbers.}
             }
 
     """
