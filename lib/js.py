@@ -82,15 +82,15 @@ def upload(version, message=None):
     lib.git.tag('-a', version, '-m', message)
     lib.git.push('--tags')
 
-def args(name,subject,keywords,username):
+def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{username}/'):
 
     license = dict(name="AGPL-3.0", template="agpl-3.0")
 
-    slug = "js-" + name
+    slug = slugprefix + name
 
     description = "{subject} for JavaScript".format(subject=subject)
 
-    fullname = "@{username}/{slug}".format(username=username,slug=slug)
+    fullname = (fullnameprefix + "{slug}").format(username=username,slug=slug)
     repository = "{username}/{slug}".format(username=username,slug=slug)
     homepage = "https://{username}.github.io/{slug}".format(username=username,slug=slug)
 

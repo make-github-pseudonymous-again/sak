@@ -18,11 +18,11 @@ import json
 
 README = "README.md"
 
-def new(name, subject, keywords=None, username=None, password=None):
+def new(name, subject, keywords=None, username=None, password=None, **rest):
 
     username, password = lib.github.credentials(username, password)
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username)
+    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username,**rest)
 
     sak.github.new(
         slug,
@@ -74,13 +74,13 @@ def new(name, subject, keywords=None, username=None, password=None):
         lib.git.push()
 
 
-def fork(oldrepo, name, subject, keywords=None, username=None, password=None):
+def fork(oldrepo, name, subject, keywords=None, username=None, password=None, **rest):
 
     username, password = lib.github.credentials(username, password)
 
     oldowner, oldslug = oldrepo.split('/')
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username)
+    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
 
     sak.github.new(
         slug,
@@ -155,11 +155,11 @@ def fork(oldrepo, name, subject, keywords=None, username=None, password=None):
         lib.git.push("--set-upstream", "origin", "master")
 
 
-def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, password=None):
+def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, password=None, **rest):
 
-    fork(oldrepo, name, subject, keywords=keywords, username=username, password=password)
+    fork(oldrepo, name, subject, keywords=keywords, username=username, password=password, **rest)
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username)
+    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
 
     es = lib.sak.data('js')
 
