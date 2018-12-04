@@ -8,3 +8,6 @@ coverage
 
 # Documentation
 gh-pages
+
+# Transpiled files
+lib

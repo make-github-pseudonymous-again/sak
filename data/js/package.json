@@ -5,13 +5,16 @@
   "author": "{author}",
   "ava": {{
     "require": [
-      "babel-polyfill",
-      "babel-register"
+      "@babel/polyfill",
+      "@babel/register"
     ]
   }},
   "babel": {{
     "presets": [
-      "env"
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-async-generator-functions"
     ],
     "env": {{
       "development": {{
@@ -24,18 +27,23 @@
   }},
   "dependencies": {{}},
   "devDependencies": {{
-    "ava": "^0.25.0",
-    "babel-cli": "^6.26.0",
-    "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
-    "codeclimate-test-reporter": "^0.5.0",
-    "coveralls": "^3.0.0",
-    "esdoc": "^1.0.4",
-    "esdoc-inject-script-plugin": "^1.0.0",
-    "esdoc-inject-style-plugin": "^1.0.0",
-    "esdoc-standard-plugin": "^1.0.0",
-    "np": "^2.20.1",
-    "nyc": "^11.6.0"
+    "@babel/cli": "7.2.0",
+    "@babel/core": "7.2.0",
+    "@babel/plugin-proposal-async-generator-functions": "7.2.0",
+    "@babel/polyfill": "7.0.0",
+    "@babel/preset-env": "7.2.0",
+    "@babel/register": "7.0.0",
+    "ava": "1.0.0-rc.2",
+    "codeclimate-test-reporter": "0.5.1",
+    "coveralls": "3.0.2",
+    "esdoc": "1.1.0",
+    "esdoc-ecmascript-proposal-plugin": "1.0.0",
+    "esdoc-inject-script-plugin": "1.0.0",
+    "esdoc-inject-style-plugin": "1.0.0",
+    "esdoc-standard-plugin": "1.0.0",
+    "np": "3.0.4",
+    "nyc": "13.1.0",
+    "xo": "0.23.0"
   }},
   "files": [
     "lib"
@@ -54,6 +62,24 @@
     "esdoc": "esdoc",
     "prepare": "npm run build",
     "release": "np",
-    "test": "ava ./test/src"
+    "test": "xo && ava ./test/src"
+  }},
+  "xo": {{
+    "prettier": true,
+    "ignore": [
+      "lib",
+      "doc"
+    ],
+    "plugins": [
+      "unicorn"
+    ],
+    "rules": {{
+      "unicorn/filename-case": [
+        "error",
+        {{
+          "case": "camelCase"
+        }}
+      ]
+    }}
   }}
 }}
