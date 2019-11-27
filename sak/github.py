@@ -22,7 +22,7 @@ STARGAZERS = lib.github.STARGAZERS
 SORT = lib.github.SORT
 
 
-def clone(repo, dest=None, username=None):
+def clone(repo, dest=None, username=None, **kwargs):
 
     if username is not None:
         url = lib.http.url(DOMAIN, repo, username, secure=True)
@@ -30,9 +30,9 @@ def clone(repo, dest=None, username=None):
         url = 'gh:{}'.format(repo)
 
     if dest is not None:
-        return lib.git.clone(url, dest)
+        return lib.git.clone(url, dest, **kwargs)
     else:
-        return lib.git.clone(url)
+        return lib.git.clone(url, **kwargs)
 
 
 def new(name, org=None, team_id=None, username=None, password=None, auto_init=FALSE, private=FALSE, description=None, homepage=None, has_issues=TRUE, has_wiki=TRUE, has_downloads=TRUE, gitignore_template=None, license_template=None):
@@ -101,7 +101,7 @@ def list(target=YOU, name=None, t=None, format="{full_name}", username=None, pas
         print(format.format(**repo))
 
 
-def download(target=YOU, name=None, t=None, username=None, password=None, prompt=True, prefix="", suffix="", regexp=""):
+def download(target=YOU, name=None, t=None, username=None, password=None, prompt=True, prefix="", suffix="", regexp="", **kwargs):
 
     for repo in lib.github.list(target, name, t, username, password):
 
@@ -114,7 +114,7 @@ def download(target=YOU, name=None, t=None, username=None, password=None, prompt
         take = take and (not regexp or re.match(regexp, repo) is not None)
 
         if take and (not prompt or lib.input.yesorno("clone '%s'?" % repo)):
-            clone(repo, username=username)
+            clone(repo, username=username, **kwargs)
 
 
 def delete(owner, repo, username=None, password=None):

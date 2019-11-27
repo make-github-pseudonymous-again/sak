@@ -4,8 +4,8 @@ import subprocess
 IGNORE = '.gitignore'
 
 
-def do(action, *args, **kwargs):
-    return subprocess.run(['git', action] + list(args), check=True, **kwargs)
+def do(action, *args, check=True, **kwargs):
+    return subprocess.run(['git', action] + list(args), check=check, **kwargs)
 
 
 def clone(*args, **kwargs):
