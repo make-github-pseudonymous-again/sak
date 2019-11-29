@@ -1,5 +1,5 @@
-
+import urllib.parse
 
 def get(**kwargs):
 
-    return "?" + "&".join(map("=".join, kwargs.items()))
+    return ("?" + urllib.parse.urlencode(kwargs)) if kwargs else ''
