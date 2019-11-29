@@ -201,12 +201,12 @@ SORT = [NEWEST, OLDEST, STARGAZERS]
 # TOOLS
 
 
-def api(*args):
-    return "https://api.github.com/" + '/'.join(map(str, args))
+def api(path, params):
+    return "https://api.github.com/" + '/'.join(map(str, path)) + lib.url.get(**params)
 
 
 @lib.fn.throttle(20, 70)
-def send(method, url, data=None, **kwargs):
+def send(method, url, params=dict(), data=None, **kwargs):
     """
             Throttling because
             https://github.com/octokit/octokit.net/issues/638#issuecomment-67795998
@@ -217,8 +217,7 @@ def send(method, url, data=None, **kwargs):
     if data is not None:
         data = json.dumps(data)
 
-    out, err, p = lib.curl.call(method, api(
-        *url), contenttype, data=data, **kwargs)
+    out, err, p = lib.curl.call(method, api(url, params), contenttype, data=data, **kwargs)
 
     lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
@@ -238,15 +237,15 @@ def credentials(username=None, password=None):
     return lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
 
 
-def paginate(url, username=None, password=None):
+def paginate(url, username=None, password=None, **kwargs):
 
     pageid = 1
 
     while True:
 
-        pageurl = url[:-1] + (url[-1] + lib.url.get(page=str(pageid)), )
+        params = dict(page=str(pageid), **kwargs)
 
-        pagecontent = get(pageurl, username=username, password=password)
+        pagecontent = get(url, params=params, username=username, password=password)
 
         if not pagecontent:
             break
@@ -256,9 +255,9 @@ def paginate(url, username=None, password=None):
         pageid += 1
 
 
-def itemize(url, username=None, password=None):
+def itemize(url, **kwargs):
 
-    for page in paginate(url, username=username, password=password):
+    for page in paginate(url, **kwargs):
 
         for item in page:
             yield item
@@ -331,6 +330,18 @@ def issues(owner=None, repo=None, number=None, user=False, org=None, username=No
     return get(url, data=parameters, username=username, password=password)
 
 
+def search ( what , query , username=None, password=None ) :
+
+    """
+        https://developer.github.com/v3/search
+    """
+
+    url = ("search", what)
+    # params = { 'q': query }
+    # yield get(url, params=params, username=username, password=password)
+    return paginate(url, q=query, username=username, password=password)
+
+
 def closeissues(owner, repo, *issuenos, username=None, password=None):
 
     username, password = credentials(username, password)
@@ -383,7 +394,6 @@ def editissue(owner, repo, number, title=None, body=None, assignee=None, state=N
     username, password = credentials(username, password)
 
     return patch(url, data=parameters, username=username, password=password)
-
 
 # LABELS
 

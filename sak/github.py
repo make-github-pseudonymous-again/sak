@@ -6,7 +6,9 @@ import lib.github
 import lib.input
 import lib.http
 import lib.args
+import sys
 import re
+import json
 
 DOMAIN = lib.github.DOMAIN
 CONFIG_KEY = lib.github.CONFIG_KEY
@@ -100,7 +102,6 @@ def list(target=YOU, name=None, t=None, format="{full_name}", username=None, pas
     for repo in lib.github.list(target, name, t, username, password):
         print(format.format(**repo))
 
-
 def download(target=YOU, name=None, t=None, username=None, password=None, prompt=True, prefix="", suffix="", regexp="", **kwargs):
 
     for repo in lib.github.list(target, name, t, username, password):
@@ -126,12 +127,24 @@ def delete(owner, repo, username=None, password=None):
     print()
 
 
+def search(what, query, username=None, password=None):
+
+    response = lib.args.forward(lib.github.search, locals())
+
+    for result in response:
+        try:
+            for item in result['items']:
+                json.dump(item, sys.stdout)
+        except:
+            json.dump(result, sys.stderr)
+            break
+
+
 def issues(owner=None, repo=None, number=None, user=False, org=None, username=None, password=None, milestone=None, filter=None, state=None, creator=None, assignee=None, mentioned=None, labels=None, sort=None, direction=None, since=None):
 
     for issue in lib.args.forward(lib.github.issues, locals()):
 
         print(issue)
-
 
 def createissue(owner, repo, title, body=None, assignee=None, milestone=None, labels=None, username=None, password=None):
 
