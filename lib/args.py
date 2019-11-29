@@ -512,6 +512,9 @@ def forward(callable, locals):
     else:
         args = [locals[key] for key in argspec.args]
 
+    if argspec.varargs:
+        args.extend(locals[argspec.varargs])
+
     if argspec.varkw is None:
         kwargs = {}
     else:
