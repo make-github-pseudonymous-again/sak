@@ -3,7 +3,7 @@
 # ~/bin must be on the PATH
 
 MAIN = $$
-WHICH = ~/.bin/$$
+WHICH = ~/.bin/sak
 
 install:
 	ln -s $(CURDIR)/$(MAIN) $(WHICH)
