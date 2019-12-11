@@ -624,3 +624,15 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
 
         lib.github.validate(lib.github.editissue(owner, origin, issue[
                             "number"], username=username, password=password, **parameters))
+
+
+def notifications(all=False, participating=False, since=None, before=None, username=None, password=None):
+
+    response = lib.args.forward(lib.github.notifications, locals())
+
+    for result in response:
+        json.dump(result, sys.stdout)
+
+def mark_as_read(thread_id, username=None, password=None):
+
+    print(lib.args.forward(lib.github.mark_as_read, locals()))

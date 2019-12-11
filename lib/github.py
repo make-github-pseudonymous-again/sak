@@ -2,7 +2,7 @@
 	Exposes Github API v3.
 """
 
-
+import sys
 import json
 import functools
 import lib.fn
@@ -204,6 +204,12 @@ SORT = [NEWEST, OLDEST, STARGAZERS]
 def api(path, params):
     return "https://api.github.com/" + '/'.join(map(str, path)) + lib.url.get(**params)
 
+def _safe ( value ) :
+
+    if value is True : return 'true'
+    if value is False : return 'false'
+
+    return value
 
 @lib.fn.throttle(20, 70)
 def send(method, url, params=dict(), data=None, **kwargs):
@@ -217,7 +223,13 @@ def send(method, url, params=dict(), data=None, **kwargs):
     if data is not None:
         data = json.dumps(data)
 
-    out, err, p = lib.curl.call(method, api(url, params), contenttype, data=data, **kwargs)
+    safe_params = {key: _safe(value) for key, value in params.items() if value is not None}
+
+    queryurl = api(url, safe_params)
+
+    print(queryurl, file=sys.stderr)
+
+    out, err, p = lib.curl.call(method, queryurl, contenttype, data=data, **kwargs)
 
     lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
@@ -235,7 +247,6 @@ delete = functools.partial(send, lib.curl.DELETE)
 def credentials(username=None, password=None):
 
     return lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
-
 
 def paginate(url, username=None, password=None, **kwargs):
 
@@ -647,3 +658,30 @@ def createhook(owner, repo, url, name="web", content_type="json", secret=None, i
     username, password = credentials(username, password)
 
     return post(apiurl, data=parameters, username=username, password=password)
+
+# NOTIFICATIONS
+
+def notifications(all=False, participating=False, since=None, before=None, username=None, password=None):
+
+    # all 	boolean 	If true, show notifications marked as read. Default: false
+    # participating 	boolean 	If true, only shows notifications in which the user is directly participating or mentioned. Default: false
+    # since 	string 	Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+    # before 	string 	Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
+
+    username, password = credentials(username, password)
+
+    url = ("notifications",)
+
+    return itemize(url, all=all, participating=participating, since=since, before=before, username=username, password=password)
+
+def mark_as_read (thread_id, username=None, password=None):
+
+    """
+        https://developer.github.com/v3/activity/notifications/#mark-a-thread-as-read
+    """
+
+    username, password = credentials(username, password)
+
+    url = ("notifications", "threads", thread_id)
+
+    return patch(url, username=username, password=password)
