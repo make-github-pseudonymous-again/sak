@@ -16,9 +16,9 @@ See [docs]({homepage}/index.html).
 [![Downloads](https://img.shields.io/npm/dm/{fullname}.svg)](https://www.npmjs.org/package/{fullname})
 
 [![Code issues](https://img.shields.io/codeclimate/issues/{repository}.svg)](https://codeclimate.com/github/{repository}/issues)
-[![Code maintainability](https://img.shields.io/codeclimate/maintainability/github/{repository}.svg)](https://codeclimate.com/github/{repository}/trends/churn)
-[![Code coverage (cov)](https://img.shields.io/codecov/c/github/{repository}.svg)](https://codecov.io/gh/{repository})
-<!--[![Code coverage (alls)](https://img.shields.io/coveralls/{repository}.svg)](https://coveralls.io/r/{repository})-->
-[![Code coverage (clim)](https://img.shields.io/codeclimate/coverage-letter/{repository}.svg)](https://codeclimate.com/github/{repository}/trends/test_coverage_new_code)
+[![Code maintainability](https://img.shields.io/codeclimate/maintainability/{repository}.svg)](https://codeclimate.com/github/{repository}/trends/churn)
+[![Code coverage (cov)](https://img.shields.io/codecov/c/gh/{repository}/master.svg)](https://codecov.io/gh/{repository})
+<!--[![Code coverage (alls)](https://img.shields.io/coveralls/github/{repository}/master.svg)](https://coveralls.io/r/{repository})-->
+<!--[![Code coverage (clim)](https://img.shields.io/codeclimate/coverage/{repository}.svg)](https://codeclimate.com/github/{repository}/trends/test_coverage_new_code)-->
 [![Code technical debt](https://img.shields.io/codeclimate/tech-debt/{repository}.svg)](https://codeclimate.com/github/{repository}/trends/technical_debt)
 [![Documentation]({homepage}/badge.svg)]({homepage}/source.html)
