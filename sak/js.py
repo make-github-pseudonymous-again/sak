@@ -217,12 +217,12 @@ def doc ( ) :
 
     jsonhook = collections.OrderedDict
 
-    with lib.json.proxy("esdoc.json", "r", object_pairs_hook=jsonhook) as esdoc:
+    with lib.json.proxy(".esdoc.json", "r", object_pairs_hook=jsonhook) as esdoc:
         config = esdoc
 
     with tempfile.TemporaryDirectory() as tmp:
 
-        tmpconfig = tmp + '/esdoc.json'
+        tmpconfig = tmp + '/.esdoc.json'
         build = tmp + '/build'
 
         config['destination'] = build
