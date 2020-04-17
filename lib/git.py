@@ -56,3 +56,6 @@ def branch(*args, **kwargs):
 
 def submodule(*args, **kwargs):
     return do('submodule', *args, **kwargs)
+
+def reset(*args, **kwargs):
+    return do('reset', *args, **kwargs)

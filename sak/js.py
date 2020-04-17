@@ -73,6 +73,13 @@ def new(name, subject, keywords=None, username=None, password=None, **rest):
         lib.git.commit('--message', '$ js new')
         lib.git.push()
 
+        # Initialize empty gh-pages branch
+        lib.git.checkout('--orphan', 'gh-pages')
+        lib.git.reset('--hard')
+        lib.git.commit('--allow-empty', '--message', 'Initializing gh-pages branch')
+        lib.git.push('origin', 'gh-pages')
+        lib.git.checkout('master')
+
 
 def fork(oldrepo, name, subject, keywords=None, username=None, password=None, **rest):
 
