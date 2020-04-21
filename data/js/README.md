@@ -22,3 +22,4 @@ See [docs]({homepage}/index.html).
 <!--[![Code coverage (clim)](https://img.shields.io/codeclimate/coverage/{repository}.svg)](https://codeclimate.com/github/{repository}/trends/test_coverage_new_code)-->
 [![Code technical debt](https://img.shields.io/codeclimate/tech-debt/{repository}.svg)](https://codeclimate.com/github/{repository}/trends/technical_debt)
 [![Documentation]({homepage}/badge.svg)]({homepage}/source.html)
+[![Package size](https://img.shields.io/bundlephobia/minzip/{fullname})](https://bundlephobia.com/result?p={fullname})
