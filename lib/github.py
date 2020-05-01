@@ -341,7 +341,7 @@ def issues(owner=None, repo=None, number=None, user=False, org=None, username=No
     return get(url, data=parameters, username=username, password=password)
 
 
-def search ( what , query , username=None, password=None ) :
+def search ( what , query , username=None, password=None, **kwargs ) :
 
     """
         https://developer.github.com/v3/search
@@ -350,7 +350,7 @@ def search ( what , query , username=None, password=None ) :
     url = ("search", what)
     # params = { 'q': query }
     # yield get(url, params=params, username=username, password=password)
-    return paginate(url, q=query, username=username, password=password)
+    return paginate(url, q=query, username=username, password=password, **kwargs)
 
 
 def closeissues(owner, repo, *issuenos, username=None, password=None):

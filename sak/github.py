@@ -126,14 +126,25 @@ def delete(owner, repo, username=None, password=None):
                       password=password, stddefault=None)
     print()
 
+def transfer(owner, repo, new_owner, username=None, password=None):
 
-def search(what, query, username=None, password=None):
+    username, password = lib.github.credentials(username, password)
+
+    url = ("repos", owner, repo, "transfer")
+    parameters = { "new_owner": new_owner }
+    lib.github.post(url, data=parameters, username=username,
+                    password=password, stddefault=None)
+    print()
+
+def search(what, query, username=None, password=None, **kwargs):
 
     response = lib.args.forward(lib.github.search, locals())
 
     for result in response:
         try:
-            for item in result['items']:
+            items = result['items']
+            if not items: break
+            for item in items:
                 json.dump(item, sys.stdout)
         except:
             json.dump(result, sys.stderr)
