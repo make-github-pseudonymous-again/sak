@@ -8,7 +8,7 @@
       "test/src/**/*"
     ],
     "require": [
-      "@babel/polyfill",
+      "regenerator-runtime/runtime",
       "@babel/register"
     ],
     "timeout": "1m"
@@ -34,7 +34,6 @@
     "@babel/cli": "7.8.4",
     "@babel/core": "7.9.0",
     "@babel/plugin-proposal-async-generator-functions": "7.8.3",
-    "@babel/polyfill": "7.8.7",
     "@babel/preset-env": "7.9.5",
     "@babel/register": "7.9.0",
     "ava": "3.7.0",
@@ -46,6 +45,7 @@
     "esdoc-standard-plugin": "1.0.0",
     "np": "6.2.1",
     "nyc": "15.0.1",
+    "regenerator-runtime": "0.13.5",
     "xo": "0.29.1"
   }},
   "files": [

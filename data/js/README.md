@@ -4,8 +4,8 @@
 {description}.
 See [docs]({homepage}/index.html).
 
-> :warning: The code needs a ES2015+ polyfill to run (`regeneratorRuntime`),
-> for instance [@babel/polyfill](https://babeljs.io/docs/usage/polyfill).
+> :warning: The code requires `regeneratorRuntime` to be defined, for instance by importing
+> [regenerator-runtime/runtime](https://www.npmjs.com/package/regenerator-runtime).
 
 [![License](https://img.shields.io/github/license/{repository}.svg)](https://raw.githubusercontent.com/{repository}/master/LICENSE)
 [![Version](https://img.shields.io/npm/v/{fullname}.svg)](https://www.npmjs.org/package/{fullname})
