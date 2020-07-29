@@ -107,6 +107,9 @@
   "keywords": [{keywords}],
   "license": "{license}",
   "main": "lib/index.js",
+  "prettier": {{
+    "trailingComma": "all"
+  }},
   "repository": {{
     "type": "git",
     "url": "https://github.com/{repository}"
