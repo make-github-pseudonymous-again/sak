@@ -122,6 +122,7 @@
     "release": "np",
     "test": "xo && ava"
   }},
+  "sideEffects": false,
   "xo": {{
     "prettier": true,
     "ignore": [
