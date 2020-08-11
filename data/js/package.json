@@ -17,9 +17,6 @@
     "presets": [
       "@babel/preset-env"
     ],
-    "plugins": [
-      "@babel/plugin-proposal-async-generator-functions"
-    ],
     "env": {{
       "test": {{
         "presets": [
@@ -82,7 +79,6 @@
   "devDependencies": {{
     "@babel/cli": "7.10.5",
     "@babel/core": "7.10.5",
-    "@babel/plugin-proposal-async-generator-functions": "7.10.5",
     "@babel/preset-env": "7.10.4",
     "@babel/register": "7.10.5",
     "ava": "3.11.0",
