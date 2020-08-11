@@ -298,6 +298,7 @@ def exportdefault( cwd = '.' , recursive = False ) :
 
         fd.write('\n')
 
+        fd.write('/* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */\n')
         fd.write('export default {\n')
         for id in ids :
             fd.write( "\t{} ,\n".format( id ) )
