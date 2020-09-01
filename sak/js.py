@@ -18,16 +18,13 @@ import json
 
 README = "README.md"
 
-def new(name, subject, keywords=None, username=None, password=None, **rest):
-
-    username, password = lib.github.credentials(username, password)
+def new(name, subject, keywords=None, username=None, token=None, **rest):
 
     license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username,**rest)
 
     sak.github.new(
         slug,
-        username=username,
-        password=password,
+        token=token,
         auto_init=lib.github.TRUE,
         private=lib.github.FALSE,
         description=description,
@@ -81,9 +78,7 @@ def new(name, subject, keywords=None, username=None, password=None, **rest):
         lib.git.checkout('master')
 
 
-def fork(oldrepo, name, subject, keywords=None, username=None, password=None, **rest):
-
-    username, password = lib.github.credentials(username, password)
+def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **rest):
 
     oldowner, oldslug = oldrepo.split('/')
 
@@ -91,8 +86,7 @@ def fork(oldrepo, name, subject, keywords=None, username=None, password=None, **
 
     sak.github.new(
         slug,
-        username=username,
-        password=password,
+        token=token,
         auto_init=lib.github.FALSE,
         private=lib.github.FALSE,
         description=description,
@@ -162,9 +156,9 @@ def fork(oldrepo, name, subject, keywords=None, username=None, password=None, **
         lib.git.push("--set-upstream", "origin", "master")
 
 
-def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, password=None, **rest):
+def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, token=None, **rest):
 
-    fork(oldrepo, name, subject, keywords=keywords, username=username, password=password, **rest)
+    fork(oldrepo, name, subject, keywords=keywords, username=username, token=token, **rest)
 
     license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
 

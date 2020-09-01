@@ -22,10 +22,8 @@ def body(data):
 
 def resource(contenttype, location, url, accept=None):
 
-    params = ["-H", "Content-Type: %s" % contenttype]
-
-    if accept is not None:
-        params += ["-H", "Accept: %s" % accept]
+    params = header("Content-Type", contenttype)
+    params += header("Accept", accept)
 
     if location:
         params.append("-L")
@@ -43,19 +41,26 @@ def auth(username=None, password=None):
     else:
         return ["-u", "%s:%s" % (username, password)]
 
+def header ( key , value ):
+    if value is None:
+        return []
+    else:
+        return ["-H", "{}: {}".format(key, value)]
 
 def request(method):
     return ["-X", method]
 
 
-def call(method, url, contenttype, data=None, username=None, password=None, location=False, accept=None, **kwargs):
+def call(method, url, contenttype, data=None, username=None, password=None,
+        location=False, accept=None, authorization=None, **kwargs):
 
     cmd = []
     cmd.extend(CMD_CURL)
     cmd.extend(request(method))
     cmd.extend(FLAG_VERBOSE)
     cmd.extend(auth(username, password))
-    cmd.extend(resource(contenttype, location, url))
+    cmd.extend(header('Authorization', authorization))
+    cmd.extend(resource(contenttype, location, url, accept=accept))
     cmd.extend(body(data))
 
     return lib.sys.call(cmd, **kwargs)

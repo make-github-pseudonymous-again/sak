@@ -7,7 +7,14 @@ import lib.kwargs
 import functools
 
 
-pretty = functools.partial(json.dump, indent='\t', separators=(',', ': '))
+compact = functools.partial(json.dump, indent=None, separators=(',', ':'))
+
+def oneline ( obj, fp, *args, **kwargs ) :
+    compact(obj, fp, *args, **kwargs)
+    fp.write('\n')
+
+pretty = functools.partial(json.dump, indent='\t', separators=(',', ': '), sort_keys=True)
+prettys = functools.partial(json.dumps, indent='\t', separators=(',', ': '), sort_keys=True)
 
 
 class proxy(object):

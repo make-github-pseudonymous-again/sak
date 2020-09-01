@@ -7,7 +7,7 @@ import json
 import functools
 import lib.fn
 import lib.args
-import lib.config
+import lib.passwordstore
 import lib.git
 import lib.error
 import lib.check
@@ -212,13 +212,13 @@ def _safe ( value ) :
     return value
 
 @lib.fn.throttle(20, 70)
-def send(method, url, params=dict(), data=None, **kwargs):
+def send(method, url, params=dict(), data=None, token=None, **kwargs):
     """
             Throttling because
             https://github.com/octokit/octokit.net/issues/638#issuecomment-67795998
     """
 
-    contenttype = "application/json"
+    contenttype = "application/vnd.github.v3+json"
 
     if data is not None:
         data = json.dumps(data)
@@ -229,7 +229,9 @@ def send(method, url, params=dict(), data=None, **kwargs):
 
     print(queryurl, file=sys.stderr)
 
-    out, err, p = lib.curl.call(method, queryurl, contenttype, data=data, **kwargs)
+    authorization = None if token is None else 'token {}'.format(token)
+
+    out, err, p = lib.curl.call(method, queryurl, contenttype, data=data, authorization=authorization, **kwargs)
 
     lib.check.SubprocessReturnedFalsyValueException(p.args, p.returncode)
 
@@ -244,23 +246,25 @@ patch = functools.partial(send, lib.curl.PATCH)
 delete = functools.partial(send, lib.curl.DELETE)
 
 
-def credentials(username=None, password=None):
+def pat ( token = None ) :
+    if token is not None : return token
+    return lib.passwordstore.get('apps/github/pat')
 
-    return lib.config.prompt_cred(DOMAIN, CONFIG_KEY, username, password)
-
-def paginate(url, username=None, password=None, **kwargs):
+def paginate(url, token=None, **kwargs):
 
     pageid = 1
+    PER_PAGE_MAX = 100
 
     while True:
 
-        params = dict(page=str(pageid), **kwargs)
+        params = dict(page=str(pageid), per_page=str(PER_PAGE_MAX), **kwargs)
 
-        pagecontent = get(url, params=params, username=username, password=password)
+        pagecontent = get(url, params=params, token=token)
 
         if not pagecontent:
             break
 
+        validate(pagecontent)
         yield pagecontent
 
         pageid += 1
@@ -278,20 +282,12 @@ def validate(data):
 
     if "message" in data:
 
-        msg = data["message"]
-
-        if "errors" in data:
-
-            for i, err in enumerate(data["errors"]):
-
-                msg += "\n#" + str(i) + " -> " + json.dumps(err)
-
-        raise lib.error.GithubAPIException(msg)
+        raise lib.error.GithubAPIException(data)
 
 
 # REPOS
 
-def list(target=YOU, name=None, t=None, username=None, password=None):
+def list(target=YOU, name=None, t=None, token=None):
 
     lib.check.OptionNotInListException(TARGET, target, TARGETS)
 
@@ -299,8 +295,7 @@ def list(target=YOU, name=None, t=None, username=None, password=None):
         t = TYPES_DEFAULT[target]
     lib.check.OptionNotInListException(TYPE, t, TYPES[target])
 
-    if target == YOU or t == PRIVATE or username is not None:
-        username, password = credentials(username, password)
+    if target == YOU or t == PRIVATE: token = pat(token)
 
     if target == YOU:
         url = ("user", "repos")
@@ -309,17 +304,17 @@ def list(target=YOU, name=None, t=None, username=None, password=None):
     elif target == ORG:
         url = ("orgs", name, "repos")
 
-    return itemize(url, username=username, password=password)
+    return itemize(url, token=token)
 
 
 # ISSUES
 
-def issues(owner=None, repo=None, number=None, user=False, org=None, username=None, password=None, milestone=None, filter=None, state=None, creator=None, assignee=None, mentioned=None, labels=None, sort=None, direction=None, since=None):
+def issues(owner=None, repo=None, number=None, user=False, org=None, token=None, filter=None, state=None, labels=None, sort=None, direction=None, since=None):
     """
             https://developer.github.com/v3/issues/
     """
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
     if owner is not None and repo is not None:
         if number is None:
@@ -333,15 +328,19 @@ def issues(owner=None, repo=None, number=None, user=False, org=None, username=No
     else:
         url = ("issues", )
 
-    keys = ["milestone", "filter", "state", "assignee", "creator",
-            "mentioned", "labels", "sort", "direction", "since"]
+    keys = ["filter", "state",
+            "labels", "sort", "direction", "since"]
 
-    parameters = lib.dict.select(locals(), keys)
+    params = lib.dict.select(locals(), keys)
 
-    return get(url, data=parameters, username=username, password=password)
+    if number:
+        return [get(url, token=token, params=params)]
+    else:
+        return itemize(url, token=token, **params)
 
 
-def search ( what , query , username=None, password=None, **kwargs ) :
+
+def search ( what , query , token=None, **kwargs ) :
 
     """
         https://developer.github.com/v3/search
@@ -349,18 +348,18 @@ def search ( what , query , username=None, password=None, **kwargs ) :
 
     url = ("search", what)
     # params = { 'q': query }
-    # yield get(url, params=params, username=username, password=password)
-    return paginate(url, q=query, username=username, password=password, **kwargs)
+    # yield get(url, params=params, token=token)
+    return paginate(url, q=query, token=token, **kwargs)
 
 
-def closeissues(owner, repo, *issuenos, username=None, password=None):
+def closeissues(owner, repo, *issuenos, token=None):
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
     for number in issuenos:
 
         issue = issues(owner, repo, number,
-                       username=username, password=password)
+                       token=token)
 
         keys = ["title", "body", "assignee", "milestone", "labels"]
 
@@ -368,10 +367,10 @@ def closeissues(owner, repo, *issuenos, username=None, password=None):
 
         parameters["state"] = "closed"
 
-        yield editissue(owner, repo, number, username=username, password=password, **parameters)
+        yield editissue(owner, repo, number, token=token, **parameters)
 
 
-def createissue(owner, repo, title, body=None, assignee=None, milestone=None, labels=None, username=None, password=None):
+def createissue(owner, repo, title, body=None, assignee=None, milestone=None, labels=None, token=None):
     """
             https://developer.github.com/v3/issues/#create-an-issue
     """
@@ -384,12 +383,12 @@ def createissue(owner, repo, title, body=None, assignee=None, milestone=None, la
 
     parameters = lib.dict.select(locals(), keys)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return post(url, data=parameters, username=username, password=password)
+    return post(url, data=parameters, token=token)
 
 
-def editissue(owner, repo, number, title=None, body=None, assignee=None, state=None, milestone=None, labels=None, username=None, password=None):
+def editissue(owner, repo, number, title=None, body=None, assignee=None, state=None, milestone=None, labels=None, token=None):
     """
             https://developer.github.com/v3/issues/#edit-an-issue
     """
@@ -402,13 +401,13 @@ def editissue(owner, repo, number, title=None, body=None, assignee=None, state=N
 
     parameters = lib.dict.select(locals(), keys)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return patch(url, data=parameters, username=username, password=password)
+    return patch(url, data=parameters, token=token)
 
 # LABELS
 
-def labels(owner, repo, name=None, issue=None, username=None, password=None):
+def labels(owner, repo, name=None, issue=None, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
@@ -420,10 +419,10 @@ def labels(owner, repo, name=None, issue=None, username=None, password=None):
     else:
         url = ("repos", owner, repo, "labels")
 
-    return get(url, username=username, password=password)
+    return get(url, token=token)
 
 
-def createlabel(owner, repo, name, color, username=None, password=None):
+def createlabel(owner, repo, name, color, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
@@ -432,12 +431,12 @@ def createlabel(owner, repo, name, color, username=None, password=None):
 
     parameters = lib.dict.select(locals(), ["name", "color"])
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return post(url, data=parameters, username=username, password=password)
+    return post(url, data=parameters, token=token)
 
 
-def updatelabel(owner, repo, oldname, newname, color, username=None, password=None):
+def updatelabel(owner, repo, oldname, newname, color, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
@@ -446,88 +445,88 @@ def updatelabel(owner, repo, oldname, newname, color, username=None, password=No
 
     parameters = dict(name=newname, color=color)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return patch(url, data=parameters, username=username, password=password)
+    return patch(url, data=parameters, token=token)
 
 
-def deletelabel(owner, repo, name, username=None, password=None):
+def deletelabel(owner, repo, name, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
 
     url = ("repos", owner, repo, "labels", name)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return delete(url, username=username, password=password)
+    return delete(url, token=token)
 
 
-def addlabels(owner, repo, issue, labels=None, username=None, password=None):
+def addlabels(owner, repo, issue, labels=None, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
 
     labels = lib.args.listify(labels)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
     url = ("repos", owner, repo, "issues", issue, "labels")
 
-    return post(url, data=labels, username=username, password=password)
+    return post(url, data=labels, token=token)
 
 
-def removelabel(owner, repo, issue, label, username=None, password=None):
+def removelabel(owner, repo, issue, label, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
     url = ("repos", owner, repo, "issues", issue, "labels", label)
 
-    return delete(url, username=username, password=password)
+    return delete(url, token=token)
 
 
-def updatelabels(owner, repo, issue, labels=None, username=None, password=None):
+def updatelabels(owner, repo, issue, labels=None, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
 
     labels = lib.args.listify(labels)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
     url = ("repos", owner, repo, "issues", issue, "labels")
 
-    return put(url, data=labels, username=username, password=password)
+    return put(url, data=labels, token=token)
 
 
-def removealllabels(owner, repo, issue, username=None, password=None):
+def removealllabels(owner, repo, issue, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
     url = ("repos", owner, repo, "issues", issue, "labels")
 
-    return delete(url, username=username, password=password)
+    return delete(url, token=token)
 
 
-def milestonelabels(owner, repo, milestone, username=None, password=None):
+def milestonelabels(owner, repo, milestone, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
 
     url = ("repos", owner, repo, "milestones", milestone, "labels")
 
-    return get(url, username=username, password=password)
+    return get(url, token=token)
 
 
 # MILESTONES
 
-def milestones(owner, repo, number=None, state=None, sort=None, direction=None, username=None, password=None):
+def milestones(owner, repo, number=None, state=None, sort=None, direction=None, token=None):
 
     if number is None:
         url = ("repos", owner, repo, "milestones")
@@ -536,47 +535,47 @@ def milestones(owner, repo, number=None, state=None, sort=None, direction=None, 
 
     parameters = lib.dict.select(locals(), ["state", "sort", "direction"])
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return get(url, data=parameters, username=username, password=password)
+    return get(url, data=parameters, token=token)
 
 
-def createmilestone(owner, repo, title, state=None, description=None, due_on=None, username=None, password=None):
+def createmilestone(owner, repo, title, state=None, description=None, due_on=None, token=None):
 
     url = ("repos", owner, repo, "milestones")
 
     parameters = lib.dict.select(
         locals(), ["title", "state", "description", "due_on"])
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return post(url, data=parameters, username=username, password=password)
+    return post(url, data=parameters, token=token)
 
 
-def updatemilestone(owner, repo, number, title, state=None, description=None, due_on=None, username=None, password=None):
+def updatemilestone(owner, repo, number, title, state=None, description=None, due_on=None, token=None):
 
     url = ("repos", owner, repo, "milestones", number)
 
     parameters = lib.dict.select(
         locals(), ["title", "state", "description", "due_on"])
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return patch(url, data=parameters, username=username, password=password)
+    return patch(url, data=parameters, token=token)
 
 
-def deletemilestone(owner, repo, number, username=None, password=None):
+def deletemilestone(owner, repo, number, token=None):
 
     url = ("repos", owner, repo, "milestones", number)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return delete(url, username=username, password=password)
+    return delete(url, token=token)
 
 
 # COMMENTS
 
-def comments(owner, repo, id=None, number=None, sort=None, direction=None, since=None, username=None, password=None):
+def comments(owner, repo, id=None, number=None, sort=None, direction=None, since=None, token=None):
 
     if id is not None:
         url = ("repos", owner, repo, "issues", "comments", id)
@@ -587,63 +586,63 @@ def comments(owner, repo, id=None, number=None, sort=None, direction=None, since
 
     parameters = lib.dict.select(locals(), ["sort", "direction", "since"])
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return get(url, data=parameters, username=username, password=password)
+    return get(url, data=parameters, token=token)
 
 
-def createcomment(owner, repo, number, body, username=None, password=None):
+def createcomment(owner, repo, number, body, token=None):
 
     url = ("repos", owner, repo, "issues", number, "comments")
 
     parameters = lib.dict.select(locals(), ["body"])
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return post(url, data=parameters, username=username, password=password)
+    return post(url, data=parameters, token=token)
 
 
-def editcomment(owner, repo, id, body, username=None, password=None):
+def editcomment(owner, repo, id, body, token=None):
 
     url = ("repos", owner, repo, "issues", "comments", id)
 
     parameters = lib.dict.select(locals(), ["body"])
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return patch(url, data=parameters, username=username, password=password)
+    return patch(url, data=parameters, token=token)
 
 
-def deletecomment(owner, repo, id, username=None, password=None):
+def deletecomment(owner, repo, id, token=None):
 
     url = ("repos", owner, repo, "issues", "comments", id)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return delete(url, username=username, password=password)
+    return delete(url, token=token)
 
 
 # WEBHOOKS
 
-def listhooks(owner, repo, username=None, password=None):
+def listhooks(owner, repo, token=None):
 
     url = ("repos", owner, repo, "hooks")
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return itemize(url, username=username, password=password)
+    return itemize(url, token=token)
 
 
-def getsinglehook(owner, repo, id, username=None, password=None):
+def getsinglehook(owner, repo, id, token=None):
 
     url = ("repos", owner, repo, "hooks", id)
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return get(url, username=username, password=password)
+    return get(url, token=token)
 
 
-def createhook(owner, repo, url, name="web", content_type="json", secret=None, insecure_ssl="0", events="push", active=True, username=None, password=None):
+def createhook(owner, repo, url, name="web", content_type="json", secret=None, insecure_ssl="0", events="push", active=True, token=None):
 
     events = lib.args.listify(events)
 
@@ -655,33 +654,33 @@ def createhook(owner, repo, url, name="web", content_type="json", secret=None, i
     parameters = lib.dict.select(
         locals(), ["name", "config", "events", "active"])
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
-    return post(apiurl, data=parameters, username=username, password=password)
+    return post(apiurl, data=parameters, token=token)
 
 # NOTIFICATIONS
 
-def notifications(all=False, participating=False, since=None, before=None, username=None, password=None):
+def notifications(all=False, participating=False, since=None, before=None, token=None):
 
     # all 	boolean 	If true, show notifications marked as read. Default: false
     # participating 	boolean 	If true, only shows notifications in which the user is directly participating or mentioned. Default: false
     # since 	string 	Only show notifications updated after the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
     # before 	string 	Only show notifications updated before the given time. This is a timestamp in ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ.
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
     url = ("notifications",)
 
-    return itemize(url, all=all, participating=participating, since=since, before=before, username=username, password=password)
+    return itemize(url, all=all, participating=participating, since=since, before=before, token=token)
 
-def mark_as_read (thread_id, username=None, password=None):
+def mark_as_read (thread_id, token=None):
 
     """
         https://developer.github.com/v3/activity/notifications/#mark-a-thread-as-read
     """
 
-    username, password = credentials(username, password)
+    token = pat(token)
 
     url = ("notifications", "threads", thread_id)
 
-    return patch(url, username=username, password=password)
+    return patch(url, token=token)

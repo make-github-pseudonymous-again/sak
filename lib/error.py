@@ -1,6 +1,7 @@
 
 import inspect
 import lib.pacman
+import lib.json
 import json
 
 
@@ -193,5 +194,6 @@ class FileDoesNotExist (MainException):
 
 class GithubAPIException (MainException):
 
-    def __init__(self, msg):
+    def __init__(self, data):
+        msg = lib.json.prettys(data)
         MainException.__init__(self, msg)

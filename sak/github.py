@@ -6,6 +6,7 @@ import lib.github
 import lib.input
 import lib.http
 import lib.args
+import lib.json
 import sys
 import re
 import json
@@ -24,10 +25,10 @@ STARGAZERS = lib.github.STARGAZERS
 SORT = lib.github.SORT
 
 
-def clone(repo, dest=None, username=None, **kwargs):
+def clone(repo, dest=None, asuser=None, **kwargs):
 
-    if username is not None:
-        url = lib.http.url(DOMAIN, repo, username, secure=True)
+    if asuser is not None:
+        url = lib.http.url(DOMAIN, repo, asuser, secure=True)
     else:
         url = 'gh:{}'.format(repo)
 
@@ -37,7 +38,7 @@ def clone(repo, dest=None, username=None, **kwargs):
         return lib.git.clone(url, **kwargs)
 
 
-def new(name, org=None, team_id=None, username=None, password=None, auto_init=FALSE, private=FALSE, description=None, homepage=None, has_issues=TRUE, has_wiki=TRUE, has_downloads=TRUE, gitignore_template=None, license_template=None):
+def new(name, org=None, team_id=None, token=None, auto_init=FALSE, private=FALSE, description=None, homepage=None, has_issues=TRUE, has_wiki=TRUE, has_downloads=TRUE, gitignore_template=None, license_template=None):
 
     lib.check.OptionNotInListException("private", private, BOOLEANS)
     lib.check.OptionNotInListException("has_issues", has_issues, BOOLEANS)
@@ -50,7 +51,7 @@ def new(name, org=None, team_id=None, username=None, password=None, auto_init=FA
     lib.check.OptionNotInListException(
         "license_template", license_template, LICENSES)
 
-    username, password = lib.github.credentials(username, password)
+    token = lib.github.pat(token)
 
     parameters = {
         "name": name,
@@ -71,14 +72,13 @@ def new(name, org=None, team_id=None, username=None, password=None, auto_init=FA
     else:
         url = ("orgs", org, "repos")
 
-    lib.github.post(url, data=parameters, username=username,
-                    password=password, stddefault=None)
+    lib.github.post(url, data=parameters, token=token, stddefault=None)
     print()
 
 
 def group(*names):
 
-    username, password = lib.github.credentials(None, None)
+    token = lib.github.pat(None)
 
     org = None
     team_id = None
@@ -93,18 +93,18 @@ def group(*names):
     license_template = None
 
     for name in names:
-        new(name, org, team_id, username, password, auto_init, private, description,
+        new(name, org, team_id, token, auto_init, private, description,
             homepage, has_issues, has_wiki, has_downloads, gitignore_template, license_template)
 
 
-def list(target=YOU, name=None, t=None, format="{full_name}", username=None, password=None):
+def list(target=YOU, name=None, t=None, format="{full_name}", token=None):
 
-    for repo in lib.github.list(target, name, t, username, password):
+    for repo in lib.github.list(target, name, t, token):
         print(format.format(**repo))
 
-def download(target=YOU, name=None, t=None, username=None, password=None, prompt=True, prefix="", suffix="", regexp="", **kwargs):
+def download(target=YOU, name=None, t=None, token=None, prompt=True, prefix="", suffix="", regexp="", asuser=None, **kwargs):
 
-    for repo in lib.github.list(target, name, t, username, password):
+    for repo in lib.github.list(target, name, t, token):
 
         repo = repo["full_name"]
 
@@ -115,28 +115,26 @@ def download(target=YOU, name=None, t=None, username=None, password=None, prompt
         take = take and (not regexp or re.match(regexp, repo) is not None)
 
         if take and (not prompt or lib.input.yesorno("clone '%s'?" % repo)):
-            clone(repo, username=username, **kwargs)
+            clone(repo, asuser=asuser, **kwargs)
 
 
-def delete(owner, repo, username=None, password=None):
-    username, password = lib.github.credentials(username, password)
+def delete(owner, repo, token=None):
+    token = lib.github.pat(token)
 
     url = ("repos", owner, repo)
-    lib.github.delete(url, username=username,
-                      password=password, stddefault=None)
+    lib.github.delete(url, token=token, stddefault=None)
     print()
 
-def transfer(owner, repo, new_owner, username=None, password=None):
+def transfer(owner, repo, new_owner, token=None):
 
-    username, password = lib.github.credentials(username, password)
+    token = lib.github.pat(token)
 
     url = ("repos", owner, repo, "transfer")
     parameters = { "new_owner": new_owner }
-    lib.github.post(url, data=parameters, username=username,
-                    password=password, stddefault=None)
+    lib.github.post(url, data=parameters, token=token, stddefault=None)
     print()
 
-def search(what, query, username=None, password=None, **kwargs):
+def search(what, query, token=None, **kwargs):
 
     response = lib.args.forward(lib.github.search, locals())
 
@@ -151,148 +149,145 @@ def search(what, query, username=None, password=None, **kwargs):
             break
 
 
-def issues(owner=None, repo=None, number=None, user=False, org=None, username=None, password=None, milestone=None, filter=None, state=None, creator=None, assignee=None, mentioned=None, labels=None, sort=None, direction=None, since=None):
+def issues(owner=None, repo=None, number=None, user=False, org=None, token=None, milestone=None, filter=None, state=None, creator=None, assignee=None, mentioned=None, labels=None, sort=None, direction=None, since=None):
 
     for issue in lib.args.forward(lib.github.issues, locals()):
+        lib.json.oneline(issue, sys.stdout)
 
-        print(issue)
-
-def createissue(owner, repo, title, body=None, assignee=None, milestone=None, labels=None, username=None, password=None):
+def createissue(owner, repo, title, body=None, assignee=None, milestone=None, labels=None, token=None):
 
     print(lib.args.forward(lib.github.createissue, locals()))
 
 
-def editissue(owner, repo, number, title=None, body=None, assignee=None, state=None, milestone=None, labels=None, username=None, password=None):
+def editissue(owner, repo, number, title=None, body=None, assignee=None, state=None, milestone=None, labels=None, token=None):
 
     print(lib.args.forward(lib.github.editissue, locals()))
 
 
-def closeissues(owner, repo, *issuenos, username=None, password=None):
+def closeissues(owner, repo, *issuenos, token=None):
 
     for response in lib.args.forward(lib.github.closeissues, locals()):
 
         print(response)
 
 
-def comments(owner, repo, id=None, number=None, sort=None, direction=None, since=None, username=None, password=None):
+def comments(owner, repo, id=None, number=None, sort=None, direction=None, since=None, token=None):
 
     print(lib.args.forward(lib.github.comments, locals()))
 
 
-def createcomment(owner, repo, number, body, username=None, password=None):
+def createcomment(owner, repo, number, body, token=None):
 
     print(lib.args.forward(lib.github.createcomment, locals()))
 
 
-def editcomment(owner, repo, id, body, username=None, password=None):
+def editcomment(owner, repo, id, body, token=None):
 
     print(lib.args.forward(lib.github.editcomment, locals()))
 
 
-def deletecomment(owner, repo, id, username=None, password=None):
+def deletecomment(owner, repo, id, token=None):
 
     print(lib.args.forward(lib.github.deletecomment, locals()))
 
 
-def labels(owner, repo, name=None, issue=None, username=None, password=None):
+def labels(owner, repo, name=None, issue=None, token=None):
 
     print(lib.args.forward(lib.github.labels, locals()))
 
 
-def createlabel(owner, repo, name, color, username=None, password=None):
+def createlabel(owner, repo, name, color, token=None):
 
     print(lib.args.forward(lib.github.createlabel, locals()))
 
 
-def updatelabel(owner, repo, oldname, newname, color, username=None, password=None):
+def updatelabel(owner, repo, oldname, newname, color, token=None):
 
     print(lib.args.forward(lib.github.updatelabel, locals()))
 
 
-def deletelabel(owner, repo, name, username=None, password=None):
+def deletelabel(owner, repo, name, token=None):
 
     print(lib.args.forward(lib.github.deletelabel, locals()))
 
 
-def addlabels(owner, repo, issue, labels=None, username=None, password=None):
+def addlabels(owner, repo, issue, labels=None, token=None):
 
     print(lib.args.forward(lib.github.addlabels, locals()))
 
 
-def removelabel(owner, repo, issue, label, username=None, password=None):
+def removelabel(owner, repo, issue, label, token=None):
 
     print(lib.args.forward(lib.github.removelabel, locals()))
 
 
-def updatelabels(owner, repo, issue, labels=None, username=None, password=None):
+def updatelabels(owner, repo, issue, labels=None, token=None):
 
     print(lib.args.forward(lib.github.updatelabels, locals()))
 
 
-def removealllabels(owner, repo, issue, username=None, password=None):
+def removealllabels(owner, repo, issue, token=None):
 
     print(lib.args.forward(lib.github.removealllabels, locals()))
 
 
-def milestonelabels(owner, repo, milestone, username=None, password=None):
+def milestonelabels(owner, repo, milestone, token=None):
 
     print(lib.args.forward(lib.github.milestonelabels, locals()))
 
 
-def milestones(owner, repo, number=None, state=None, sort=None, direction=None, username=None, password=None):
+def milestones(owner, repo, number=None, state=None, sort=None, direction=None, token=None):
 
     print(lib.args.forward(lib.github.milestones, locals()))
 
 
-def createmilestone(owner, repo, title, state=None, description=None, due_on=None, username=None, password=None):
+def createmilestone(owner, repo, title, state=None, description=None, due_on=None, token=None):
 
     print(lib.args.forward(lib.github.createmilestone, locals()))
 
 
-def updatemilestone(owner, repo, number, title, state=None, description=None, due_on=None, username=None, password=None):
+def updatemilestone(owner, repo, number, title, state=None, description=None, due_on=None, token=None):
 
     print(lib.args.forward(lib.github.updatemilestone, locals()))
 
 
-def deletemilestone(owner, repo, number, username=None, password=None):
+def deletemilestone(owner, repo, number, token=None):
 
     print(lib.args.forward(lib.github.deletemilestone, locals()))
 
 
-def listforks(owner, repo, sort=NEWEST, username=None, password=None):
+def listforks(owner, repo, sort=NEWEST, token=None, identify=False):
     """
             https://developer.github.com/v3/issues/labels/
     """
 
-    if username is not None:
-        username, password = lib.github.credentials(username, password)
+    if identify:
+        token = lib.github.pat(token)
 
     url = ("repos", owner, repo, "forks")
 
     parameters = dict(sort=sort)
 
-    lib.github.get(url, data=parameters, username=username,
-                   password=password, stddefault=None)
+    lib.github.get(url, data=parameters, token=token, stddefault=None)
     print()
 
 
-def fork(owner, repo, organization=None, username=None, password=None):
+def fork(owner, repo, organization=None, token=None):
     """
             https://developer.github.com/v3/issues/labels/
     """
 
-    username, password = lib.github.credentials(username, password)
+    token = lib.github.pat(token)
 
     url = ("repos", owner, repo, "forks")
 
     parameters = dict(organization=organization)
 
-    lib.github.post(url, data=parameters, username=username,
-                    password=password, stddefault=None)
+    lib.github.post(url, data=parameters, token=token, stddefault=None)
     print()
 
 
-def patch(owner, repo, name, username=None, password=None, private=FALSE, description=None, homepage=None, has_issues=TRUE, has_wiki=TRUE, has_downloads=TRUE, default_branch=None):
+def patch(owner, repo, name, token=None, private=FALSE, description=None, homepage=None, has_issues=TRUE, has_wiki=TRUE, has_downloads=TRUE, default_branch=None):
 
     lib.check.OptionNotInListException("private", private, BOOLEANS)
     lib.check.OptionNotInListException("has_issues", has_issues, BOOLEANS)
@@ -300,7 +295,7 @@ def patch(owner, repo, name, username=None, password=None, private=FALSE, descri
     lib.check.OptionNotInListException(
         "has_downloads", has_downloads, BOOLEANS)
 
-    username, password = lib.github.credentials(username, password)
+    token = lib.github.pat(token)
 
     parameters = {
         "name": name,
@@ -315,26 +310,25 @@ def patch(owner, repo, name, username=None, password=None, private=FALSE, descri
 
     url = ("repos", owner, repo)
 
-    lib.github.patch(url, data=parameters, username=username,
-                     password=password, stddefault=None)
+    lib.github.patch(url, data=parameters, token=token, stddefault=None)
     print()
 
 # WEBHOOKS
 
 
-def listhooks(owner, repo, username=None, password=None):
+def listhooks(owner, repo, token=None):
 
     for hook in lib.args.forward(lib.github.listhooks, locals()):
 
         print(hook)
 
 
-def getsinglehook(owner, repo, id, username=None, password=None):
+def getsinglehook(owner, repo, id, token=None):
 
     print(lib.args.forward(lib.github.getsinglehook, locals()))
 
 
-def createhook(owner, repo, url, name="web", content_type="json", secret=None, insecure_ssl="0", events="push", active=True, username=None, password=None):
+def createhook(owner, repo, url, name="web", content_type="json", secret=None, insecure_ssl="0", events="push", active=True, token=None):
 
     print(lib.args.forward(lib.github.createhook, locals()))
 
@@ -434,9 +428,9 @@ def archive(username, forks=False, gist=True, metadata=True):
                 f.write(data)
 
 
-def migrateissues(owner, origin, destination, *issuenos, username=None, password=None):
+def migrateissues(owner, origin, destination, *issuenos, token=None):
 
-    username, password = lib.github.credentials(username, password)
+    token = lib.github.pat(token)
 
     print("fetch issues to migrate")
 
@@ -444,8 +438,7 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
 
     for number in issuenos:
 
-        out = lib.github.issues(owner, origin, number,
-                                username=username, password=password)
+        out = lib.github.issues(owner, origin, number, token=token)
 
         lib.github.validate(out)
 
@@ -474,7 +467,7 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
     print("remove already existing labels from the migrate list")
 
     labelsalreadythere = lib.github.labels(
-        owner, destination, username=username, password=password)
+        owner, destination, token=token)
 
     lib.github.validate(labelsalreadythere)
 
@@ -487,7 +480,7 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
     milestonesmap = {}
 
     milestonesalreadythere = lib.github.milestones(
-        owner, destination, username=username, password=password)
+        owner, destination, token=token)
 
     lib.github.validate(milestonesalreadythere)
 
@@ -510,7 +503,7 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
         color = label["color"]
 
         lib.github.validate(lib.github.createlabel(
-            owner, destination, name, color, username=username, password=password))
+            owner, destination, name, color, token=token))
 
     print("migrate milestones and save map between old numbers and new ones")
 
@@ -522,7 +515,7 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
         number = milestone["number"]
 
         out = lib.github.createmilestone(
-            owner, destination, title, username=username, password=password, **parameters)
+            owner, destination, title, token=token, **parameters)
 
         lib.github.validate(out)
 
@@ -557,7 +550,7 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
         title = issue["title"]
 
         out = lib.github.createissue(
-            owner, destination, title, username=username, password=password, **parameters)
+            owner, destination, title, token=token, **parameters)
 
         lib.github.validate(out)
 
@@ -574,7 +567,7 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
             number = issue["number"]
 
             commentstomigrate[number] = lib.github.comments(
-                owner, origin, number=number, username=username, password=password)
+                owner, origin, number=number, token=token)
 
             lib.github.validate(commentstomigrate[number])
 
@@ -589,7 +582,7 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
             body = comment["body"]
 
             lib.github.validate(lib.github.createcomment(
-                owner, destination, number, body, username=username, password=password))
+                owner, destination, number, body, token=token))
 
     print("add comment to say that it was migrated to destination")
     print("add comment to say that it was migrated from origin")
@@ -607,10 +600,10 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
         bodyto = "migrated from %s" % issuefrom["html_url"]
 
         lib.github.validate(lib.github.createcomment(
-            owner, origin, numberfrom, bodyfrom, username=username, password=password))
+            owner, origin, numberfrom, bodyfrom, token=token))
 
         lib.github.validate(lib.github.createcomment(
-            owner, destination, numberto, bodyto, username=username, password=password))
+            owner, destination, numberto, bodyto, token=token))
 
     print("close issues from origin")
 
@@ -634,16 +627,16 @@ def migrateissues(owner, origin, destination, *issuenos, username=None, password
             parameters["labels"] = [label["name"] for label in issue["labels"]]
 
         lib.github.validate(lib.github.editissue(owner, origin, issue[
-                            "number"], username=username, password=password, **parameters))
+                            "number"], token=token, **parameters))
 
 
-def notifications(all=False, participating=False, since=None, before=None, username=None, password=None):
+def notifications(all=False, participating=False, since=None, before=None, token=None):
 
     response = lib.args.forward(lib.github.notifications, locals())
 
     for result in response:
-        json.dump(result, sys.stdout)
+        lib.json.oneline(result, sys.stdout)
 
-def mark_as_read(thread_id, username=None, password=None):
+def mark_as_read(thread_id, token=None):
 
     print(lib.args.forward(lib.github.mark_as_read, locals()))
