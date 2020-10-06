@@ -126,8 +126,7 @@
   "xo": {{
     "prettier": true,
     "ignore": [
-      "lib",
-      "doc"
+      "lib"
     ],
     "plugins": [
       "unicorn"
@@ -139,6 +138,14 @@
           "case": "camelCase"
         }}
       ]
-    }}
+    }},
+    "overrides": [
+      {{
+        "files": [
+          "doc/**"
+        ],
+        "env": "browser"
+      }}
+    ]
   }}
 }}
