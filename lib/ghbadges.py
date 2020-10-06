@@ -19,7 +19,7 @@ def npmlicense(username=None, repo=None, packagename=None, style=FLAT, fmt=SVG):
 
     title = "NPM license"
     img = sio.npmlicense(packagename, style=style, fmt=fmt)
-    href = "https://raw.githubusercontent.com/%s/%s/master/LICENSE" % (
+    href = "https://raw.githubusercontent.com/%s/%s/main/LICENSE" % (
         username, repo)
 
     return iwl(title, img, href)
@@ -120,12 +120,12 @@ def inchci(username=None, repo=None, packagename=None, style=FLAT, fmt=SVG):
 
             >>> from lib.ghbadges import inchci
             >>> print( inchci( "aureooms" , "js-algebra" ) )
-            [![Inline docs](http://inch-ci.org/github/aureooms/js-algebra.svg?branch=master&style=shields)](http://inch-ci.org/github/aureooms/js-algebra)
+            [![Inline docs](http://inch-ci.org/github/aureooms/js-algebra.svg?branch=main&style=shields)](http://inch-ci.org/github/aureooms/js-algebra)
 
     """
 
     title = "Inline docs"
-    img = "http://inch-ci.org/github/%s/%s.svg?branch=master&style=shields" % (
+    img = "http://inch-ci.org/github/%s/%s.svg?branch=main&style=shields" % (
         username, repo)
     href = "http://inch-ci.org/github/%s/%s" % (username, repo)
 

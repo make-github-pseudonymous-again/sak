@@ -75,7 +75,7 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
         lib.git.reset('--hard')
         lib.git.commit('--allow-empty', '--message', 'Initializing gh-pages branch')
         lib.git.push('origin', 'gh-pages')
-        lib.git.checkout('master')
+        lib.git.checkout('main')
 
 
 def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **rest):
@@ -153,7 +153,7 @@ def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **res
         url = lib.http.url("github.com", path=repository, username=username, secure=True)
 
         lib.git.remote("set-url", "origin", url)
-        lib.git.push("--set-upstream", "origin", "master")
+        lib.git.push("--set-upstream", "origin", "main")
 
 
 def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, token=None, **rest):
@@ -259,7 +259,7 @@ def doc ( ) :
             raise
 
         finally:
-            lib.git.checkout('master')
+            lib.git.checkout('main')
 
 def exportall ( cwd = '.' , recursive = False ) :
 

@@ -56,7 +56,7 @@ try:
             subprocess.call(['jam', 'publish'])
 
         finally:
-            lib.git.checkout("master")
+            lib.git.checkout("main")
 
     def setversion(version):
         version = lib.npm.setversion(version)
