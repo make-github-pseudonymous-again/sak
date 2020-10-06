@@ -4,6 +4,9 @@
 {description}.
 See [docs]({homepage}/index.html).
 
+> :building_construction: Caveat emptor! This is work in progress. Code may be
+> working. Documentation may be present. Coherence may be. Maybe.
+
 > :warning: The code requires `regeneratorRuntime` to be defined, for instance by importing
 > [regenerator-runtime/runtime](https://www.npmjs.com/package/regenerator-runtime).
 
