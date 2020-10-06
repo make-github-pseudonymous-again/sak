@@ -96,7 +96,7 @@ def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **res
         has_downloads=lib.github.TRUE
     )
 
-    sak.github.clone(oldrepo, dest=slug, username=username)
+    sak.github.clone(oldrepo, dest=slug)
 
     with lib.dir.cd(slug):
 
