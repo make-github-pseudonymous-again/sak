@@ -68,7 +68,7 @@ def bibtex(id):
                 HOWPUBLISHED = {\href{https://oeis.org/A000108}{A000108}},
                 MONTH        = {Apr},
                 YEAR         = {1991},
-                NOTE         = {Catalan numbers: C(n) = binomial(2n,n)/(n+1) = (2n)!/(n!(n+1)!). Also called Segner numbers.}
+                NOTE         = {Catalan numbers: C(n) = binomial(2n,n)/(n+1) = (2n)!/(n!(n+1)!).}
             }
             >>> bibtex( "A001010" ) # doctest: +NORMALIZE_WHITESPACE
             @MISC{OEIS:A001010,
