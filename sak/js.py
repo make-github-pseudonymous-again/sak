@@ -141,14 +141,18 @@ def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **res
                 _new = { key: json.dumps( value )[1:-1] for ( key , value ) in new.items() }
 
 
-            with open(filename, 'r') as fd:
-                data = fd.read()
+            try:
+                with open(filename, 'r') as fd:
+                    data = fd.read()
 
-            for key in keys :
-                data.replace(str(_old[key]),str(_new[key]))
+                for key in keys :
+                    data.replace(str(_old[key]),str(_new[key]))
 
-            with open(filename, 'w') as fd:
-                fd.write(data)
+                with open(filename, 'w') as fd:
+                    fd.write(data)
+
+            except UnicodeDecodeError:
+                pass
 
         url = lib.http.url("github.com", path=repository, username=username, secure=True)
 
