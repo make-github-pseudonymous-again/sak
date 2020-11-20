@@ -1,34 +1,32 @@
-var domReady = function(callback) {{
-	var state = document.readyState ;
-    if ( state === 'interactive' || state === 'complete' ) {{
-		callback() ;
+const domReady = function (callback) {{
+	const state = document.readyState;
+	if ( state === 'interactive' || state === 'complete' ) {{
+		callback();
 	}}
 	else {{
 		document.addEventListener('DOMContentLoaded', callback);
 	}}
-}} ;
+}};
 
 
-domReady(function(){{
-
-	var projectname = document.createElement('a');
+domReady(function () {{
+	const projectname = document.createElement('a');
 	projectname.classList.add('project-name');
 	projectname.text = '{repository}';
-	projectname.href = './index.html' ;
+	projectname.href = './index.html';
 
-	var header = document.getElementsByTagName('header')[0] ;
+	const header = document.getElementsByTagName('header')[0];
 	header.insertBefore(projectname,header.firstChild);
 
-	var testlink = document.querySelector('header > a[data-ice="testLink"]') ;
-	testlink.href = 'https://coveralls.io/github/{repository}' ;
-	testlink.target = '_BLANK' ;
+	const testlink = document.querySelector('header > a[data-ice="testLink"]');
+	testlink.href = 'https://coveralls.io/github/{repository}';
+	testlink.target = '_BLANK';
 
-	var searchBox = document.querySelector('.search-box');
-	var input = document.querySelector('.search-input');
+	const searchBox = document.querySelector('.search-box');
+	const input = document.querySelector('.search-input');
 
 	// active search box when focus on searchBox.
-	input.addEventListener('focus', function(){{
+	input.addEventListener('focus', function () {{
 		searchBox.classList.add('active');
 	}});
-
 }});
