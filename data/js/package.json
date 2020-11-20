@@ -125,7 +125,7 @@
   "sideEffects": false,
   "xo": {{
     "prettier": true,
-    "ignore": [
+    "ignores": [
       "lib"
     ],
     "plugins": [
