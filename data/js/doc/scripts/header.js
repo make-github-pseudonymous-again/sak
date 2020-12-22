@@ -15,7 +15,7 @@ domReady(() => {{
 	projectname.text = '{repository}';
 	projectname.href = './index.html';
 
-	const header = document.getElementsByTagName('header')[0];
+	const header = document.querySelector('header');
 	header.insertBefore(projectname,header.firstChild);
 
 	const testlink = document.querySelector('header > a[data-ice="testLink"]');
