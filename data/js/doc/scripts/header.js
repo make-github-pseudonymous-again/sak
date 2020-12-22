@@ -9,7 +9,7 @@ const domReady = function (callback) {{
 }};
 
 
-domReady(function () {{
+domReady(() => {{
 	const projectname = document.createElement('a');
 	projectname.classList.add('project-name');
 	projectname.text = '{repository}';
@@ -26,7 +26,7 @@ domReady(function () {{
 	const input = document.querySelector('.search-input');
 
 	// active search box when focus on searchBox.
-	input.addEventListener('focus', function () {{
+	input.addEventListener('focus', () => {{
 		searchBox.classList.add('active');
 	}});
 }});
