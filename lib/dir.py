@@ -80,3 +80,6 @@ class cd (object):
 
     def __exit__(self, etype, value, traceback):
         os.chdir(self.old)
+
+def directories(path):
+    return filter( os.path.isdir , map( lambda x : os.path.join( path , x ) , os.listdir(path) ) )

@@ -276,9 +276,7 @@ def exportall ( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
             fd.write( "export * from './{}' ;\n".format( filename ) )
 
     if recursive :
-
-        for directory in filter( os.path.isdir , map( lambda x : os.path.join( cwd , x ) , os.listdir(cwd) ) ) :
-
+        for directory in lib.dir.directories(cwd) :
             exportall( cwd = directory , recursive = True, entrypoint = entrypoint)
 
 
@@ -310,9 +308,7 @@ def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
         fd.write('} ;\n')
 
     if recursive :
-
-        for directory in filter( os.path.isdir , map( lambda x : os.path.join( cwd , x ) , os.listdir(cwd) ) ) :
-
+        for directory in lib.dir.directories(cwd) :
             exportdefault( cwd = directory , recursive = True, entrypoint = entrypoint)
 
 
