@@ -115,3 +115,15 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
 
     return license, slug, description, fullname, repository, homepage, keywords, fmtargs
 
+def entrypoints(cwd, entrypoint):
+    with os.scandir(cwd) as entries:
+        yield from map(
+            lambda x: x.name if x.is_file() else '{}/{}'.format(x.name, entrypoint),
+            sorted(
+                filter(
+                    lambda x: x.name != entrypoint,
+                    entries
+                ),
+                key = lambda x: (x.is_file(), x.name)
+            )
+        )

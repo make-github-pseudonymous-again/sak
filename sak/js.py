@@ -267,7 +267,7 @@ def doc ( ) :
 
 def exportall ( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
-    filenames = sorted(filter(lambda x: x != entrypoint, os.listdir(cwd)))
+    filenames = list(lib.js.entrypoints(cwd, entrypoint))
 
     with open( os.path.join(cwd, entrypoint) , 'w' ) as fd :
 
@@ -283,7 +283,7 @@ def exportall ( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
 def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
-    filenames = sorted(filter(lambda x: x != entrypoint, os.listdir(cwd)))
+    filenames = list(lib.js.entrypoints(cwd, entrypoint))
 
     with open( os.path.join(cwd, entrypoint) , 'w' ) as fd :
 
