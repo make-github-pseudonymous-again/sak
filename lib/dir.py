@@ -83,7 +83,7 @@ class cd (object):
 
 def children(path, selector=lambda x: True):
     with os.scandir(path) as entries:
-        return map(lambda x: os.path.join(path, x.name), filter(selector, entries))
+        yield from map(lambda x: os.path.join(path, x.name), filter(selector, entries))
 
 def files(path):
     return children(path, lambda x: x.is_file())
