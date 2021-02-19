@@ -6,6 +6,7 @@ import lib.ver
 import lib.git
 import lib.args
 import collections
+import re
 
 NPM = 'package.json'
 BOWER = 'bower.json'
@@ -96,6 +97,8 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
 
     keywords = sorted(lib.args.listify(keywords))
 
+    var = re.sub('^[A-Z]', lambda match: match.group(0).lower(), name.title().replace('-',''))
+
     fmtargs = dict(
         name=name,
         description=description,
@@ -107,7 +110,7 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
         repository=repository,
         homepage=homepage,
         keywords=keywords,
-        var=name.replace('-','')
+        var=var
     )
 
     return license, slug, description, fullname, repository, homepage, keywords, fmtargs
