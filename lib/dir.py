@@ -82,4 +82,5 @@ class cd (object):
         os.chdir(self.old)
 
 def directories(path):
-    return filter( os.path.isdir , map( lambda x : os.path.join( path , x ) , os.listdir(path) ) )
+    with os.scandir(path) as entries:
+        return map(lambda x: os.path.join(path, x.name), filter(lambda x: x.is_dir(), entries))
