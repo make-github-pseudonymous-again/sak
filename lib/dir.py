@@ -81,6 +81,12 @@ class cd (object):
     def __exit__(self, etype, value, traceback):
         os.chdir(self.old)
 
-def directories(path):
+def children(path, selector=lambda x: True):
     with os.scandir(path) as entries:
-        return map(lambda x: os.path.join(path, x.name), filter(lambda x: x.is_dir(), entries))
+        return map(lambda x: os.path.join(path, x.name), filter(selector, entries))
+
+def files(path):
+    return children(path, lambda x: x.is_file())
+
+def directories(path):
+    return children(path, lambda x: x.is_dir())
