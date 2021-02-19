@@ -273,7 +273,7 @@ def exportall ( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
         for filename in filenames :
 
-            fd.write( "export * from './{}' ;\n".format( filename ) )
+            fd.write( "export * from './{}';\n".format( filename ) )
 
     if recursive :
         for directory in lib.dir.directories(cwd) :
@@ -290,22 +290,22 @@ def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
         ids = list(map(lambda x: os.path.splitext(x)[0], filenames))
 
         for [id, filename] in zip(ids, filenames) :
-            fd.write( "import {0} from './{1}' ;\n".format( id, filename ) )
+            fd.write( "import {0} from './{1}';\n".format( id, filename ) )
 
         fd.write('\n')
 
         fd.write('/* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */\n')
         fd.write('export default {\n')
         for id in ids :
-            fd.write( "\t{} ,\n".format( id ) )
-        fd.write('} ;\n')
+            fd.write( "\t{},\n".format( id ) )
+        fd.write('};\n')
 
         fd.write('\n')
 
         fd.write('export {\n')
         for id in ids :
-            fd.write( "\t{} ,\n".format( id ) )
-        fd.write('} ;\n')
+            fd.write( "\t{},\n".format( id ) )
+        fd.write('};\n')
 
     if recursive :
         for directory in lib.dir.directories(cwd) :
