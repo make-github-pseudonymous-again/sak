@@ -265,34 +265,34 @@ def doc ( ) :
         finally:
             lib.git.checkout('main')
 
-def exportall ( cwd = '.' , recursive = False ) :
+def exportall ( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
-    with open( '{}/index.js'.format(cwd) , 'w' ) as fd :
+    filenames = sorted(filter(lambda x: x !== entrypoint, os.listdir(cwd)))
 
-        for id , _ in map( os.path.splitext , sorted( os.listdir(cwd) ) ) :
+    with open( os.path.join(cwd, entrypoint) , 'w' ) as fd :
 
-            if id == 'index' : continue
+        for filename in filenames :
 
-            fd.write( "export * from './{}' ;\n".format( id ) )
+            fd.write( "export * from './{}' ;\n".format( filename ) )
 
     if recursive :
 
-        for directory in filter( os.path.isdir , map( lambda x : '{}/{}'.format( cwd , x ) , os.listdir(cwd) ) ) :
+        for directory in filter( os.path.isdir , map( lambda x : os.path.join( cwd , x ) , os.listdir(cwd) ) ) :
 
-            exportall( cwd = directory , recursive = True)
+            exportall( cwd = directory , recursive = True, entrypoint = entrypoint)
 
 
 
-def exportdefault( cwd = '.' , recursive = False ) :
+def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
-    with open( '{}/index.js'.format(cwd) , 'w' ) as fd :
+    filenames = sorted(filter(lambda x: x !== entrypoint, os.listdir(cwd)))
 
-        files = map( os.path.splitext , sorted( os.listdir(cwd) ) )
+    with open( os.path.join(cwd, entrypoint) , 'w' ) as fd :
 
-        ids = [ id for id , _ in files if id != 'index' ]
+        ids = list(map(lambda x: os.path.splitext(x)[0], filenames))
 
-        for id in ids :
-            fd.write( "import {0} from './{0}' ;\n".format( id ) )
+        for [id, filename] in zip(ids, filenames) :
+            fd.write( "import {0} from './{1}' ;\n".format( id, filename ) )
 
         fd.write('\n')
 
@@ -311,9 +311,9 @@ def exportdefault( cwd = '.' , recursive = False ) :
 
     if recursive :
 
-        for directory in filter( os.path.isdir , map( lambda x : '{}/{}'.format( cwd , x ) , os.listdir(cwd) ) ) :
+        for directory in filter( os.path.isdir , map( lambda x : os.path.join( cwd , x ) , os.listdir(cwd) ) ) :
 
-            exportdefault( cwd = directory , recursive = True)
+            exportdefault( cwd = directory , recursive = True, entrypoint = entrypoint)
 
 
 
