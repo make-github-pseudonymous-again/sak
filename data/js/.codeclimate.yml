@@ -1,6 +1,4 @@
-languages:
-  JavaScript: true
-exclude_paths:
+exclude_patterns:
 - "doc/**"
 - "lib/**"
 - "test/**"
