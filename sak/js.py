@@ -67,7 +67,7 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
                 fd.write(data)
 
         lib.git.add('--all')
-        lib.git.commit('--message', '$ js new')
+        lib.git.commit('--message', ':robot: chore: Setup repository.')
         lib.git.push()
 
         # Initialize empty gh-pages branch
