@@ -25,6 +25,7 @@
   "scripts": {{
     "build": "NODE_ENV=production microbundle",
     "cover": "nyc --reporter=lcov npm test",
+    "debug": "NODE_ENV=debug npm run test -- -st --fail-fast",
     "dev": "npm run lint-config && npm run lint-and-fix && npm run cover -- -- -st --fail-fast",
     "esdoc": "esdoc",
     "lint": "xo",
@@ -83,6 +84,18 @@
       ]
     ],
     "env": {{
+      "debug": {{
+        "presets": [
+          [
+            "@babel/preset-env",
+            {{
+              "targets": "current node"
+            }}
+          ],
+          "babel-preset-power-assert"
+        ],
+        "sourceMaps": "inline"
+      }},
       "test": {{
         "presets": [
           [
