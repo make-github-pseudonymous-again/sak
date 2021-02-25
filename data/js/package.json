@@ -24,10 +24,11 @@
   ],
   "scripts": {{
     "build": "NODE_ENV=production microbundle",
+    "build-docs": "esdoc",
+    "build-gh-pages": "npm run build-docs",
     "cover": "nyc --reporter=lcov npm test",
     "debug": "NODE_ENV=debug npm run test -- -st --fail-fast",
     "dev": "npm run lint-config && npm run lint-and-fix && npm run cover -- -- -st --fail-fast",
-    "esdoc": "esdoc",
     "lint": "xo",
     "lint-and-fix": "npm run lint -- --fix",
     "lint-config": "fixpack --dryRun",
