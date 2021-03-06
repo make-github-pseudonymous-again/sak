@@ -35,6 +35,14 @@
     "devDependencies"
   ],
   "sortedSubItems": [
+    "keywords",
+    "files",
+    "bundledDependencies",
+    "dependencies",
+    "optionalDependencies",
+    "peerDependencies",
+    "peerDependenciesMeta",
+    "devDependencies"
   ],
   "warn": [
     "description",
