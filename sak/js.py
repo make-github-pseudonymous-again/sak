@@ -1,7 +1,6 @@
 import shutil
-import tempfile
-import subprocess
 import sak.github
+import lib.git
 import lib.json
 import lib.github
 import lib.sak
@@ -10,10 +9,9 @@ import collections
 import lib.dir
 import lib.file
 import lib.js
-import fileinput
 import lib.args
 import lib.http
-from lib.nice.operator import keygetter, keysetter
+from lib.nice.operator import keygetter
 import os
 import sys
 import json
