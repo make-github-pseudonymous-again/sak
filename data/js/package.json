@@ -18,7 +18,7 @@
   "main": "dist/index.js",
   "module": "dist/index.module.js",
   "unpkg": "dist/index.umd.js",
-  "exports": "dist/index.modern.js",
+  "exports": "./dist/index.modern.js",
   "files": [
     "dist"
   ],
