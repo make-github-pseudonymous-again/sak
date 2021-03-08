@@ -38,11 +38,11 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
 
     with lib.dir.cd(slug):
 
-        for basename in os.listdir(lib.sak.data('js')) :
-            if os.path.isdir(lib.sak.data('js',basename)):
-                shutil.copytree(lib.sak.data('js',basename), basename)
+        for entry in os.scandir(lib.sak.data('js')):
+            if entry.is_dir():
+                shutil.copytree(lib.sak.data('js',entry.name), entry.name)
             else:
-                shutil.copy(lib.sak.data('js',basename), basename)
+                shutil.copy(lib.sak.data('js',entry.name), entry.name)
 
         with open('LICENSE', 'w') as fd:
             fd.write(license['body'])
