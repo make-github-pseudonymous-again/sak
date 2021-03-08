@@ -1,4 +1,4 @@
-[{fullname}]({homepage})
+{readme_heading_prefix}[{name}]({homepage})
 ==
 
 {description}.

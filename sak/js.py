@@ -20,14 +20,14 @@ README = "README.md"
 
 def new(name, subject, keywords=None, username=None, token=None, **rest):
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username,**rest)
+    license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username,**rest)
 
     sak.github.new(
         slug,
         token=token,
         auto_init=lib.github.FALSE,
         private=lib.github.FALSE,
-        description=description,
+        description=github_description,
         homepage=homepage,
         has_issues=lib.github.TRUE,
         has_wiki=lib.github.TRUE,
@@ -83,14 +83,14 @@ def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **res
 
     oldowner, oldslug = oldrepo.split('/')
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
+    license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
 
     sak.github.new(
         slug,
         token=token,
         auto_init=lib.github.FALSE,
         private=lib.github.FALSE,
-        description=description,
+        description=github_description,
         homepage=homepage,
         has_issues=lib.github.TRUE,
         has_wiki=lib.github.TRUE,
@@ -165,7 +165,7 @@ def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, toke
 
     fork(oldrepo, name, subject, keywords=keywords, username=username, token=token, **rest)
 
-    license, slug, description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
+    license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
 
     es = lib.sak.data('js')
 

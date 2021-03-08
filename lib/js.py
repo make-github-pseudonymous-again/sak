@@ -88,13 +88,14 @@ def upload(version, message=None):
 def make_var(name):
     return re.sub('^[A-Z]', lambda match: match.group(0).lower(), name.title().replace('-',''))
 
-def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{username}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0'):
+def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{username}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0', emoji=None):
 
     license = lib.github.license(license_template)
 
     slug = slugprefix + name
 
     description = subject + subjectsuffix
+    github_description = description if emoji is None else '{} {}'.format(emoji, description)
 
     fullname = (fullnameprefix + "{slug}").format(username=username,slug=slug)
     repository = "{username}/{slug}".format(username=username,slug=slug)
@@ -109,6 +110,7 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
         description=description,
         slug=slug,
         username=username,
+        readme_heading_prefix='' if emoji is None else '{} '.format(emoji),
         version=version,
         license=license['spdx_id'],
         author=username,
@@ -119,7 +121,7 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
         var=var
     )
 
-    return license, slug, description, fullname, repository, homepage, keywords, fmtargs
+    return license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs
 
 def entrypoints(cwd, entrypoint):
     with os.scandir(cwd) as entries:
