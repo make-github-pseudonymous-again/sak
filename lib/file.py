@@ -29,7 +29,7 @@ def walk(src, f):
     lib.dir.walk(src, f=callback)
 
 def iterall(*src,root='',exclude=frozenset()):
-
+    # TODO improve using os.scandir
     for s in src :
         path = root + s
         if path in exclude :
