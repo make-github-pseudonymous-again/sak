@@ -71,13 +71,6 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
         lib.git.commit('--message', ':robot: chore: Setup repository.')
         lib.git.push('-u', 'origin', 'main')
 
-        # Initialize empty gh-pages branch
-        lib.git.checkout('--orphan', 'gh-pages')
-        lib.git.reset('--hard')
-        lib.git.commit('--allow-empty', '--message', 'Initializing gh-pages branch')
-        lib.git.push('origin', 'gh-pages')
-        lib.git.checkout('main')
-
 
 def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **rest):
 
