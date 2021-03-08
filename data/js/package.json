@@ -94,8 +94,7 @@
             }}
           ],
           "babel-preset-power-assert"
-        ],
-        "sourceMaps": "inline"
+        ]
       }},
       "test": {{
         "presets": [
@@ -118,8 +117,7 @@
               ]
             }}
           ]
-        ],
-        "sourceMaps": "inline"
+        ]
       }},
       "development": {{
         "presets": [
@@ -136,8 +134,7 @@
               ]
             }}
           ]
-        ],
-        "sourceMaps": "inline"
+        ]
       }},
       "production": {{
         "plugins": [
@@ -152,8 +149,7 @@
               ]
             }}
           ]
-        ],
-        "sourceMaps": "inline"
+        ]
       }}
     }}
   }},
