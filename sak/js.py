@@ -214,7 +214,7 @@ def exportall ( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
 
 
-def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
+def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js', named=True, default=False ) :
 
     filenames = list(lib.js.entrypoints(cwd, entrypoint))
 
@@ -227,22 +227,24 @@ def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
         fd.write('\n')
 
-        fd.write('/* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */\n')
-        fd.write('export default {\n')
-        for id in ids :
-            fd.write( "\t{},\n".format( id ) )
-        fd.write('};\n')
+        if default:
+            fd.write('/* eslint import/no-anonymous-default-export: [2, {"allowObject": true}] */\n')
+            fd.write('export default {\n')
+            for id in ids :
+                fd.write( "\t{},\n".format( id ) )
+            fd.write('};\n')
 
-        fd.write('\n')
+            fd.write('\n')
 
-        fd.write('export {\n')
-        for id in ids :
-            fd.write( "\t{},\n".format( id ) )
-        fd.write('};\n')
+        if named:
+            fd.write('export {\n')
+            for id in ids :
+                fd.write( "\t{},\n".format( id ) )
+            fd.write('};\n')
 
     if recursive :
         for directory in lib.dir.directories(cwd) :
-            exportdefault( cwd = directory , recursive = True, entrypoint = entrypoint)
+            exportdefault( cwd = directory , recursive = True, entrypoint = entrypoint, named=False, default=True)
 
 
 def encode_json_values ( obj ):
