@@ -51,10 +51,8 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
 
         for filename in lib.file.iterall('.',exclude={'./.git'}):
 
-            basename, ext = os.path.splitext(filename)
-
             _fmtargs = fmtargs
-
+            _, ext = os.path.splitext(filename)
             if ext == '.json' :
                 _fmtargs = encode_json_values(_fmtargs)
 
@@ -75,8 +73,6 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
 
 
 def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **rest):
-
-    oldowner, oldslug = oldrepo.split('/')
 
     license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
 
@@ -160,10 +156,8 @@ def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, toke
 
         for filename in lib.file.iterall(es):
 
-            basename, ext = os.path.splitext(filename)
-
             _fmtargs = fmtargs
-
+            _, ext = os.path.splitext(filename)
             if ext == '.json' :
                 _fmtargs = encode_json_values(_fmtargs)
 
