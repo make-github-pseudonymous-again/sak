@@ -640,3 +640,8 @@ def notifications(all=False, participating=False, since=None, before=None, token
 def mark_as_read(thread_id, token=None):
 
     print(lib.args.forward(lib.github.mark_as_read, locals()))
+
+def license(license_template, key='body'):
+    license = lib.github.license(license_template)
+    output = license[key]
+    sys.stdout.write(output)
