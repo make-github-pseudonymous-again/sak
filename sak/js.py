@@ -170,10 +170,7 @@ def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, toke
             _fmtargs = fmtargs
 
             if ext == '.json' :
-
-                # escape values for json
-
-                _fmtargs = { key: json.dumps( value )[1:-1] for ( key , value ) in fmtargs.items() }
+                _fmtargs = encode_json_values(_fmtargs)
 
             with open(filename,'r') as fd :
                 data = fd.read()
