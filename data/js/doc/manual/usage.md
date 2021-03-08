@@ -12,7 +12,7 @@ import 'regenerator-runtime/runtime.js' ;
 
 Then, import the library where needed
 ```js
-const {var} = require( '{fullname}' ) ;
+const {var} = require( '{name}' ) ;
 // or
-import * as {var} from '{fullname}' ;
+import * as {var} from '{name}' ;
 ```

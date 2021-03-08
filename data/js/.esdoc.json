@@ -13,7 +13,7 @@
           "autoPrivate": true
         }},
         "brand": {{
-          "title": "{fullname}"
+          "title": "{name}"
         }},
         "test": {{
           "type": "ava",

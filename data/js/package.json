@@ -1,5 +1,5 @@
 {{
-  "name": "{fullname}",
+  "name": "{name}",
   "description": "{description}",
   "version": {version},
   "license": "{license}",
