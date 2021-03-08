@@ -2,6 +2,7 @@ import shutil
 import tempfile
 import subprocess
 import sak.github
+import lib.json
 import lib.github
 import lib.sak
 import lib.check
@@ -14,7 +15,10 @@ import lib.args
 import lib.http
 from lib.nice.operator import keygetter, keysetter
 import os
+import sys
 import json
+import re
+from difflib import unified_diff
 
 README = "README.md"
 
@@ -253,4 +257,98 @@ def encode_json_values ( obj ):
     return {**literal, **raw}
 
 
+def diff(cwd = '.'):
 
+    with lib.json.proxy(os.path.join(cwd, "package.json"), "r") as package:
+        name = package['name']
+        description = package['description']
+        version = package['version']
+        license = package['license']
+        author = package['author']
+        homepage = package['homepage']
+        repository = '/'.join(package['repository']['url'].split('/')[3:])
+        keywords = package['keywords']
+
+    emoji = None
+
+    with open(os.path.join(cwd, 'README.md')) as fd:
+        readme_heading = fd.readline()
+        m = re.match(r"(:[^:]+:) \[", readme_heading)
+        if m:
+            emoji = m.group(1)
+
+    var = lib.js.make_var(name.split('/')[-1])
+    with open(os.path.join(cwd, 'doc', 'manual', 'usage.md'), 'r') as fd:
+        for line in fd:
+            m = re.match(r"const ([a-zA-Z]\w*) = require", line)
+            if m:
+                var = m.group(1)
+                break
+
+    fmtargs = dict(
+        name=name,
+        description=description,
+        readme_heading_prefix='' if emoji is None else '{} '.format(emoji),
+        version=version,
+        license=license,
+        author=author,
+        homepage=homepage,
+        repository=repository,
+        keywords=keywords,
+        var=var
+    )
+
+    with lib.dir.cd(cwd):
+
+        root = lib.sak.data('js')
+
+        for absfilename in lib.file.iterall(root,exclude={'./.git'}):
+            relfilename = absfilename[len(root)+1:]
+            if not os.path.isfile(relfilename):
+                print('! removed {}'.format(relfilename), file=sys.stderr)
+
+        for filename in lib.file.iterall('.',exclude={'./.git'}):
+
+            if filename.startswith('./node_modules/'): continue
+            if filename.startswith('./coverage/'): continue
+            if filename.startswith('./dist/'): continue
+            if filename.startswith('./src/'): continue
+            if filename.startswith('./test/'): continue
+            if filename.startswith('./.husky/_/'): continue
+            if filename == './LICENSE': continue
+            if filename == './yarn.lock': continue
+
+            template = lib.sak.data('js', filename)
+
+            if not os.path.isfile(template):
+                print('! added {}'.format(filename), file=sys.stderr)
+                continue
+
+            _fmtargs = fmtargs
+            _, ext = os.path.splitext(filename)
+            if ext == '.json' :
+                _fmtargs = encode_json_values(_fmtargs)
+
+            with open(template, 'r') as fd:
+                data = fd.read().format(**_fmtargs)
+                if ext == '.json':
+                    # pretty-print json
+                    data = json.dumps(json.loads(data), indent = 2)+'\n'
+                s1 = data.splitlines(keepends=True)
+
+            with open(filename) as fd:
+                s2 = fd.read().splitlines(keepends=True)
+
+            lines = unified_diff(
+                s1,
+                s2,
+                fromfile=template,
+                tofile=filename
+            )
+
+            # try:
+                # first_line = next(lines)
+                # sys.stdout.writelines(['diff\n', 'index\n', first_line])
+            sys.stdout.writelines(lines)
+            # except StopIteration:
+                # pass
