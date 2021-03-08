@@ -85,6 +85,8 @@ def upload(version, message=None):
     lib.git.tag('-a', version, '-m', message)
     lib.git.push('--tags')
 
+def make_var(name):
+    return re.sub('^[A-Z]', lambda match: match.group(0).lower(), name.title().replace('-',''))
 
 def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{username}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0'):
 
@@ -100,7 +102,7 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
 
     keywords = sorted(lib.args.listify(keywords))
 
-    var = re.sub('^[A-Z]', lambda match: match.group(0).lower(), name.title().replace('-',''))
+    var = make_var(name)
 
     fmtargs = dict(
         name=name,
