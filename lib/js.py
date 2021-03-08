@@ -108,8 +108,6 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
     fmtargs = dict(
         name=name,
         description=description,
-        slug=slug,
-        username=username,
         readme_heading_prefix='' if emoji is None else '{} '.format(emoji),
         version=version,
         license=license['spdx_id'],
