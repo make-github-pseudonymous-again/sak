@@ -60,6 +60,9 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
                 data = fd.read()
 
             data = data.format(**_fmtargs)
+            if ext == '.json':
+                # pretty-print json
+                data = json.dumps(json.loads(data), indent = 2)+'\n'
 
             with open(filename, 'w') as fd:
                 fd.write(data)
@@ -176,6 +179,9 @@ def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, toke
                 data = fd.read()
 
             data = data.format(**_fmtargs)
+            if ext == '.json':
+                # pretty-print json
+                data = json.dumps(json.loads(data), indent = 2)+'\n'
 
             new = filename[len(es)+1:]
 
