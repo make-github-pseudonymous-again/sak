@@ -684,3 +684,8 @@ def mark_as_read (thread_id, token=None):
     url = ("notifications", "threads", thread_id)
 
     return patch(url, token=token)
+
+
+def license(license_template):
+    path = ("licenses", license_template)
+    return get(path)

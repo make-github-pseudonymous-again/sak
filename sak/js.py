@@ -25,15 +25,13 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
     sak.github.new(
         slug,
         token=token,
-        auto_init=lib.github.TRUE,
+        auto_init=lib.github.FALSE,
         private=lib.github.FALSE,
         description=description,
         homepage=homepage,
         has_issues=lib.github.TRUE,
         has_wiki=lib.github.TRUE,
-        has_downloads=lib.github.TRUE,
-        gitignore_template="Node",
-        license_template=license["template"]
+        has_downloads=lib.github.TRUE
     )
 
     sak.github.clone(repository)
@@ -45,6 +43,9 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
                 shutil.copytree(lib.sak.data('js',basename), basename)
             else:
                 shutil.copy(lib.sak.data('js',basename), basename)
+
+        with open('LICENSE', 'w') as fd:
+            fd.write(license['body'])
 
         for filename in lib.file.iterall('.',exclude={'./.git'}):
 
@@ -68,7 +69,7 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
 
         lib.git.add('--all')
         lib.git.commit('--message', ':robot: chore: Setup repository.')
-        lib.git.push()
+        lib.git.push('-u', 'origin', 'main')
 
         # Initialize empty gh-pages branch
         lib.git.checkout('--orphan', 'gh-pages')
