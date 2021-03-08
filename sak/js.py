@@ -197,59 +197,6 @@ def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, toke
         lib.git.commit('--message', '$ js fromjs')
         lib.git.push()
 
-def doc ( ) :
-
-    jsonhook = collections.OrderedDict
-
-    with lib.json.proxy(".esdoc.json", "r", object_pairs_hook=jsonhook) as esdoc:
-        config = esdoc
-
-    with tempfile.TemporaryDirectory() as tmp:
-
-        tmpconfig = tmp + '/.esdoc.json'
-        build = tmp + '/build'
-
-        config['destination'] = build
-
-        os.makedirs(build)
-
-        with lib.json.proxy(tmpconfig, "w", object_pairs_hook=jsonhook) as esdoc:
-            esdoc.update(config)
-
-        subprocess.run(['npm', 'run', 'esdoc', '--', '-c', tmpconfig],check=True)
-
-        try:
-
-            try:
-                lib.git.checkout('gh-pages')
-            except:
-                lib.git.branch('gh-pages')
-
-            lib.git.pull()
-
-            for basename in os.listdir('.') :
-                if basename in ['.git','.gitignore','node_modules'] :
-                    pass
-                elif os.path.isdir(basename):
-                    shutil.rmtree(basename)
-                else:
-                    os.remove(basename)
-
-            for basename in os.listdir(build) :
-                if os.path.isdir(build+'/'+basename):
-                    shutil.copytree(build+'/'+basename, basename)
-                else:
-                    shutil.copy(build+'/'+basename, basename)
-
-            lib.git.add('--all')
-            lib.git.commit('--message', 'esdoc update')
-            lib.git.push('--set-upstream', 'origin', 'gh-pages')
-
-        except:
-            raise
-
-        finally:
-            lib.git.checkout('main')
 
 def exportall ( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
 
