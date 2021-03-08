@@ -1,7 +1,7 @@
 {{
   "name": "{fullname}",
   "description": "{description}",
-  "version": "0.0.0",
+  "version": {version},
   "license": "{license}",
   "author": "{author}",
   "homepage": "{homepage}",

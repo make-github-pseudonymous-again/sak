@@ -84,7 +84,7 @@ def upload(version, message=None):
     lib.git.push('--tags')
 
 
-def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{username}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0"):
+def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{username}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0'):
 
     license = lib.github.license(license_template)
 
@@ -105,6 +105,7 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
         description=description,
         slug=slug,
         username=username,
+        version=version,
         license=license['spdx_id'],
         author=username,
         fullname=fullname,
