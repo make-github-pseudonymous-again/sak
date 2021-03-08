@@ -54,10 +54,7 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
             _fmtargs = fmtargs
 
             if ext == '.json' :
-
-                # escape values for json
-
-                _fmtargs = { key: json.dumps( value )[1:-1] for ( key , value ) in fmtargs.items() }
+                _fmtargs = encode_json_values(_fmtargs)
 
             with open(filename, 'r') as fd:
                 data = fd.read()
@@ -104,9 +101,7 @@ def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **res
         jsonhook = collections.OrderedDict
 
         with open(lib.sak.data('js','package.json'), 'r') as fd:
-
-            # escape json values
-            _fmtargs = { key: json.dumps( value )[1:-1] for ( key , value ) in fmtargs.items() }
+            _fmtargs = encode_json_values(fmtargs)
             _npm = json.loads(fd.read().format(**_fmtargs))
 
         keys = (
@@ -130,17 +125,11 @@ def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **res
 
         for filename in lib.file.iterall('.',exclude={'./.git'}):
 
-            basename, ext = os.path.splitext(filename)
-
             _old, _new = old, new
-
+            _, ext = os.path.splitext(filename)
             if ext == '.json' :
-
-                # escape values for json
-
-                _old = { key: json.dumps( value )[1:-1] for ( key , value ) in old.items() }
-                _new = { key: json.dumps( value )[1:-1] for ( key , value ) in new.items() }
-
+                _old = encode_json_values(_old)
+                _new = encode_json_values(_new)
 
             try:
                 with open(filename, 'r') as fd:
@@ -311,6 +300,12 @@ def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js' ) :
     if recursive :
         for directory in lib.dir.directories(cwd) :
             exportdefault( cwd = directory , recursive = True, entrypoint = entrypoint)
+
+
+def encode_json_values ( obj ):
+    literal = { key: json.dumps( value ) for ( key , value ) in obj.items() }
+    raw = { '_'+key: value[1:-1] for ( key , value ) in literal.items() }
+    return {**literal, **raw}
 
 
 
