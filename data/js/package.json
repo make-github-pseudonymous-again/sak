@@ -33,7 +33,7 @@
     "lint": "xo",
     "lint-and-fix": "npm run lint -- --fix",
     "lint-config": "fixpack --dryRun",
-    "lint-config-and-fix": "npm run lint-config -- --no-dryRun",
+    "lint-config-and-fix": "fixpack || fixpack",
     "postinstall": "npm run install-hooks",
     "postpublish": "pinst --enable",
     "precommit": "lint-staged",
