@@ -1,9 +1,11 @@
 
-import os.path
+import os
 import lib.json
 import lib.list
 import lib.ver
 import lib.git
+import lib.check
+import lib.github
 import lib.args
 import collections
 import re
