@@ -2,12 +2,10 @@ const domReady = function (callback) {{
 	const state = document.readyState;
 	if (state === 'interactive' || state === 'complete') {{
 		callback();
-	}}
-	else {{
+	}} else {{
 		document.addEventListener('DOMContentLoaded', callback);
 	}}
 }};
-
 
 domReady(() => {{
 	const projectname = document.createElement('a');
