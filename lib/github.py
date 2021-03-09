@@ -686,6 +686,7 @@ def mark_as_read (thread_id, token=None):
     return patch(url, token=token)
 
 
-def license(license_template):
+def license(license_template, token=None):
+    token = pat(token)
     path = ("licenses", license_template)
-    return get(path)
+    return get(path, token=token)
