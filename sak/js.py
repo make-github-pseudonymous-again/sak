@@ -259,6 +259,7 @@ def diff(cwd = '.'):
         author = package['author']
         homepage = package['homepage']
         repository = '/'.join(package['repository']['url'].split('/')[3:])
+        if repository[-4:] == '.git': repository = repository[:-4]
         keywords = package['keywords']
 
     emoji = None
