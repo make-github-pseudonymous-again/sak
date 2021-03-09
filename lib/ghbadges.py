@@ -56,7 +56,7 @@ def traviscibuild(username=None, repo=None, packagename=None, style=FLAT, fmt=SV
 
     title = "Build Status"
     img = sio.travis(username, repo, style=style, fmt=fmt)
-    href = "https://travis-ci.org/%s/%s" % (username, repo)
+    href = "https://travis-ci.com/%s/%s" % (username, repo)
 
     return iwl(title, img, href)
 
