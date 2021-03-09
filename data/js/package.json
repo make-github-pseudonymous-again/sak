@@ -40,7 +40,7 @@
     "precommit": "lint-staged",
     "prepare": "npm run build",
     "prepublishOnly": "pinst --disable",
-    "release": "np --message ':hatching_chick: release: v%s'",
+    "release": "np --message ':hatching_chick: release: Bumping to v%s.'",
     "test": "ava",
     "travis": "npm run lint && npm run cover"
   }},
