@@ -17,8 +17,16 @@
   "source": "src/index.js",
   "main": "dist/index.js",
   "module": "dist/index.module.js",
+  "umd:main": "dist/index.umd.js",
   "unpkg": "dist/index.umd.js",
-  "exports": "./dist/index.modern.js",
+  "exports": {{
+    ".": {{
+      "browser": "./dist/index.module.js",
+      "umd": "./dist/index.umd.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.modern.js"
+    }}
+  }},
   "files": [
     "dist"
   ],
