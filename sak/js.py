@@ -305,6 +305,7 @@ def diff(cwd = '.'):
             if filename.startswith('./node_modules/'): continue
             if filename.startswith('./coverage/'): continue
             if filename.startswith('./dist/'): continue
+            if filename.startswith('./lib/'): continue
             if filename.startswith('./src/'): continue
             if filename.startswith('./test/'): continue
             if filename.startswith('./.husky/_/'): continue
