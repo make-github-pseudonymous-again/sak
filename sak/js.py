@@ -257,7 +257,7 @@ def diff(cwd = '.'):
         version = package['version']
         license = package['license']
         author = package['author']
-        homepage = package['homepage']
+        homepage = package['homepage'].rstrip('/')
         repository = '/'.join(package['repository']['url'].split('/')[3:])
         if repository[-4:] == '.git': repository = repository[:-4]
         keywords = package['keywords']
