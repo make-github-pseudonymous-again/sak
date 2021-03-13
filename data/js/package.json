@@ -6,8 +6,8 @@
   "author": {author},
   "homepage": {homepage},
   "repository": {{
-    "type": "git",
-    "url": "https://github.com/{_repository}"
+    "url": "https://github.com/{_repository}",
+    "type": "git"
   }},
   "bugs": {{
     "url": "https://github.com/{_repository}/issues"
