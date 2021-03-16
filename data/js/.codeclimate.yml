@@ -1,4 +1,4 @@
 exclude_patterns:
-- "doc/**"
-- "dist/**"
-- "test/**"
+  - doc/**
+  - dist/**
+  - test/**
