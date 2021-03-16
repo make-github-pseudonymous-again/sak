@@ -54,7 +54,6 @@
   }},
   "dependencies": {{}},
   "devDependencies": {{
-    "@babel/cli": "7.13.10",
     "@babel/core": "7.13.10",
     "@babel/preset-env": "7.13.10",
     "@babel/register": "7.13.8",
