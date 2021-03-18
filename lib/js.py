@@ -9,6 +9,7 @@ import lib.github
 import lib.args
 import collections
 import re
+from itertools import chain
 
 NPM = 'package.json'
 BOWER = 'bower.json'
@@ -121,14 +122,30 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
     return license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs
 
 def entrypoints(cwd, entrypoint):
+    # Goes recursive if entrypoint is None
     with os.scandir(cwd) as entries:
-        yield from map(
-            lambda x: x.name if x.is_file() else '{}/{}'.format(x.name, entrypoint),
-            sorted(
-                filter(
-                    lambda x: x.name != entrypoint,
-                    entries
-                ),
-                key = lambda x: (x.is_file(), x.name)
+        yield from chain.from_iterable(
+            map(
+                lambda x:
+                    [x.name] if x.is_file() else
+                    map(lambda y: '{}/{}'.format(x.name, y),
+                        entrypoints('{}/{}'.format(cwd, x.name), None)) if
+                    entrypoint is None else
+                    ['{}/{}'.format(x.name, entrypoint)],
+                sorted(
+                    filter(
+                        lambda x: x.name != entrypoint,
+                        entries
+                    ),
+                    key = lambda x: (x.is_file(), x.name)
+                )
             )
         )
+
+def entrypoint_id(filename, entrypoint):
+    entrypoint_suffix = '/' + entrypoint
+    if filename.endswith(entrypoint_suffix):
+        path = filename[:-len(entrypoint_suffix)]
+    else:
+        path = os.path.splitext(filename)[0]
+    return path.split('/')[-1]

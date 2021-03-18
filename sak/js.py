@@ -216,7 +216,7 @@ def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js', name
 
     with open( os.path.join(cwd, entrypoint) , 'w' ) as fd :
 
-        ids = list(map(lambda x: os.path.splitext(x)[0], filenames))
+        ids = list(map(lambda x: lib.js.entrypoint_id(x, entrypoint), filenames))
 
         for [id, filename] in zip(ids, filenames) :
             fd.write( "import {0} from './{1}';\n".format( id, filename ) )
@@ -241,6 +241,18 @@ def exportdefault( cwd = '.' , recursive = False , entrypoint = 'index.js', name
     if recursive :
         for directory in lib.dir.directories(cwd) :
             exportdefault( cwd = directory , recursive = True, entrypoint = entrypoint, named=False, default=True)
+
+def exportflat( cwd = '.' , entrypoint = 'index.js') :
+
+    filenames = list(lib.js.entrypoints(cwd, None))
+
+    with open( os.path.join(cwd, entrypoint) , 'w' ) as fd :
+
+        ids = list(map(lambda x: lib.js.entrypoint_id(x, entrypoint), filenames))
+
+        for [id, filename] in zip(ids, filenames) :
+            if filename == entrypoint: continue
+            fd.write( "export {{default as {0}}} from './{1}';\n".format( id, filename ) )
 
 
 def encode_json_values ( obj ):
