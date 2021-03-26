@@ -12,7 +12,7 @@ See [docs]({homepage}/index.html).
 
 [![License](https://img.shields.io/github/license/{repository}.svg)](https://raw.githubusercontent.com/{repository}/main/LICENSE)
 [![Version](https://img.shields.io/npm/v/{name}.svg)](https://www.npmjs.org/package/{name})
-[![Build](https://img.shields.io/travis/{repository}/main.svg)](https://travis-ci.com/{repository}/branches)
+[![Tests](https://img.shields.io/github/workflow/status/{repository}/ci:test?event=push&label=tests)](https://github.com/{repository}/actions/workflows/ci:test.yml?query=branch:main)
 [![Dependencies](https://img.shields.io/david/{repository}.svg)](https://david-dm.org/{repository})
 [![Dev dependencies](https://img.shields.io/david/dev/{repository}.svg)](https://david-dm.org/{repository}?type=dev)
 [![GitHub issues](https://img.shields.io/github/issues/{repository}.svg)](https://github.com/{repository}/issues)
