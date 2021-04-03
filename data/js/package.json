@@ -37,7 +37,7 @@
     "build-gh-pages": "npm run build-docs",
     "ci:test": "npm run lint-config && npm run lint && npm run cover",
     "commit-msg": "commitlint --edit",
-    "cover": "c8 --all --src src --reporter=lcov npm test",
+    "cover": "NODE_ENV=cover c8 --all --src src --reporter lcov --reporter text-summary --reporter text npm test",
     "debug": "NODE_ENV=debug npm run test -- -st --fail-fast",
     "dev": "npm run lint-config-and-fix && npm run lint-and-fix && npm run cover -- -- -st --fail-fast",
     "install-hooks": "husky install",
@@ -97,9 +97,18 @@
       [
         "@babel/preset-env",
         {{
-          "targets": [
-            "defaults",
-            "maintained node versions"
+          "targets": "current node"
+        }}
+      ]
+    ],
+    "plugins": [
+      [
+        "transform-remove-console",
+        {{
+          "exclude": [
+            "log",
+            "error",
+            "warn"
           ]
         }}
       ]
@@ -107,68 +116,61 @@
     "env": {{
       "debug": {{
         "presets": [
-          [
-            "@babel/preset-env",
-            {{
-              "targets": "current node"
-            }}
-          ],
           "babel-preset-power-assert"
+        ],
+        "plugins": [
+          [
+            "transform-remove-console",
+            {{
+              "exclude": [
+                "debug",
+                "log",
+                "error",
+                "warn"
+              ]
+            }}
+          ]
         ]
       }},
       "test": {{
         "presets": [
-          [
-            "@babel/preset-env",
-            {{
-              "targets": "current node"
-            }}
-          ],
           "babel-preset-power-assert"
-        ],
-        "plugins": [
-          [
-            "transform-remove-console",
-            {{
-              "exclude": [
-                "log",
-                "error",
-                "warn"
-              ]
-            }}
-          ]
+        ]
+      }},
+      "cover": {{
+        "sourceMaps": "both",
+        "presets": [
+          "babel-preset-power-assert"
         ]
       }},
       "development": {{
         "presets": [
-          "babel-preset-power-assert"
-        ],
-        "plugins": [
           [
-            "transform-remove-console",
+            "@babel/preset-env",
             {{
-              "exclude": [
-                "log",
-                "error",
-                "warn"
+              "targets": [
+                "defaults",
+                "maintained node versions"
               ]
             }}
-          ]
+          ],
+          "babel-preset-power-assert"
         ]
       }},
       "production": {{
-        "plugins": [
-          "babel-plugin-unassert",
+        "presets": [
           [
-            "transform-remove-console",
+            "@babel/preset-env",
             {{
-              "exclude": [
-                "log",
-                "error",
-                "warn"
+              "targets": [
+                "defaults",
+                "maintained node versions"
               ]
             }}
           ]
+        ],
+        "plugins": [
+          "babel-plugin-unassert"
         ]
       }}
     }}
