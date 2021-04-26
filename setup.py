@@ -11,9 +11,9 @@ setup(
     description='Swiss Army Knife',
     long_description='sak is a module, submodule and function based tool',
 
-    author='aureooms',
+    author='make-github-pseudonymous-again',
     author_email='aurelien.ooms@gmail.com',
-    url='https://github.com/aureooms/sak',
+    url='https://github.com/make-github-pseudonymous-again/sak',
     license='LICENSE',
 
     install_requires=[

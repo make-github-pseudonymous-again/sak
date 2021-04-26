@@ -1,11 +1,11 @@
 # sak : Swiss Army Knife
 
 [![PyPI release](https://img.shields.io/pypi/v/sak.svg?style=flat)](https://pypi.python.org/pypi/sak)
-[![Build Status](http://img.shields.io/travis/aureooms/sak.svg?style=flat)](https://travis-ci.com/aureooms/sak)
-[![Code Climate](http://img.shields.io/codeclimate/github/aureooms/sak.svg?style=flat)](https://codeclimate.com/github/aureooms/sak)
-[![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/aureooms/sak.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sak/?branch=main)
-[![Code Coverage](http://img.shields.io/scrutinizer/coverage/g/aureooms/sak.svg?style=flat)](https://scrutinizer-ci.com/g/aureooms/sak/?branch=main)
-[![GitHub issues](http://img.shields.io/github/issues/aureooms/sak.svg?style=flat)](https://github.com/aureooms/sak/issues)
+[![Build Status](http://img.shields.io/travis/make-github-pseudonymous-again/sak.svg?style=flat)](https://travis-ci.com/make-github-pseudonymous-again/sak)
+[![Code Climate](http://img.shields.io/codeclimate/github/make-github-pseudonymous-again/sak.svg?style=flat)](https://codeclimate.com/github/make-github-pseudonymous-again/sak)
+[![Scrutinizer Code Quality](http://img.shields.io/scrutinizer/g/make-github-pseudonymous-again/sak.svg?style=flat)](https://scrutinizer-ci.com/g/make-github-pseudonymous-again/sak/?branch=main)
+[![Code Coverage](http://img.shields.io/scrutinizer/coverage/g/make-github-pseudonymous-again/sak.svg?style=flat)](https://scrutinizer-ci.com/g/make-github-pseudonymous-again/sak/?branch=main)
+[![GitHub issues](http://img.shields.io/github/issues/make-github-pseudonymous-again/sak.svg?style=flat)](https://github.com/make-github-pseudonymous-again/sak/issues)
 
 **sak** is a module, submodule and function based tool
 
@@ -48,13 +48,13 @@ All functions support kwargs,
 
   - clone all your github repos:
 
-		$ gth d --username aureooms --noprompt
+		$ gth d --username make-github-pseudonymous-again --noprompt
 
 All functions support shrinking kwargs,
 
   - clone all your github repos:
 
-		$ gth d -u aureooms --nopro
+		$ gth d -u make-github-pseudonymous-again --nopro
 
 Currently available modules:
 

@@ -119,8 +119,8 @@ def inchci(username=None, repo=None, packagename=None, style=FLAT, fmt=SVG):
     """
 
             >>> from lib.ghbadges import inchci
-            >>> print( inchci( "aureooms" , "js-algebra" ) )
-            [![Inline docs](http://inch-ci.org/github/aureooms/js-algebra.svg?branch=main&style=shields)](http://inch-ci.org/github/aureooms/js-algebra)
+            >>> print( inchci( "make-github-pseudonymous-again" , "js-algebra" ) )
+            [![Inline docs](http://inch-ci.org/github/make-github-pseudonymous-again/js-algebra.svg?branch=main&style=shields)](http://inch-ci.org/github/make-github-pseudonymous-again/js-algebra)
 
     """
 
@@ -136,8 +136,8 @@ def ghpageesdoc(username=None,repo=None,packagename=None,style=FLAT,fmt=SVG):
     """
 
             >>> from lib.ghbadges import ghpageesdoc
-            >>> print( ghpageesdoc( "aureooms" , "js-algebra" ) )
-            [![Documentation](https://raw.githubusercontent.com/aureooms/js-algebra/gh-pages/badge.svg)](https://aureooms.github.io/js-algebra/source.html)
+            >>> print( ghpageesdoc( "make-github-pseudonymous-again" , "js-algebra" ) )
+            [![Documentation](https://raw.githubusercontent.com/make-github-pseudonymous-again/js-algebra/gh-pages/badge.svg)](https://make-github-pseudonymous-again.github.io/js-algebra/source.html)
 
     """
 
