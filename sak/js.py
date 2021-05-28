@@ -353,9 +353,9 @@ def diff(cwd = '.'):
                 tofile=filename
             )
 
-            # try:
-                # first_line = next(lines)
-                # sys.stdout.writelines(['diff\n', 'index\n', first_line])
-            sys.stdout.writelines(lines)
-            # except StopIteration:
-                # pass
+            try:
+                first_line = next(lines)
+                sys.stdout.writelines(['diff --git a/{} b/{}\n'.format(template, filename), 'index dead..beef 100644\n', first_line])
+                sys.stdout.writelines(lines)
+            except StopIteration:
+                pass
