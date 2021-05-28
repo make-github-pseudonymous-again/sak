@@ -20,12 +20,13 @@ from difflib import unified_diff
 
 README = "README.md"
 
-def new(name, subject, keywords=None, username=None, token=None, **rest):
+def new(name, subject, keywords=None, username=None, org=None, token=None, **rest):
 
-    license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username,**rest)
+    license, slug, description, github_description, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username,org,**rest)
 
     sak.github.new(
         slug,
+        org=org,
         token=token,
         auto_init=lib.github.FALSE,
         private=lib.github.FALSE,
@@ -72,9 +73,9 @@ def new(name, subject, keywords=None, username=None, token=None, **rest):
         lib.git.push('-u', 'origin', 'main')
 
 
-def fork(oldrepo, name, subject, keywords=None, username=None, token=None, **rest):
+def fork(oldrepo, name, subject, keywords=None, username=None, org=None,token=None, **rest):
 
-    license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
+    license, slug, description, github_description, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, org,**rest)
 
     sak.github.new(
         slug,
@@ -148,7 +149,7 @@ def deprecated_fromjs(oldrepo, name, subject, keywords=None, username=None, toke
 
     fork(oldrepo, name, subject, keywords=keywords, username=username, token=token, **rest)
 
-    license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
+    license, slug, description, github_description, repository, homepage, keywords, fmtargs = lib.js.args(name,subject,keywords,username, **rest)
 
     es = lib.sak.data('js')
 

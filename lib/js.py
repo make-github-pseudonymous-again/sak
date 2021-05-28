@@ -89,7 +89,7 @@ def upload(version, message=None):
 def make_var(name):
     return re.sub('^[A-Z]', lambda match: match.group(0).lower(), name.title().replace('-',''))
 
-def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{username}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0', emoji=None):
+def args(name,subject,keywords,username,org,slugprefix='',fullnameprefix='@{scope}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0', emoji=None, scope=None, author=None):
 
     license = lib.github.license(license_template)
 
@@ -98,9 +98,12 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
     description = subject + subjectsuffix
     github_description = description if emoji is None else '{} {}'.format(emoji, description)
 
-    fullname = (fullnameprefix + "{slug}").format(username=username,slug=slug)
-    repository = "{username}/{slug}".format(username=username,slug=slug)
-    homepage = "https://{username}.github.io/{slug}".format(username=username,slug=slug)
+    owner = org or username
+    if scope is None: scope = owner
+    if author is None: author = username
+    fullname = (fullnameprefix + "{slug}").format(scope=scope,slug=slug)
+    repository = "{owner}/{slug}".format(owner=owner,slug=slug)
+    homepage = "https://{owner}.github.io/{slug}".format(owner=owner,slug=slug)
 
     keywords = sorted(lib.args.listify(keywords))
 
@@ -112,14 +115,14 @@ def args(name,subject,keywords,username,slugprefix='js-',fullnameprefix='@{usern
         readme_heading_prefix='' if emoji is None else '{} '.format(emoji),
         version=version,
         license=license['spdx_id'],
-        author=username,
+        author=author,
         repository=repository,
         homepage=homepage,
         keywords=keywords,
         var=var
     )
 
-    return license, slug, description, github_description, fullname, repository, homepage, keywords, fmtargs
+    return license, slug, description, github_description, repository, homepage, keywords, fmtargs
 
 def entrypoints(cwd, entrypoint):
     # Goes recursive if entrypoint is None
