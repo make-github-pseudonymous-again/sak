@@ -15,7 +15,7 @@
   "keywords": {keywords},
   "sideEffects": false,
   "source": "src/index.js",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "module": "dist/index.module.js",
   "esmodule": "dist/index.modern.js",
   "umd:main": "dist/index.umd.js",
@@ -24,7 +24,7 @@
     ".": {{
       "browser": "./dist/index.module.js",
       "umd": "./dist/index.umd.js",
-      "require": "./dist/index.js",
+      "require": "./dist/index.cjs",
       "default": "./dist/index.modern.js"
     }}
   }},
@@ -78,7 +78,7 @@
     "pinst": "2.1.6",
     "power-assert": "1.6.1",
     "regenerator-runtime": "0.13.7",
-    "xo": "0.40.1"
+    "xo": "0.39.1"
   }},
   "ava": {{
     "files": [
