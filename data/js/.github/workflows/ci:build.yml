@@ -1,10 +1,10 @@
-name: ci:test
+name: ci:build
 on:
   - push
   - pull_request
 jobs:
   test:
-    name: Continuous integration (tests)
+    name: Continuous integration (build)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout 🛎️
@@ -16,10 +16,5 @@ jobs:
           install-command: yarn --frozen-lockfile --ignore-scripts
           useRollingCache: true
 
-      - name: Test 🔬
-        run: yarn ci:test
-
-      - name: Publish coverage report 📃
-        uses: codecov/codecov-action@v2
-        with:
-          fail_ci_if_error: true
+      - name: Build 🏗️
+        run: yarn ci:build

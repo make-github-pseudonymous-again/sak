@@ -14,6 +14,7 @@
   }},
   "keywords": {keywords},
   "sideEffects": false,
+  "type": "module",
   "source": "src/index.js",
   "main": "dist/index.cjs",
   "module": "dist/index.module.js",
@@ -35,6 +36,7 @@
     "build": "NODE_ENV=production microbundle",
     "build-docs": "esdoc",
     "build-gh-pages": "npm run build-docs",
+    "ci:build": "npm run build",
     "ci:test": "npm run lint-config && npm run lint && npm run cover",
     "commit-msg": "commitlint --edit",
     "cover": "NODE_ENV=cover c8 --all --src src --reporter lcov --reporter text-summary --reporter text npm test",
@@ -55,30 +57,30 @@
   }},
   "dependencies": {{}},
   "devDependencies": {{
-    "@babel/core": "7.14.3",
-    "@babel/preset-env": "7.14.2",
-    "@babel/register": "7.13.16",
-    "@commitlint/cli": "12.1.4",
+    "@babel/core": "7.15.0",
+    "@babel/preset-env": "7.15.0",
+    "@babel/register": "7.14.5",
+    "@commitlint/cli": "13.1.0",
     "@js-library/commitlint-config": "0.0.4",
     "ava": "3.15.0",
     "babel-plugin-transform-remove-console": "6.9.4",
     "babel-plugin-unassert": "3.1.0",
     "babel-preset-power-assert": "3.0.0",
-    "c8": "7.7.2",
+    "c8": "7.8.0",
     "esdoc": "1.1.0",
     "esdoc-ecmascript-proposal-plugin": "1.0.0",
     "esdoc-inject-script-plugin": "1.0.0",
     "esdoc-inject-style-plugin": "1.0.0",
     "esdoc-standard-plugin": "1.0.0",
     "fixpack": "4.0.0",
-    "husky": "6.0.0",
-    "lint-staged": "11.0.0",
+    "husky": "7.0.1",
+    "lint-staged": "11.1.1",
     "microbundle": "0.13.1",
     "np": "7.5.0",
     "pinst": "2.1.6",
     "power-assert": "1.6.1",
-    "regenerator-runtime": "0.13.7",
-    "xo": "0.39.1"
+    "regenerator-runtime": "0.13.9",
+    "xo": "0.43.0"
   }},
   "ava": {{
     "files": [
@@ -199,7 +201,8 @@
             "pascalCase": true
           }}
         }}
-      ]
+      ],
+      "unicorn/prefer-node-protocol": "off"
     }},
     "overrides": [
       {{
