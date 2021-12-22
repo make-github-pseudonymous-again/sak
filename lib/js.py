@@ -89,7 +89,7 @@ def upload(version, message=None):
 def make_var(name):
     return re.sub('^[A-Z]', lambda match: match.group(0).lower(), name.title().replace('-',''))
 
-def args(name,subject,keywords,username,org,slugprefix='',fullnameprefix='@{scope}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0', emoji=None, scope=None, author=None):
+def args(name, subject, keywords, username, org, slugprefix='', fullnameprefix='@{scope}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0', emoji=None, scope=None, author=None, packageType='commonjs'):
 
     license = lib.github.license(license_template)
 
@@ -105,6 +105,9 @@ def args(name,subject,keywords,username,org,slugprefix='',fullnameprefix='@{scop
     repository = "{owner}/{slug}".format(owner=owner,slug=slug)
     homepage = "https://{owner}.github.io/{slug}".format(owner=owner,slug=slug)
 
+    commonjsExtension = 'js' if packageType == 'commonjs' else 'cjs'
+    moduleExtension = 'js' if packageType == 'module' else 'mjs'
+
     keywords = sorted(lib.args.listify(keywords))
 
     var = make_var(name)
@@ -119,7 +122,10 @@ def args(name,subject,keywords,username,org,slugprefix='',fullnameprefix='@{scop
         repository=repository,
         homepage=homepage,
         keywords=keywords,
-        var=var
+        var=var,
+        packageType=packageType,
+        commonjsExtension=commonjsExtension,
+        moduleExtension=moduleExtension,
     )
 
     return license, slug, description, github_description, repository, homepage, keywords, fmtargs

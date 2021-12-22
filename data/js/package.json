@@ -14,19 +14,19 @@
   }},
   "keywords": {keywords},
   "sideEffects": false,
-  "type": "module",
+  "type": {packageType},
   "source": "src/index.js",
-  "main": "dist/index.cjs",
-  "module": "dist/index.module.js",
-  "esmodule": "dist/index.modern.js",
+  "main": "dist/index.{_commonjsExtension}",
+  "module": "dist/index.module.{_moduleExtension}",
+  "esmodule": "dist/index.modern.{_moduleExtension}",
   "umd:main": "dist/index.umd.js",
   "unpkg": "dist/index.umd.js",
   "exports": {{
     ".": {{
-      "browser": "./dist/index.module.js",
+      "browser": "./dist/index.module.{_moduleExtension}",
       "umd": "./dist/index.umd.js",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.modern.js"
+      "require": "./dist/index.{_commonjsExtension}",
+      "default": "./dist/index.modern.{_moduleExtension}"
     }}
   }},
   "files": [

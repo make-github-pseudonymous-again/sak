@@ -274,6 +274,7 @@ def diff(cwd = '.'):
         repository = '/'.join(package['repository']['url'].split('/')[3:])
         if repository[-4:] == '.git': repository = repository[:-4]
         keywords = package['keywords']
+        packageType = package.get('type', 'commonjs')
 
     emoji = None
 
@@ -291,6 +292,9 @@ def diff(cwd = '.'):
                 var = m.group(1)
                 break
 
+    commonjsExtension = 'js' if packageType == 'commonjs' else 'cjs'
+    moduleExtension = 'js' if packageType == 'module' else 'mjs'
+
     fmtargs = dict(
         name=name,
         description=description,
@@ -301,7 +305,10 @@ def diff(cwd = '.'):
         homepage=homepage,
         repository=repository,
         keywords=keywords,
-        var=var
+        var=var,
+        packageType=packageType,
+        commonjsExtension=commonjsExtension,
+        moduleExtension=moduleExtension,
     )
 
     with lib.dir.cd(cwd):
