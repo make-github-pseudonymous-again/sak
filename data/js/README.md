@@ -13,7 +13,7 @@ See [docs]({homepage}/index.html).
 
 [![License](https://img.shields.io/github/license/{repository}.svg)](https://raw.githubusercontent.com/{repository}/main/LICENSE)
 [![Version](https://img.shields.io/npm/v/{name}.svg)](https://www.npmjs.org/package/{name})
-[![Tests](https://img.shields.io/github/workflow/status/{repository}/ci?event=push&label=tests)](https://github.com/{repository}/actions/workflows/ci.yml?query=branch:main)
+[![Tests](https://img.shields.io/github/workflow/status/{repository}/ci:cover?event=push&label=tests)](https://github.com/{repository}/actions/workflows/ci:cover.yml?query=branch:main)
 [![Dependencies](https://img.shields.io/librariesio/github/{repository}.svg)](https://github.com/{repository}/network/dependencies)
 [![GitHub issues](https://img.shields.io/github/issues/{repository}.svg)](https://github.com/{repository}/issues)
 [![Downloads](https://img.shields.io/npm/dm/{name}.svg)](https://www.npmjs.org/package/{name})
