@@ -327,7 +327,8 @@ def diff(cwd = '.'):
             if filename.startswith('./dist/'): continue
             if filename.startswith('./lib/'): continue
             if filename.startswith('./src/'): continue
-            if filename.startswith('./test/'): continue
+            if filename.startswith('./test/src/'): continue
+            if filename.startswith('./test/data/'): continue
             if filename.startswith('./.husky/_/'): continue
             if filename == './LICENSE': continue
             if filename == './yarn.lock': continue

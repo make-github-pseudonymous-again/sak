@@ -54,16 +54,24 @@
     "prepare": "npm run build",
     "prepublishOnly": "pinst --disable",
     "release": "np --message ':hatching_chick: release: Bumping to v%s.'",
-    "test": "ava"
+    "test": "npm run test:src",
+    "test-cmd": "NODE_LOADER_CONFIG=test/loader/config.js ava",
+    "test:cjs": "IMPORT_MAP_PATH=test/import-maps/dist/index.json npm run test-cmd",
+    "test:dist": "npm run test:modern && npm run test:module && npm run test:cjs",
+    "test:modern": "IMPORT_MAP_PATH=test/import-maps/dist/index.modern.json npm run test-cmd",
+    "test:module": "IMPORT_MAP_PATH=test/import-maps/dist/index.module.json npm run test-cmd",
+    "test:src": "IMPORT_MAP_PATH=test/import-maps/src/index.json npm run test-cmd"
   }},
   "dependencies": {{}},
   "devDependencies": {{
-    "@babel/core": "7.16.5",
-    "@babel/preset-env": "7.16.5",
-    "@babel/register": "7.16.5",
-    "@commitlint/cli": "16.0.0",
+    "@babel/core": "7.16.7",
+    "@babel/preset-env": "7.16.8",
+    "@commitlint/cli": "16.0.2",
     "@js-library/commitlint-config": "0.0.4",
-    "ava": "3.15.0",
+    "@node-loader/babel": "2.0.1",
+    "@node-loader/core": "2.0.0",
+    "@node-loader/import-maps": "1.0.3",
+    "ava": "4.0.1",
     "babel-plugin-transform-remove-console": "6.9.4",
     "babel-plugin-unassert": "3.2.0",
     "babel-preset-power-assert": "3.0.0",
@@ -88,21 +96,15 @@
       "test/src/**/*"
     ],
     "require": [
-      "regenerator-runtime/runtime",
-      "@babel/register"
+      "regenerator-runtime/runtime"
+    ],
+    "nodeArguments": [
+      "--experimental-loader=@node-loader/core"
     ],
     "timeout": "1m"
   }},
   "babel": {{
     "sourceMaps": true,
-    "presets": [
-      [
-        "@babel/preset-env",
-        {{
-          "targets": "current node"
-        }}
-      ]
-    ],
     "plugins": [
       [
         "transform-remove-console",

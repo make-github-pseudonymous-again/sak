@@ -89,7 +89,7 @@ def upload(version, message=None):
 def make_var(name):
     return re.sub('^[A-Z]', lambda match: match.group(0).lower(), name.title().replace('-',''))
 
-def args(name, subject, keywords, username, org, slugprefix='', fullnameprefix='@{scope}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0', emoji=None, scope=None, author=None, packageType='commonjs'):
+def args(name, subject, keywords, username, org, slugprefix='', fullnameprefix='@{scope}/', subjectsuffix=' for JavaScript', license_template="agpl-3.0", version='0.0.0', emoji=None, scope=None, author=None, packageType='module'):
 
     license = lib.github.license(license_template)
 
