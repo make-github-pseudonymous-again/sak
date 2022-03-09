@@ -330,6 +330,8 @@ def diff(cwd = '.'):
             if filename.startswith('./test/src/'): continue
             if filename.startswith('./test/data/'): continue
             if filename.startswith('./.husky/_/'): continue
+            if filename.startswith('./_benchmark/'): continue
+            if filename.startswith('./_profile/'): continue
             if filename == './LICENSE': continue
             if filename == './yarn.lock': continue
 

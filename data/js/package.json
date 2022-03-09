@@ -64,14 +64,14 @@
   }},
   "dependencies": {{}},
   "devDependencies": {{
-    "@babel/core": "7.16.7",
-    "@babel/preset-env": "7.16.8",
-    "@commitlint/cli": "16.0.2",
+    "@babel/core": "7.17.5",
+    "@babel/preset-env": "7.16.11",
+    "@commitlint/cli": "16.2.1",
     "@js-library/commitlint-config": "0.0.4",
     "@node-loader/babel": "2.0.1",
     "@node-loader/core": "2.0.0",
     "@node-loader/import-maps": "1.0.3",
-    "ava": "4.0.1",
+    "ava": "4.1.0",
     "babel-plugin-transform-remove-console": "6.9.4",
     "babel-plugin-unassert": "3.2.0",
     "babel-preset-power-assert": "3.0.0",
@@ -83,13 +83,13 @@
     "esdoc-standard-plugin": "1.0.0",
     "fixpack": "4.0.0",
     "husky": "7.0.4",
-    "lint-staged": "12.1.7",
+    "lint-staged": "12.3.5",
     "microbundle": "0.14.2",
     "np": "7.6.0",
-    "pinst": "2.1.6",
+    "pinst": "3.0.0",
     "power-assert": "1.6.1",
     "regenerator-runtime": "0.13.9",
-    "xo": "0.47.0"
+    "xo": "0.48.0"
   }},
   "ava": {{
     "files": [
