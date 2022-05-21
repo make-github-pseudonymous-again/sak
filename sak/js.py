@@ -285,12 +285,15 @@ def diff(cwd = '.'):
             emoji = m.group(1)
 
     var = lib.js.make_var(name.split('/')[-1])
-    with open(os.path.join(cwd, 'doc', 'manual', 'usage.md'), 'r') as fd:
-        for line in fd:
-            m = re.match(r"const ([a-zA-Z]\w*) = require", line)
-            if m:
-                var = m.group(1)
-                break
+    try:
+        with open(os.path.join(cwd, 'doc', 'manual', 'usage.md'), 'r') as fd:
+            for line in fd:
+                m = re.match(r"const ([a-zA-Z]\w*) = require", line)
+                if m:
+                    var = m.group(1)
+                    break
+    except FileNotFoundError:
+        pass
 
     commonjsExtension = 'js' if packageType == 'commonjs' else 'cjs'
     moduleExtension = 'js' if packageType == 'module' else 'mjs'
