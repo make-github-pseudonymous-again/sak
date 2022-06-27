@@ -12,7 +12,7 @@ setup(
     long_description='sak is a module, submodule and function based tool',
 
     author='make-github-pseudonymous-again',
-    author_email='aurelien.ooms@gmail.com',
+    author_email='5165674+make-github-pseudonymous-again@users.noreply.github.com',
     url='https://github.com/make-github-pseudonymous-again/sak',
     license='LICENSE',
 
