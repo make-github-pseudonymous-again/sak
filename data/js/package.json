@@ -65,6 +65,7 @@
   "dependencies": {{}},
   "devDependencies": {{
     "@babel/core": "7.18.9",
+    "@babel/plugin-transform-for-of": "7.18.8",
     "@babel/preset-env": "7.18.9",
     "@commitlint/cli": "17.0.3",
     "@js-library/commitlint-config": "0.0.4",
@@ -176,6 +177,7 @@
           ]
         ],
         "plugins": [
+          "@babel/plugin-transform-for-of",
           "babel-plugin-unassert"
         ]
       }}
