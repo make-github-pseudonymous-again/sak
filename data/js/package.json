@@ -64,15 +64,15 @@
   }},
   "dependencies": {{}},
   "devDependencies": {{
-    "@babel/core": "7.18.9",
+    "@babel/core": "7.19.0",
     "@babel/plugin-transform-for-of": "7.18.8",
-    "@babel/preset-env": "7.18.9",
-    "@commitlint/cli": "17.0.3",
+    "@babel/preset-env": "7.19.0",
+    "@commitlint/cli": "17.1.2",
     "@js-library/commitlint-config": "0.0.4",
     "@node-loader/babel": "2.0.1",
     "@node-loader/core": "2.0.0",
     "@node-loader/import-maps": "1.0.3",
-    "ava": "4.3.1",
+    "ava": "4.3.3",
     "babel-plugin-transform-remove-console": "6.9.4",
     "babel-plugin-unassert": "3.2.0",
     "babel-preset-power-assert": "3.0.0",
@@ -85,12 +85,12 @@
     "fixpack": "4.0.0",
     "husky": "8.0.1",
     "lint-staged": "13.0.3",
-    "microbundle": "0.15.0",
+    "microbundle": "0.15.1",
     "np": "7.6.2",
     "pinst": "3.0.0",
     "power-assert": "1.6.1",
     "regenerator-runtime": "0.13.9",
-    "xo": "0.51.0"
+    "xo": "0.52.3"
   }},
   "ava": {{
     "files": [
