@@ -97,11 +97,11 @@
     "files": [
       "test/src/**/*"
     ],
-    "require": [
-      "regenerator-runtime/runtime"
-    ],
     "nodeArguments": [
       "--experimental-loader=@node-loader/core"
+    ],
+    "require": [
+      "regenerator-runtime/runtime"
     ],
     "timeout": "1m"
   }},
